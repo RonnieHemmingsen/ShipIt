@@ -6,6 +6,7 @@ public static class EventStrings
     public const string PLAYERDEAD = "PlayerDead";
     public const string HAZARDKILL = "HazardKill";
     public const string COINGRAB = "CoinGrab";
+    public const string BIGCOINGRAB = "BigCoinGrab"; 
     public const string ENEMYDESTROYED = "EnemyDestroyed";
     public const string INVULNERABILITYON = "InvulnerabilityOn";
     public const string INVULNERABILITYOFF = "InvulnerabilityOff";
@@ -22,6 +23,7 @@ public static class TagStrings
     public const string COIN = "Coin";
     public const string BOLT = "Bolt";
     public const string ENEMYBOLT = "EnemyBolt";
+    public const string BIGCOIN = "BigCoin";
 }
    
 public static class GameSettings

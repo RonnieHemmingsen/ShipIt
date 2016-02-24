@@ -4,7 +4,7 @@ using System.Collections;
 public class Utilities : MonoBehaviour {
 
     /*Returns true if the distance to other is less than distVal*/
-    public static bool IsCloseEnoughToOther(Vector3 thisObjPos, Vector3 otherObjPos, float distVal)
+    public static bool DistanceLessThanValueToOther(Vector3 thisObjPos, Vector3 otherObjPos, float distVal)
     {
         float distance = 0.0f;
 

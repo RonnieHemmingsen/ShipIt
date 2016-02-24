@@ -47,7 +47,7 @@ public class EnemyScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        if(Utilities.IsCloseEnoughToOther(transform.position, _gotoPos, 0.3f) && !_isAtLocation)
+        if(Utilities.DistanceLessThanValueToOther(transform.position, _gotoPos, 0.3f) && !_isAtLocation)
         {
             //is not at location
             transform.position = Vector3.MoveTowards(transform.position, _gotoPos, _step);    
@@ -100,8 +100,7 @@ public class EnemyScript : MonoBehaviour {
         if(_isReadyToRetreat && _timeBeforeRetreating < 0)
         {
             //print(7);
-            _GM.IsEnemySpawned = false;
-            if(Utilities.IsCloseEnoughToOther(transform.position, _retreatPos, 0.3f))
+             if(Utilities.DistanceLessThanValueToOther(transform.position, _retreatPos, 0.3f))
             {
                 transform.position = Vector3.MoveTowards(transform.position, _retreatPos, _step);
             }

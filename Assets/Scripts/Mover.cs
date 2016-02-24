@@ -23,13 +23,14 @@ public class Mover : MonoBehaviour {
 
 	// Use this for initialization
 	void OnEnable () {
-        if(transform.tag == "Hazard")
+
+        if(transform.tag != TagStrings.BOLT)
         {
             _rigidbody.velocity = transform.forward * _GM.GameSpeed; //speed afhængig af GM.
         }
         else
         {
-            _rigidbody.velocity = transform.forward * _speed; //speed sat på GO.
+            _rigidbody.velocity = transform.forward * _speed;
         }
 	}
 }

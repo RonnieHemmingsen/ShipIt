@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
@@ -23,11 +24,15 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float _playerInvulnerableTimer = 3.0f;
     [SerializeField]
-    private float _spawnEnemyTimer = 20.0f;
+    private float _chanceToSpawnDestroyAll = 0.01f;
     [SerializeField]
-    private int _chanceToSpawnDestroyAll = 10;
+    private float _chanceToSpawnInvulnerability = 0.03f;
     [SerializeField]
-    private int _chanceToSpawnInvulnerability = 10;
+    private float _chanceToSpawnEnemy = 0.08f;
+    [SerializeField]
+    private float _chanceToSpawnCoin = 1f;
+    [SerializeField]
+    private float _chanceToSpawnBigCoin = 0.02f;
     [SerializeField]
     private Text _distanceText;
     [SerializeField]
@@ -50,18 +55,19 @@ public class GameManager : MonoBehaviour {
     private GameObject _destroyAll;
     [SerializeField]
     private GameObject _coin;
+    [SerializeField]
+    private GameObject _bigCoin;
 
 
     private ObjectPoolManager _objPool;
+    private List<Vector3> ItemSpawnPositions = new List<Vector3>();
+    private List<Vector3> EnemySpawnPositions = new List<Vector3>();
     private float _score = 0;
     private float _playTime = 0;
     private float _playDistance = 0;
     private int _destroyedHazards = 0;
     private bool _isPlayerInvulnerable;
-    private bool _isEnemySpawned;
-    private bool _enemyCanSpawn;
     private float _deltaInvulneTime;
-    private float _deltaEnemyTime;
     private bool _isDestroyAllSpawned;
     private int _coinScore;
 
@@ -105,12 +111,7 @@ public class GameManager : MonoBehaviour {
         get { return _coinScore; }
         set { _coinScore = value; }
     }
-
-    public bool IsEnemySpawned
-    {
-        get { return _isEnemySpawned; }
-        set { _isEnemySpawned = value; }
-    }
+        
     void Awake()
     {
         if (instance == null)
@@ -132,6 +133,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         _objPool.CreatePool(100, _coin, _coin.tag);
+        _objPool.CreatePool(100, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
         _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
         _objPool.CreatePool(5, _enemy, _enemy.tag);
@@ -142,12 +144,11 @@ public class GameManager : MonoBehaviour {
         _speedText.text = "Speed: 5";
         _scoreText.text = "Score: 0";
 
-        _deltaEnemyTime = _spawnEnemyTimer;
         _deltaInvulneTime = _playerInvulnerableTimer;
 
-        _enemyCanSpawn = true;
-
+        InvokeRepeating("SpawnDecider", 1.0f, .5f);
         StartCoroutine(SpawnWaves());
+
 	}
 
     void OnEnable()
@@ -155,6 +156,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StartListening(EventStrings.PLAYERDEAD, GameOver);
         EventManager.StartListening(EventStrings.HAZARDKILL, UpdateHazardDestroyed); 
         EventManager.StartListening(EventStrings.COINGRAB, UpdateCoinScore);
+        EventManager.StartListening(EventStrings.BIGCOINGRAB, UpdateBigCoinScore);
         EventManager.StartListening(EventStrings.ENEMYDESTROYED, EnemyDestroyed);
         EventManager.StartListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
         EventManager.StartListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
@@ -166,6 +168,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.PLAYERDEAD, GameOver);
         EventManager.StopListening(EventStrings.HAZARDKILL, UpdateHazardDestroyed);
         EventManager.StopListening(EventStrings.COINGRAB, UpdateCoinScore);
+        EventManager.StopListening(EventStrings.BIGCOINGRAB, UpdateBigCoinScore);
         EventManager.StopListening(EventStrings.ENEMYDESTROYED, EnemyDestroyed);
         EventManager.StopListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
         EventManager.StopListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
@@ -186,18 +189,7 @@ public class GameManager : MonoBehaviour {
                 _deltaInvulneTime = _playerInvulnerableTimer;
             }
         }
-        //print(IsEnemySpawned);
-        if(!IsEnemySpawned)
-        {
             
-            _deltaEnemyTime -= Time.deltaTime;
-            if(_deltaEnemyTime < 0)
-            {
-                _enemyCanSpawn = true;
-            }
-        }
-
-
         CalculateScore();
         CalculatePlayDistance();
         CalculateGameSpeed();
@@ -205,6 +197,7 @@ public class GameManager : MonoBehaviour {
 
     private IEnumerator SpawnWaves()
     {
+        
         yield return new WaitForSeconds(_startWait);
         while(true)
         {
@@ -215,10 +208,6 @@ public class GameManager : MonoBehaviour {
                 GameObject GO = _objPool.GetObjectFromPool(TagStrings.HAZARD);
                 GO.transform.position = spawnPos;
 
-                SpawnCoins(spawnPos);
-                SpawnEnemies();
-                SpawnDestroyAll(spawnPos);
-                SpawnInvulnerability(spawnPos);
 
                 yield return new WaitForSeconds(_spawnWait);
 
@@ -227,75 +216,96 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    private void SpawnEnemies()
+    private void SpawnDecider()
     {
-        if(_enemyCanSpawn)
-        {
-            _enemyCanSpawn = false;
-            _isEnemySpawned = true;
-            _deltaEnemyTime = _spawnEnemyTimer;
-            Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+            float rand = Random.value;
 
-            GameObject GO = _objPool.GetObjectFromPool(TagStrings.ENEMY);
-            GO.transform.position = spawnPos; 
+        if(rand <= _chanceToSpawnCoin) 
+        {
+            SpawnStuff(TagStrings.COIN);    
+        }
+            
+        if(rand <= _chanceToSpawnBigCoin)
+        {
+            SpawnStuff(TagStrings.BIGCOIN);
         }
 
-    }
-
-    private void SpawnInvulnerability(Vector3 lastSpawnPos)
-    {
-        Vector3 spawnPos = Vector3.zero;
-        int number = Utilities.RandomIntGenerator(1, 100);
-
-        if(number >= 1 && number <= _chanceToSpawnInvulnerability)
+        if (rand <= _chanceToSpawnEnemy) 
         {
-            //print("Did it: " + number);
-            while(Utilities.IsCloseEnoughToOther(spawnPos, lastSpawnPos, 0.3f))
-            {
-                spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
-            }
-
-            GameObject GO = _objPool.GetObjectFromPool(TagStrings.INVULNERABLE);
-            GO.transform.position = spawnPos;
+        //print(rand + " <= " + _chanceToSpawnEnemy);
+            SpawnStuff(TagStrings.ENEMY);  
         }
 
-    }
-
-    private void SpawnDestroyAll(Vector3 lastSpawnPos)
-    {
-        Vector3 spawnPos = Vector3.zero;
-        int number = Utilities.RandomIntGenerator(1, 100);
-
-        if(number >= 1 && number <= _chanceToSpawnDestroyAll)
+        if (rand <= _chanceToSpawnDestroyAll) 
         {
-            //print("Did it: " + number);
-            while(Utilities.IsCloseEnoughToOther(spawnPos, lastSpawnPos, 0.3f))
-            {
-                spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+            
+            SpawnStuff(TagStrings.DESTROYALL);    
+        }
 
-                //_isDestroyAllSpawned = true;
-            }
-
-            GameObject GO = _objPool.GetObjectFromPool(TagStrings.DESTROYALL);
-            GO.transform.position = spawnPos;
+        if (rand <= _chanceToSpawnInvulnerability) 
+        {
+            SpawnStuff(TagStrings.INVULNERABLE);    
         }
     }
 
-    private void SpawnCoins(Vector3 lastSpawnPos)
+    private void SpawnStuff(string tag)
     {
+        bool canSpawnHere = false;
         Vector3 spawnPos = Vector3.zero;
-        float farEnough = 3.0f;
-        float dist = 0.0f;
 
-        while (dist < farEnough)
+
+        while(!canSpawnHere)
         {
             spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
-            dist = Vector3.Distance(spawnPos, lastSpawnPos);
+
+            if(EnemySpawnPositions.Count == 0)
+            {
+                EnemySpawnPositions.Add(spawnPos);
+                canSpawnHere = true;
+            }
+
+            if(tag == TagStrings.ENEMY)
+            {
+                foreach (var item in EnemySpawnPositions)
+                {
+                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 1.0f))
+                    {
+                        canSpawnHere = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                if(ItemSpawnPositions.Count == 0)
+                {
+                    ItemSpawnPositions.Add(spawnPos);
+                    canSpawnHere = true;
+                }
+                foreach (var item in EnemySpawnPositions)
+                {
+                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 0.3f))
+                    {
+                        canSpawnHere = true;
+                        break;
+                    }
+                }
+            }
         }
 
+        if(tag == TagStrings.ENEMY)
+        {
+            EnemySpawnPositions.Add(spawnPos);
+            MaintainPositionLists(EnemySpawnPositions);
+        }
+        else
+        {
+            ItemSpawnPositions.Add(spawnPos);
+            MaintainPositionLists(ItemSpawnPositions);
+        }
 
-        GameObject GO = _objPool.GetObjectFromPool(TagStrings.COIN);
-        GO.transform.position = spawnPos;
+        GameObject GO = _objPool.GetObjectFromPool(tag);
+        GO.transform.position = spawnPos; 
     }
 
     private void CalculateScore()
@@ -323,7 +333,8 @@ public class GameManager : MonoBehaviour {
     private void UpdateHazardDestroyed()
     {
         _destroyedHazards += 1;
-        _killText.text = "Kills: " + _destroyedHazards.ToString();
+        _coinScore += 5;
+        _scoreText.text = "Score: " + _coinScore.ToString();
 
     }
 
@@ -333,13 +344,18 @@ public class GameManager : MonoBehaviour {
         _scoreText.text = "Score: " + _coinScore.ToString();
     }
 
+    private void UpdateBigCoinScore()
+    {
+        _coinScore += 100;
+        _scoreText.text = "Score: " +_coinScore.ToString();
+    }
+
     private void EnemyDestroyed()
     {
-        _enemyCanSpawn = true;
-        _isEnemySpawned = false;
         _destroyedHazards += 1;
-        _killText.text = "Kills: " + _destroyedHazards.ToString(); 
-        _deltaEnemyTime = _spawnEnemyTimer;
+        _coinScore += 10;
+        _scoreText.text = "Score: " + _coinScore.ToString(); 
+
     }
 
     private void InvulnerabilityOn()
@@ -363,4 +379,14 @@ public class GameManager : MonoBehaviour {
         print("You died");
     }
 	
+    private void MaintainPositionLists(List<Vector3> list)
+    {
+        //print("List count : " +list.Count);
+
+        if(list.Count < 5)
+            return;
+
+        list.RemoveAt(0);
+    }
 }
+   

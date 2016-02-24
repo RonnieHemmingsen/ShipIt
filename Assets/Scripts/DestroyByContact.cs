@@ -77,6 +77,15 @@ public class DestroyByContact : MonoBehaviour {
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
         }
 
+        //player grabs big coin
+        if(this.tag == TagStrings.BIGCOIN && other.tag == TagStrings.PLAYER)
+        {
+            EventManager.TriggerEvent(EventStrings.BIGCOINGRAB);
+            Instantiate(_explosion, transform.position, transform.rotation);
+            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            
+        }
+
         //Enemy destroyed by player bolt
         if(this.tag == TagStrings.ENEMY && other.tag == TagStrings.BOLT)
         {
@@ -96,7 +105,6 @@ public class DestroyByContact : MonoBehaviour {
                 if(hazard.activeSelf == true)
                 {
                     ExplodeAThing(hazard);
-          
                 }
 
             }
