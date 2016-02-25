@@ -28,18 +28,20 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private GameObject _invulnerableForceField;
     [SerializeField]
+    private GameObject _ludicrousSpeedAfterburner;
+    [SerializeField]
     private Boundary _boundary;
 
     private Rigidbody _rigidbody;
     private AudioSource _laserSound;
-    private float _moveHorizontal;
-    private float _moveVertical;
+    private Animator _anim;
     private ObjectPoolManager _objPool;
+    private GameManager _GM;
 
     private float _timeBetweenShots;
-    private float _timeBetweenJumps;
-    private bool _canJump;
-    private Animator _anim;
+    private float _moveHorizontal;
+    private float _moveVertical;
+
 
 
     public float ShipSpeed
@@ -65,27 +67,34 @@ public class PlayerController : MonoBehaviour {
         _rigidbody = GetComponent<Rigidbody>();
         _laserSound = GetComponent<AudioSource>();
         _anim = GetComponentInChildren<Animator>();
-        _objPool = GameObject.FindObjectOfType<ObjectPoolManager>().GetComponent<ObjectPoolManager>();
+        _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
+        _GM = GameObject.FindObjectOfType<GameManager>();
+
     }
 
     void OnEnable()
     {
-        EventManager.StartListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
-        EventManager.StartListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
+        EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
+        EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
+        EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
+        EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
+
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
-        EventManager.StopListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
+        EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
+        EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
+        EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
+        EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
         
     }
 
     void Start()
     {
         _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
+        _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _objPool.CreatePool(_numberOfShots, _bolt, _bolt.tag);
-        _canJump = true;
     }
 
     void FixedUpdate()
@@ -96,6 +105,16 @@ public class PlayerController : MonoBehaviour {
         if(Input.GetKeyDown(KeyCode.Space))
         {
             Fire();
+        }
+
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            if(_GM.HasLudicrousSpeedToken) 
+            {
+                EventManager.TriggerEvent(EventStrings.GET_REKT);
+                EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
+            }
         }
         //#endif
 
@@ -139,16 +158,11 @@ public class PlayerController : MonoBehaviour {
         
     void Update()
     {
-        _timeBetweenJumps += Time.deltaTime;
-        if(_timeBetweenJumps >= _jumpRate && !_canJump)
-        {
-            _canJump = true;
-        }
-    }
 
+    }
+        
     private void InvulnerabilityOn()
     {
-        _invulnerableForceField.SetActive(true);
         Image im =  _invulnerableForceField.GetComponent<Image>();
 
         StartCoroutine(FadeInAndOut(1f, im, () =>
@@ -167,13 +181,27 @@ public class PlayerController : MonoBehaviour {
         }));
 
     }
+
+    private void EngageLudicrousSpeed()
+    {
+        print("engage");
+        Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
+        StartCoroutine(FadeInAndOut(1, im, () => {}));
+    }
+
+    private void DisengageLudicrousSpeed()
+    {
+        print("disengage");
+        Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
+        StartCoroutine(FadeInAndOut(0, im, () => {}));
+    }
         
 
     IEnumerator FadeInAndOut(float fadeToValue, Image im, Action onComplete)
     {
         
-        im.CrossFadeAlpha(fadeToValue, GameSettings.CROSSFADE_APHA_VALUE, false);
-        yield return new WaitForSeconds(GameSettings.CROSSFADE_APHA_VALUE);
+        im.CrossFadeAlpha(fadeToValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);
+        yield return new WaitForSeconds(GameSettings.CROSSFADE_ALPHA_VALUE);
         onComplete();
 
     }

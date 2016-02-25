@@ -1,0 +1,172 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &155730
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 403386}
+  - 114: {fileID: 11471706}
+  - 82: {fileID: 8259420}
+  - 114: {fileID: 11474278}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &403386
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 155730}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+--- !u!82 &8259420
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 155730}
+  m_Enabled: 0
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 7b04c59dd84f14039b601e1abbe7b884, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.5
+  m_Pitch: 1
+  Loop: 1
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+--- !u!114 &11471706
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 155730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52c479069bbad4c0b8c9b770171ec831, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isDebugInvulne: 1
+  _gameSpeed: -5
+  _scoreMultiplier: 10
+  _spawnWait: 0.5
+  _startWait: 1
+  _waveWait: 0.15
+  _hazardCount: 20
+  _playerInvulnerableTimer: 3
+  _ludicrousSpeedTimer: 5
+  _chanceToSpawnDestroyAll: 0.1
+  _chanceToSpawnInvulnerability: 0.03
+  _chanceToSpawnEnemy: 0.05
+  _chanceToSpawnCoin: 0.8
+  _chanceToSpawnBigCoin: 0.02
+  _chanceToSpawnLudicrousSpeed: 0.2
+  _distanceText: {fileID: 0}
+  _scoreText: {fileID: 0}
+  _killText: {fileID: 0}
+  _timePlayedText: {fileID: 0}
+  _speedText: {fileID: 0}
+  _spawnValues: {x: 7, y: 0, z: 16}
+  _asteroid: {fileID: 172768, guid: 66142ff9f311343cda8cdacd73695717, type: 2}
+  _enemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
+  _invulnePower: {fileID: 187450, guid: fcec80ae7811f41d7954a597bc914bc8, type: 2}
+  _destroyAll: {fileID: 199062, guid: 26ea0fc732a1b42839f85b72b1f4e6cc, type: 2}
+  _coin: {fileID: 179460, guid: 76ed37fba87964d1db4fd128dc5fcc44, type: 2}
+  _bigCoin: {fileID: 137594, guid: 966e81172a8654e0d94809cba051e97a, type: 2}
+  _ludicrousToken: {fileID: 164614, guid: e3bb05aca73274d62b40a1e1eb112f8f, type: 2}
+--- !u!114 &11474278
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 155730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 580b355e03739485cbe88fe033d9f879, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _maxSpeed: -10
+  _speedIncrementValue: 0.1
+  _timeBetweenSpeedIncrements: 1
+  _timeBeforeEnemiesAppear: 5
+  _maxNumberOfEnemies: 2
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 155730}
+  m_IsPrefabParent: 1

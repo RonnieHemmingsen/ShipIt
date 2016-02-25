@@ -13,7 +13,7 @@ public class DestroyByContact : MonoBehaviour {
 
     void Awake()
     {
-        _objPool = GameObject.FindObjectOfType<ObjectPoolManager>().GetComponent<ObjectPoolManager>();
+        _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
         _GM = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
     }
 
@@ -27,7 +27,7 @@ public class DestroyByContact : MonoBehaviour {
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(other.tag, other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.HAZARDKILL);
+            EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
         //Player hits hazzard, both are dead.
@@ -38,19 +38,19 @@ public class DestroyByContact : MonoBehaviour {
             Instantiate(_explosion, transform.position, transform.rotation);
             Destroy(other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.PLAYERDEAD);
+            EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
 
         }
 
         //Player hits enemy laser and is fucking dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && this.tag == TagStrings.ENEMYBOLT && !_GM.DebugInvulne)
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && this.tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
         {
          
             print("Death by laser");
             Instantiate(_explosion, transform.position, transform.rotation);
             Destroy(other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.PLAYERDEAD);
+            EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
 
         //Invulnerable player hits hazard
@@ -58,7 +58,7 @@ public class DestroyByContact : MonoBehaviour {
         {
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.HAZARDKILL);
+            EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
         //Player grabs invulnerable powerup
@@ -66,21 +66,21 @@ public class DestroyByContact : MonoBehaviour {
         {
             print(this.tag);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.INVULNERABILITYON);
+            EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
         }
 
         //Player grabs coin
         if(this.tag == TagStrings.COIN && other.tag == TagStrings.PLAYER)
         {
-            EventManager.TriggerEvent(EventStrings.COINGRAB);
+            EventManager.TriggerEvent(EventStrings.COIN_GRAB);
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
         }
 
         //player grabs big coin
-        if(this.tag == TagStrings.BIGCOIN && other.tag == TagStrings.PLAYER)
+        if(this.tag == TagStrings.BIG_COIN && other.tag == TagStrings.PLAYER)
         {
-            EventManager.TriggerEvent(EventStrings.BIGCOINGRAB);
+            EventManager.TriggerEvent(EventStrings.BIG_COIN_GRAB);
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
             
@@ -89,13 +89,13 @@ public class DestroyByContact : MonoBehaviour {
         //Enemy destroyed by player bolt
         if(this.tag == TagStrings.ENEMY && other.tag == TagStrings.BOLT)
         {
-            EventManager.TriggerEvent(EventStrings.ENEMYDESTROYED);
+            EventManager.TriggerEvent(EventStrings.ENEMY_DESTROYED);
             Instantiate(_explosion, transform.position, Quaternion.identity);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
         }
 
         // Player Grabs DestroyAll
-        if(this.tag == TagStrings.DESTROYALL && other.tag == TagStrings.PLAYER)
+        if(this.tag == TagStrings.DESTROY_ALL && other.tag == TagStrings.PLAYER)
         {
             print("DestroyAll");
 
@@ -111,6 +111,14 @@ public class DestroyByContact : MonoBehaviour {
 
             Instantiate(_explosion, transform.position, Quaternion.identity);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+        }
+
+        //Engage ludicrous speed
+        if(this.tag == TagStrings.LUDICROUS_SPEED && other.tag == TagStrings.PLAYER)
+        {
+            print(tag);
+            EventManager.TriggerEvent(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN);
+            ExplodeAThing(this.gameObject);
         }
     }
 

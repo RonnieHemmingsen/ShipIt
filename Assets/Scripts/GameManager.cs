@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float _playerInvulnerableTimer = 3.0f;
     [SerializeField]
+    private float _ludicrousSpeedTimer = 3.0f;
+    [SerializeField]
     private float _chanceToSpawnDestroyAll = 0.01f;
     [SerializeField]
     private float _chanceToSpawnInvulnerability = 0.03f;
@@ -33,6 +35,8 @@ public class GameManager : MonoBehaviour {
     private float _chanceToSpawnCoin = 1f;
     [SerializeField]
     private float _chanceToSpawnBigCoin = 0.02f;
+    [SerializeField]
+    private float _chanceToSpawnLudicrousSpeed = 0.2f;
     [SerializeField]
     private Text _distanceText;
     [SerializeField]
@@ -57,47 +61,39 @@ public class GameManager : MonoBehaviour {
     private GameObject _coin;
     [SerializeField]
     private GameObject _bigCoin;
+    [SerializeField]
+    private GameObject _ludicrousToken;
 
 
+
+    private GameBalancer _zen;
     private ObjectPoolManager _objPool;
     private List<Vector3> ItemSpawnPositions = new List<Vector3>();
     private List<Vector3> EnemySpawnPositions = new List<Vector3>();
     private float _score = 0;
-    private float _playTime = 0;
     private float _playDistance = 0;
     private int _destroyedHazards = 0;
     private bool _isPlayerInvulnerable;
     private float _deltaInvulneTime;
+    private float _deltaLudicrousSpeedTime;
     private bool _isDestroyAllSpawned;
     private int _coinScore;
+    private bool _canSpawnEnemies;
+    private bool _canSpawnAsteroids;
+    private bool _isLudicrousSpeedActive;
+    private bool _hasLudicrousSpeedToken;
+
 
     public bool DebugInvulne
     {
         get { return _isDebugInvulne; }
         set { _isDebugInvulne = value; }
     }
-
-    public float Score {
-        get { return _score; }
-        set { _score = value; }
-    }
-
-    public float PlayDistance
-    {
-        get { return _playDistance; }
-        set { _playDistance = value; }
-    }
-
+        
     public float GameSpeed
     {
         get { return _gameSpeed; }
         set { _gameSpeed = value; }
-    }
-
-    public int DestroyedHazards
-    {
-        get { return _destroyedHazards; }
-        set { _destroyedHazards = value; }
     }
        
     public bool IsPlayerInvulnerable
@@ -106,10 +102,22 @@ public class GameManager : MonoBehaviour {
         set { _isPlayerInvulnerable = value; }
     }
 
-    public int CoinScore
+    public bool IsLudicrousSpeedActive
     {
-        get { return _coinScore; }
-        set { _coinScore = value; }
+        get { return _isLudicrousSpeedActive; }
+        set { _isLudicrousSpeedActive = value; }
+    }
+
+    public bool HasLudicrousSpeedToken
+    {
+        get { return _hasLudicrousSpeedToken; }
+        set { _hasLudicrousSpeedToken = value; }
+    }
+
+    public bool CanSpawnAsteroids
+    {
+        get { return _canSpawnAsteroids; }
+        set { _canSpawnAsteroids = value; }
     }
         
     void Awake()
@@ -126,6 +134,7 @@ public class GameManager : MonoBehaviour {
         DontDestroyOnLoad(this);
 
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
+        _zen = GetComponent<GameBalancer>();
     }
 
 
@@ -136,8 +145,9 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(100, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
         _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
-        _objPool.CreatePool(5, _enemy, _enemy.tag);
+        _objPool.CreatePool(_zen.MaxNumberOfEnemies, _enemy, _enemy.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
+        _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
 
         _killText.text = "Kills: 0";
         _distanceText.text = "Distance: 0";
@@ -145,6 +155,7 @@ public class GameManager : MonoBehaviour {
         _scoreText.text = "Score: 0";
 
         _deltaInvulneTime = _playerInvulnerableTimer;
+        _deltaLudicrousSpeedTime = _ludicrousSpeedTimer;
 
         InvokeRepeating("SpawnDecider", 1.0f, .5f);
         StartCoroutine(SpawnWaves());
@@ -153,60 +164,83 @@ public class GameManager : MonoBehaviour {
 
     void OnEnable()
     {
-        EventManager.StartListening(EventStrings.PLAYERDEAD, GameOver);
-        EventManager.StartListening(EventStrings.HAZARDKILL, UpdateHazardDestroyed); 
-        EventManager.StartListening(EventStrings.COINGRAB, UpdateCoinScore);
-        EventManager.StartListening(EventStrings.BIGCOINGRAB, UpdateBigCoinScore);
-        EventManager.StartListening(EventStrings.ENEMYDESTROYED, EnemyDestroyed);
-        EventManager.StartListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
-        EventManager.StartListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
+        EventManager.StartListening(EventStrings.PLAYER_DEAD, GameOver);
+        EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
+        EventManager.StartListening(EventStrings.COIN_GRAB, UpdateCoinScore);
+        EventManager.StartListening(EventStrings.BIG_COIN_GRAB, UpdateBigCoinScore);
+        EventManager.StartListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+        EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
+        EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
+        EventManager.StartListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
+        EventManager.StartListening(EventStrings.TOGGLE_ENEMY_SPAWNING, ToggleEnemySpawn);
+        EventManager.StartListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
+        EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
+        EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
+        EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
         
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(EventStrings.PLAYERDEAD, GameOver);
-        EventManager.StopListening(EventStrings.HAZARDKILL, UpdateHazardDestroyed);
-        EventManager.StopListening(EventStrings.COINGRAB, UpdateCoinScore);
-        EventManager.StopListening(EventStrings.BIGCOINGRAB, UpdateBigCoinScore);
-        EventManager.StopListening(EventStrings.ENEMYDESTROYED, EnemyDestroyed);
-        EventManager.StopListening(EventStrings.INVULNERABILITYON, InvulnerabilityOn);
-        EventManager.StopListening(EventStrings.INVULNERABILITYOFF, InvulnerabilityOff);
+        EventManager.StopListening(EventStrings.PLAYER_DEAD, GameOver);
+        EventManager.StopListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed);
+        EventManager.StopListening(EventStrings.COIN_GRAB, UpdateCoinScore);
+        EventManager.StopListening(EventStrings.BIG_COIN_GRAB, UpdateBigCoinScore);
+        EventManager.StopListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+        EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
+        EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
+        EventManager.StopListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
+        EventManager.StopListening(EventStrings.TOGGLE_ENEMY_SPAWNING, ToggleEnemySpawn);
+        EventManager.StopListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
+        EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
+        EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
+        EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
     }
 
     void Update()
     {
-        _playTime += Mathf.Round(Time.time * 100) / 100f;
-        _timePlayedText.text = _playTime.ToString();
+        
+        _timePlayedText.text = Mathf.RoundToInt(Time.time).ToString();
 
         if(_isPlayerInvulnerable)
         {
             _deltaInvulneTime -= Time.deltaTime;
             if(_deltaInvulneTime < 0)
             {
-                EventManager.TriggerEvent(EventStrings.INVULNERABILITYOFF);
-                _isPlayerInvulnerable = false;
-                _deltaInvulneTime = _playerInvulnerableTimer;
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_OFF);
+
+            }
+        }
+
+        if(_isLudicrousSpeedActive)
+        {
+            _deltaLudicrousSpeedTime -= Time.deltaTime;
+            if(_deltaLudicrousSpeedTime < 0)
+            {
+                EventManager.TriggerEvent(EventStrings.STOP_CAMERA_SHAKE);
+                EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
             }
         }
             
-        CalculateScore();
         CalculatePlayDistance();
-        CalculateGameSpeed();
     }
 
     private IEnumerator SpawnWaves()
     {
         
         yield return new WaitForSeconds(_startWait);
-        while(true)
+        while(_canSpawnAsteroids)
         {
             for (int i = 0; i < _hazardCount; i++)
             {
                 Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
 
                 GameObject GO = _objPool.GetObjectFromPool(TagStrings.HAZARD);
-                GO.transform.position = spawnPos;
+                if(GO != null)
+                {
+                    GO.transform.position = spawnPos;    
+                }
+
 
 
                 yield return new WaitForSeconds(_spawnWait);
@@ -227,24 +261,41 @@ public class GameManager : MonoBehaviour {
             
         if(rand <= _chanceToSpawnBigCoin)
         {
-            SpawnStuff(TagStrings.BIGCOIN);
+            SpawnStuff(TagStrings.BIG_COIN);
         }
 
         if (rand <= _chanceToSpawnEnemy) 
         {
         //print(rand + " <= " + _chanceToSpawnEnemy);
-            SpawnStuff(TagStrings.ENEMY);  
+            if(_canSpawnEnemies)
+            {
+                SpawnStuff(TagStrings.ENEMY);   
+            }
+               
         }
 
         if (rand <= _chanceToSpawnDestroyAll) 
         {
             
-            SpawnStuff(TagStrings.DESTROYALL);    
+            SpawnStuff(TagStrings.DESTROY_ALL);    
         }
 
         if (rand <= _chanceToSpawnInvulnerability) 
         {
-            SpawnStuff(TagStrings.INVULNERABLE);    
+            if(!_isPlayerInvulnerable)
+            {
+                SpawnStuff(TagStrings.INVULNERABLE);    
+            }
+
+        }
+
+        if (rand <= _chanceToSpawnLudicrousSpeed)
+        {
+            if(!_hasLudicrousSpeedToken)
+            {
+                SpawnStuff(TagStrings.LUDICROUS_SPEED);    
+            }
+
         }
     }
 
@@ -305,28 +356,48 @@ public class GameManager : MonoBehaviour {
         }
 
         GameObject GO = _objPool.GetObjectFromPool(tag);
-        GO.transform.position = spawnPos; 
-    }
+        if(GO != null)
+        {
+            GO.transform.position = spawnPos; 
+        }
+        else
+        {
+            //debug only
+            print("Attempted to spawn null object: " + tag);
+        }
 
-    private void CalculateScore()
-    {
-        _score = Mathf.Abs (_playDistance * _scoreMultiplier);
-        //_scoreText.text = _score.ToString();;
     }
 
     private void CalculatePlayDistance()
     {
-        _playDistance = Mathf.Abs(_gameSpeed * _playTime / 100);
+        _playDistance = Mathf.Abs(_gameSpeed * Time.time / 100);
         _distanceText.text = _playDistance.ToString("F1");
     }
 
-    private void CalculateGameSpeed()
+    private void UpdateGameSpeed()
     {
-        if(Mathf.RoundToInt(_playTime) % 100 == 0)
-        {
-            _gameSpeed -= 0.05f;
-            _speedText.text = Mathf.Abs(_gameSpeed).ToString("F1");
+        _gameSpeed -= 0.1f;
+        _speedText.text = Mathf.Abs(_gameSpeed).ToString("F1");
 
+    }
+
+    private void UpdateSpeedTokenAvailability()
+    {
+        _hasLudicrousSpeedToken = !_hasLudicrousSpeedToken;
+    }
+
+    private void ToggleEnemySpawn()
+    {
+        _canSpawnEnemies = !_canSpawnEnemies;
+    }
+
+    private void ToggleAsteroidSpawn()
+    {
+        _canSpawnAsteroids = !_canSpawnAsteroids;
+
+        if(_canSpawnAsteroids)
+        {
+            StartCoroutine(SpawnWaves());
         }
     }
 
@@ -358,6 +429,24 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    private void EngageLudicrousSpeed()
+    {
+        UpdateSpeedTokenAvailability();
+        _isLudicrousSpeedActive = true;
+        _isPlayerInvulnerable = true;
+        _gameSpeed -= 30;
+        _speedText.text = _gameSpeed.ToString();
+    }
+
+    private void DisengageLudicousSpeed()
+    {
+        _isLudicrousSpeedActive = false;
+        _isPlayerInvulnerable = false;
+        _deltaLudicrousSpeedTime = _ludicrousSpeedTimer;
+        _gameSpeed += 30;
+        _speedText.text = _gameSpeed.ToString();
+    }
+
     private void InvulnerabilityOn()
     {
         _isPlayerInvulnerable = true;
@@ -365,6 +454,7 @@ public class GameManager : MonoBehaviour {
 
     private void InvulnerabilityOff()
     {
+        _deltaInvulneTime = _playerInvulnerableTimer;
         _isPlayerInvulnerable = false;
     }
 
