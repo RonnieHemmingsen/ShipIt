@@ -117,7 +117,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isDebugInvulne: 0
   _gameSpeed: -5
-  _scoreMultiplier: 10
   _spawnWait: 0.5
   _startWait: 1
   _waveWait: 0.15
@@ -125,8 +124,9 @@ MonoBehaviour:
   _playerInvulnerableTimer: 3
   _ludicrousSpeedTimer: 5
   _chanceToSpawnDestroyAll: 0.1
-  _chanceToSpawnInvulnerability: 0.03
-  _chanceToSpawnEnemy: 0.05
+  _chanceToSpawnInvulnerability: 0.5
+  _chanceToSpawnLaserEnemy: 0.08
+  _chanceToSpawnBulletEnemy: 0.2
   _chanceToSpawnCoin: 0.8
   _chanceToSpawnBigCoin: 0.02
   _chanceToSpawnLudicrousSpeed: 0.2
@@ -158,8 +158,10 @@ MonoBehaviour:
   _maxSpeed: -10
   _speedIncrementValue: 0.1
   _timeBetweenSpeedIncrements: 1
-  _timeBeforeEnemiesAppear: 5
-  _maxNumberOfEnemies: 2
+  _timeBeforeLaserEnemiesAppear: 5
+  _timeBeforeBulletEnemiesAppear: 30
+  _maxNumberOfLaserEnemies: 3
+  _maxNumberOfBulletEnemies: 2
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

@@ -8,7 +8,8 @@ public static class EventStrings
 
     public const string ENEMY_DESTROYED = "EnemyDestroyed";
     public const string SPEED_INCREASE = "SpeedIncrease";
-    public const string TOGGLE_ENEMY_SPAWNING = "ToggleEnemySpawning";
+    public const string TOGGLE_LASER_ENEMY_SPAWNING = "ToggleLaserEnemySpawning";
+    public const string TOGGLE_BULLET_ENEMY_SPAWNING = "ToggleBulletEnemySpawning";
     public const string TOGGLE_ASTEROID_SPAWNING = "ToggleAsteroidSpawning";
 
     public const string GRAB_COIN = "GrabCoin";
@@ -27,6 +28,8 @@ public static class EventStrings
     public const string STOP_CAMERA_SHAKE = "StopCameraShake";
     public const string START_BULLETENEMY_SHOOTING = "StartBulletEnemyShooting";
     public const string STOP_BULLETENEMY_SHOOTING = "StopBulletEnemyShooting";
+
+    public const string TOKEN_OUT_OF_BOUNDS = "TokenOutOfBounds";
 }
 
 //fairly important to keep consistent with tag manager!!

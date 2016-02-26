@@ -10,19 +10,30 @@ public class GameBalancer : MonoBehaviour {
     [SerializeField]
     private float _timeBetweenSpeedIncrements;
     [SerializeField]
-    private float _timeBeforeEnemiesAppear;
+    private float _timeBeforeLaserEnemiesAppear;
     [SerializeField]
-    private int _maxNumberOfEnemies;
+    private float _timeBeforeBulletEnemiesAppear;
+    [SerializeField]
+    private int _maxNumberOfLaserEnemies;
+    [SerializeField]
+    private int _maxNumberOfBulletEnemies;
 
     private GameManager _GM;
     private float _deltaTimeIncrement;
 
-    public int MaxNumberOfEnemies
+    #region Properties
+    public int MaxNumberOfLaserEnemies
     {
-        get { return _maxNumberOfEnemies; }
-        set { _maxNumberOfEnemies = value; }
+        get { return _maxNumberOfLaserEnemies; }
+        set { _maxNumberOfLaserEnemies = value; }
     }
 
+    public int MaxNumberOfBulletEnemies
+    {
+        get { return _maxNumberOfBulletEnemies; }
+        set { _maxNumberOfBulletEnemies = value; }
+    }
+    #endregion
     void Awake()
     {
         _GM = GetComponent<GameManager>();   
@@ -45,10 +56,10 @@ public class GameBalancer : MonoBehaviour {
             //print("Speed Timestamp: " + Time.deltaTime);
         }
 
-        if(Time.time > _timeBeforeEnemiesAppear)
+        if(Time.time > _timeBeforeLaserEnemiesAppear)
         {
             //print("Enemies Timestamp: " + Time.deltaTime);
-            EventManager.TriggerEvent(EventStrings.TOGGLE_ENEMY_SPAWNING);
+            EventManager.TriggerEvent(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING);
         }
 
         AsteroidToggle();

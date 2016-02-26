@@ -40,7 +40,8 @@ public class PlayerController : MonoBehaviour {
 
     private float _timeBetweenShots;
     private float _moveHorizontal;
-    private float _moveVertical;
+    private float _currentVertical;
+    private float _lastVertical;
     private bool _hasFiredTouch;
     private Vector2 _startSwipePosition;
 
@@ -97,18 +98,22 @@ public class PlayerController : MonoBehaviour {
         _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _objPool.CreatePool(_numberOfShots, _bolt, _bolt.tag);
+        _lastVertical = Input.acceleration.y;
+        _currentVertical = Input.acceleration.y;
     }
 
     void FixedUpdate()
     {
         MoveControl();
         LudicrousSpeedControl();
+        InvulnerabilityControl();
+        DestroyAllControl();
     }
         
     #region controls
     private void MoveControl()
     {
-        #if UNITY_EDITOR
+        //#if UNITY_EDITOR
         _moveHorizontal = Input.GetAxis("Horizontal");
 
         if(Input.GetKeyDown(KeyCode.Space))
@@ -116,9 +121,9 @@ public class PlayerController : MonoBehaviour {
             Fire();
         }
 
-        #elif UNITY_IOS
+        //#elif UNITY_IOS
         _moveHorizontal = Input.acceleration.x;
-        #endif
+        //#endif
 
         Vector3 val = new Vector3(_moveHorizontal, 0 ,0);
         _rigidbody.velocity =  val * ShipSpeed;
@@ -143,15 +148,73 @@ public class PlayerController : MonoBehaviour {
 
         _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
         //print(Mathf.Abs(_moveHorizontal));
+        }          
+    }
+
+    private void DestroyAllControl()
+    {
+        //#if UNITY_EDITOR
+        if(Input.GetKeyDown(KeyCode.Z))
+        {
+            if(_GM.HasDestroyAllToken)
+            {
+                EventManager.TriggerEvent(EventStrings.GET_REKT);
+            }
         }
+        //#elif UNITY_IOS
+        _currentVertical = Input.acceleration.y;
+        float difference = _currentVertical - _lastVertical;
+        if(difference > 0.5f && _GM.HasDestroyAllToken)
+        {
+            print("Difference: " + difference);
+            EventManager.TriggerEvent(EventStrings.GET_REKT);
+        }
+        else
+        {
+            _lastVertical = _currentVertical;
+        }
+        //#endif
+    }
 
+    private void InvulnerabilityControl()
+    {
+        //#if UNITY_EDITOR
+        if(Input.GetKeyDown(KeyCode.LeftControl))
+        {
+            if(_GM.HasInvulnerabilityToken)
+            {
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
+            }
+        }
+        //#elif UNITY_IOS
+        Touch[] touches = Input.touches;
+        if(Input.touchCount == 2 && _GM.HasInvulnerabilityToken)
+        {
+            bool leftSideTouch = false;
+            bool rightSideTouch = false;
+            foreach (var t in touches) 
+            {
+                if(t.position.x < Screen.width / 2)
+                {
+                    leftSideTouch = true;
+                }
+                if(t.position.x > Screen.width / 2)
+                {
+                    rightSideTouch = true;
+                }
+            }
 
-           
+            if(leftSideTouch == true && rightSideTouch == true)
+            {
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);   
+            }
+        }
+        //#endif
     }
 
     private void LudicrousSpeedControl()
     {
-        #if UNITY_EDITOR
+        //#if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             if(_GM.HasLudicrousSpeedToken) 
@@ -161,7 +224,7 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
-        #elif UNITY_IOS
+        //#elif UNITY_IOS
 
 
         Touch[] touchy = Input.touches;
@@ -196,7 +259,7 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
-        #endif
+        //#endif
 
     }
     #endregion

@@ -82,7 +82,7 @@ public class DestroyByContact : MonoBehaviour {
         {
             print(tag);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
+            EventManager.TriggerEvent(EventStrings.GRAB_INVUNERABILITY_TOKEN);
         }
 
         //Player grabs coin
@@ -114,21 +114,11 @@ public class DestroyByContact : MonoBehaviour {
         {
             print("DestroyAll");
 
-            var hazards = GameObject.FindGameObjectsWithTag(TagStrings.HAZARD);
-            foreach (var hazard in hazards)
-            {
-                if(hazard.activeSelf == true)
-                {
-                    ExplodeAThing(hazard);
-                }
-
-            }
-
-            Instantiate(_explosion, transform.position, Quaternion.identity);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            EventManager.TriggerEvent(EventStrings.GRAB_DESTROY_ALL_TOKEN);
+            ExplodeAThing(gameObject);
         }
 
-        //Engage ludicrous speed
+        //Grab ludicrous speed token
         if(this.tag == TagStrings.LUDICROUS_SPEED && other.tag == TagStrings.PLAYER)
         {
             print(tag);
