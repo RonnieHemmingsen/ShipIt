@@ -23,8 +23,8 @@ public class CameraShaker : MonoBehaviour {
 
     void OnDisable()
     {
-        EventManager.StartListening(EventStrings.START_CAMERA_SHAKE, StartShake);
-        EventManager.StartListening(EventStrings.STOP_CAMERA_SHAKE, StopShake);
+        EventManager.StopListening(EventStrings.START_CAMERA_SHAKE, StartShake);
+        EventManager.StopListening(EventStrings.STOP_CAMERA_SHAKE, StopShake);
     }
 
     void Update()

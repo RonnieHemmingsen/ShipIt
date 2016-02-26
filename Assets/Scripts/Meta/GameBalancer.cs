@@ -61,7 +61,7 @@ public class GameBalancer : MonoBehaviour {
         if(rand <= 0.01f)
         {
             //EventManager.TriggerEvent(EventStrings.TOGGLE_ASTEROID_SPAWNING);
-            print("AsteroidToggle - " + rand);
+            //print("AsteroidToggle - " + rand);
             
         }
 

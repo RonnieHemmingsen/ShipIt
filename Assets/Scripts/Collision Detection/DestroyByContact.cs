@@ -21,7 +21,7 @@ public class DestroyByContact : MonoBehaviour {
     {
 
         //print("This: " + this.tag + " - Other: " + other.tag);
-        //Laser hits a hazzard
+        //Player bolt hits a hazzard
         if(other.tag == TagStrings.BOLT && this.tag == TagStrings.HAZARD)
         {
             Instantiate(_explosion, transform.position, transform.rotation);
@@ -30,7 +30,14 @@ public class DestroyByContact : MonoBehaviour {
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
-        //Player hits hazzard, both are dead.
+        //Bullet hits a hazard
+        if(other.tag == TagStrings.HAZARD && tag == TagStrings.BULLET)
+        {
+            ExplodeAThing(other.gameObject);
+            ExplodeAThing(gameObject);
+        }
+
+        //Player hits hazard, both are dead.
         if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && this.tag == TagStrings.HAZARD && !_GM.DebugInvulne)
         {
             
@@ -43,13 +50,22 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player hits enemy laser and is fucking dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && this.tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
         {
          
             print("Death by laser");
             Instantiate(_explosion, transform.position, transform.rotation);
             Destroy(other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
+        }
+
+        //Player hits a bullet and is hard pressed for luck
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && tag == TagStrings.BULLET && !_GM.DebugInvulne)
+        {
+            print("Death by bullet");
+            ExplodeAThing(gameObject);
+            Destroy(other.gameObject);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
 
@@ -62,36 +78,35 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player grabs invulnerable powerup
-        if(this.tag == TagStrings.INVULNERABLE && other.tag == TagStrings.PLAYER)
+        if(tag == TagStrings.INVULNERABLE && other.tag == TagStrings.PLAYER)
         {
-            print(this.tag);
+            print(tag);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
             EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
         }
 
         //Player grabs coin
-        if(this.tag == TagStrings.COIN && other.tag == TagStrings.PLAYER)
+        if(tag == TagStrings.COIN && other.tag == TagStrings.PLAYER)
         {
-            EventManager.TriggerEvent(EventStrings.COIN_GRAB);
+            EventManager.TriggerEvent(EventStrings.GRAB_COIN);
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
         }
 
         //player grabs big coin
-        if(this.tag == TagStrings.BIG_COIN && other.tag == TagStrings.PLAYER)
+        if(tag == TagStrings.BIG_COIN && other.tag == TagStrings.PLAYER)
         {
-            EventManager.TriggerEvent(EventStrings.BIG_COIN_GRAB);
+            EventManager.TriggerEvent(EventStrings.GRAB_BIG_COIN);
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
             
         }
 
         //Enemy destroyed by player bolt
-        if(this.tag == TagStrings.ENEMY && other.tag == TagStrings.BOLT)
+        if((tag == TagStrings.LASER_ENEMY || tag == TagStrings.BULLET_ENEMY) && other.tag == TagStrings.BOLT)
         {
             EventManager.TriggerEvent(EventStrings.ENEMY_DESTROYED);
-            Instantiate(_explosion, transform.position, Quaternion.identity);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            ExplodeAThing(gameObject);
         }
 
         // Player Grabs DestroyAll

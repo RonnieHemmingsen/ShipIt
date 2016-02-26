@@ -4,7 +4,7 @@ using System.Collections;
 public class Mover : MonoBehaviour {
 
     [SerializeField]
-    private float _speed = 10;
+    private float _speed = -10;
 
     private Rigidbody _rigidbody;
     private GameManager _GM;
@@ -18,7 +18,7 @@ public class Mover : MonoBehaviour {
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _GM = FindObjectOfType<GameManager>().GetComponent<GameManager>();
+        _GM = FindObjectOfType<GameManager>();
     }
 
 	// Use this for initialization
@@ -28,6 +28,7 @@ public class Mover : MonoBehaviour {
         {
             _rigidbody.velocity = transform.forward * _GM.GameSpeed; //speed afhængig af GM.
         }
+
         else
         {
             _rigidbody.velocity = transform.forward * _speed;

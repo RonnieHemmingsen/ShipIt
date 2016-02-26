@@ -31,9 +31,10 @@ GameObject:
   - 54: {fileID: 5401424}
   - 114: {fileID: 11472578}
   - 114: {fileID: 11402924}
+  - 114: {fileID: 11493844}
   m_Layer: 0
-  m_Name: Enemy
-  m_TagString: Enemy
+  m_Name: LaserEnemy
+  m_TagString: LaserEnemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -234,12 +235,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a042d1fa2853a44e885a428cad3a0d18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _laserBeam: {fileID: 120256, guid: e4d031d3c082d4e12807d8b8aab417cd, type: 2}
+--- !u!114 &11493844
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 193976}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc041124afe343b6a143e46940dd190, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _moveSpeed: 5
   _timeBeforeShooting: 2
   _shootingTime: 5
-  _timeBeforeRetreating: 1
-  _laserBeam: {fileID: 120256, guid: e4d031d3c082d4e12807d8b8aab417cd, type: 2}
-  _targetPos: {x: 7, y: 0, z: 8}
+  _timeBeforeRetreating: 3
+  _targetPos: {x: 5, y: 0, z: 8}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

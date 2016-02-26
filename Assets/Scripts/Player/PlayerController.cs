@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour {
     private float _timeBetweenShots;
     private float _moveHorizontal;
     private float _moveVertical;
+    private bool _hasFiredTouch;
+    private Vector2 _startSwipePosition;
 
 
 
@@ -99,6 +101,13 @@ public class PlayerController : MonoBehaviour {
 
     void FixedUpdate()
     {
+        MoveControl();
+        LudicrousSpeedControl();
+    }
+        
+    #region controls
+    private void MoveControl()
+    {
         #if UNITY_EDITOR
         _moveHorizontal = Input.GetAxis("Horizontal");
 
@@ -107,60 +116,91 @@ public class PlayerController : MonoBehaviour {
             Fire();
         }
 
+        #elif UNITY_IOS
+        _moveHorizontal = Input.acceleration.x;
+        #endif
+
+        Vector3 val = new Vector3(_moveHorizontal, 0 ,0);
+        _rigidbody.velocity =  val * ShipSpeed;
+
+
+        _rigidbody.position = new Vector3
+        (
+        Mathf.Clamp (_rigidbody.position.x, _boundary.xMin, _boundary.xMax),
+        Mathf.Clamp (_rigidbody.position.y, _boundary.yMin, _boundary.yMax),
+        Mathf.Clamp (_rigidbody.position.z, _boundary.zMin, _boundary.zMax)
+        );
+
+
+        if(_moveHorizontal >= 0)
+        {
+        _anim.SetFloat("RightTurn", _moveHorizontal);
+        _anim.SetFloat("LeftTurn", -0.1f);
+        }
+        else
+        {
+        _anim.SetFloat("RightTurn", -0.1f);
+
+        _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
+        //print(Mathf.Abs(_moveHorizontal));
+        }
+
+
+           
+    }
+
+    private void LudicrousSpeedControl()
+    {
+        #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
             if(_GM.HasLudicrousSpeedToken) 
             {
-                EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
-        //#endif
-
         #elif UNITY_IOS
-        _moveHorizontal = Input.acceleration.x;
 
 
         Touch[] touchy = Input.touches;
-
-        if(Input.touchCount == 1)
+        //Shoot once per tap
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch)
         {
+            _hasFiredTouch = true;
             Fire();
+        }
+        //reset on tap end
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Ended && _hasFiredTouch)
+        {
+            _hasFiredTouch = false;
+        }
+
+        //check if swipe has started -cache location
+        if(Input.touchCount == 2 && touchy[0].phase == TouchPhase.Began && touchy[1].phase == TouchPhase.Began)
+        {
+            _startSwipePosition = touchy[0].position;
+            print("Start Position: " + _startSwipePosition);
+        }
+
+        //Check if swipe has progressed, trigger ludicrous speed if appropriate
+        if(Input.touchCount == 2 && touchy[0].phase == TouchPhase.Moved && touchy[1].phase == TouchPhase.Moved)
+        {
+            float distance = Vector2.Distance(touchy[0].deltaPosition, _startSwipePosition);
+            print("Swipe Distance: " + distance);
+            if(distance > 500 && _GM.HasLudicrousSpeedToken)
+            {
+                EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.GET_REKT);
+                EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
+            }
         }
         #endif
 
-        Vector3 val = new Vector3(_moveHorizontal, 0 ,0);
-        //Debug.Log(_moveHorizontal);
-        _rigidbody.velocity =  val * ShipSpeed;
-
-        _rigidbody.position = new Vector3
-            (
-                Mathf.Clamp (_rigidbody.position.x, _boundary.xMin, _boundary.xMax),
-                Mathf.Clamp (_rigidbody.position.y, _boundary.yMin, _boundary.yMax),
-                Mathf.Clamp (_rigidbody.position.z, _boundary.zMin, _boundary.zMax)
-            );
-        
-
-        if(_moveHorizontal >= 0)
-        {
-            _anim.SetFloat("RightTurn", _moveHorizontal);
-            _anim.SetFloat("LeftTurn", -0.1f);
-        }
-        else
-        {
-            _anim.SetFloat("RightTurn", -0.1f);
-
-            _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
-            //print(Mathf.Abs(_moveHorizontal));
-        }
     }
-        
-    void Update()
-    {
+    #endregion
 
-    }
-        
     private void InvulnerabilityOn()
     {
         Image im =  _invulnerableForceField.GetComponent<Image>();
@@ -206,7 +246,7 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    public void Fire()
+    private void Fire()
     {
         if (Time.time > _timeBetweenShots)
         {

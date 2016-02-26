@@ -12,8 +12,6 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float _gameSpeed = -5.0f;
     [SerializeField]
-    private float _scoreMultiplier = 10.0f;
-    [SerializeField]
     private float _spawnWait = 1.5f;
     [SerializeField]
     private float _startWait = 1f;
@@ -30,7 +28,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float _chanceToSpawnInvulnerability = 0.03f;
     [SerializeField]
-    private float _chanceToSpawnEnemy = 0.08f;
+    private float _chanceToSpawnLaserEnemy = 0.08f;
+    [SerializeField]
+    private float _chanceToSpawnBulletEnemy = 0.2f;
     [SerializeField]
     private float _chanceToSpawnCoin = 1f;
     [SerializeField]
@@ -52,7 +52,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private GameObject _asteroid;
     [SerializeField]
-    private GameObject _enemy;
+    private GameObject _laserEnemy;
+    [SerializeField]
+    private GameObject _bulletEnemy;
     [SerializeField]
     private GameObject _invulnePower;
     [SerializeField]
@@ -145,7 +147,8 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(100, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
         _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
-        _objPool.CreatePool(_zen.MaxNumberOfEnemies, _enemy, _enemy.tag);
+        _objPool.CreatePool(_zen.MaxNumberOfEnemies, _laserEnemy, _laserEnemy.tag);
+        _objPool.CreatePool(_zen.MaxNumberOfEnemies, _bulletEnemy, _bulletEnemy.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
 
@@ -166,8 +169,8 @@ public class GameManager : MonoBehaviour {
     {
         EventManager.StartListening(EventStrings.PLAYER_DEAD, GameOver);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
-        EventManager.StartListening(EventStrings.COIN_GRAB, UpdateCoinScore);
-        EventManager.StartListening(EventStrings.BIG_COIN_GRAB, UpdateBigCoinScore);
+        EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
+        EventManager.StartListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
         EventManager.StartListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
@@ -184,15 +187,15 @@ public class GameManager : MonoBehaviour {
     {
         EventManager.StopListening(EventStrings.PLAYER_DEAD, GameOver);
         EventManager.StopListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed);
-        EventManager.StopListening(EventStrings.COIN_GRAB, UpdateCoinScore);
-        EventManager.StopListening(EventStrings.BIG_COIN_GRAB, UpdateBigCoinScore);
+        EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
+        EventManager.StopListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
         EventManager.StopListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StopListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
         EventManager.StopListening(EventStrings.TOGGLE_ENEMY_SPAWNING, ToggleEnemySpawn);
         EventManager.StopListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
-        EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
+        EventManager.StopListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
     }
@@ -252,58 +255,71 @@ public class GameManager : MonoBehaviour {
 
     private void SpawnDecider()
     {
-            float rand = Random.value;
+        float rand = Random.value;
 
         if(rand <= _chanceToSpawnCoin) 
         {
-            SpawnStuff(TagStrings.COIN);    
+            StartCoroutine(SpawnStuff(TagStrings.COIN, 0));    
         }
             
         if(rand <= _chanceToSpawnBigCoin)
         {
-            SpawnStuff(TagStrings.BIG_COIN);
+            StartCoroutine(SpawnStuff(TagStrings.BIG_COIN, 0));
         }
 
-        if (rand <= _chanceToSpawnEnemy) 
+        if (rand <= _chanceToSpawnBulletEnemy) 
         {
-        //print(rand + " <= " + _chanceToSpawnEnemy);
+            float randTime = Random.Range(0.0f, 1.0f);
             if(_canSpawnEnemies)
             {
-                SpawnStuff(TagStrings.ENEMY);   
+                StartCoroutine(SpawnStuff(TagStrings.BULLET_ENEMY, randTime));   
             }
                
         }
 
+        if (rand <= _chanceToSpawnLaserEnemy) 
+        {
+            float randTime = Random.Range(0.0f, 1.0f);
+            if(_canSpawnEnemies)
+            {
+                StartCoroutine(SpawnStuff(TagStrings.LASER_ENEMY, randTime));   
+            }
+
+        }
+
         if (rand <= _chanceToSpawnDestroyAll) 
         {
-            
-            SpawnStuff(TagStrings.DESTROY_ALL);    
+            float randTime = Random.Range(0.0f, 1.0f);
+            StartCoroutine(SpawnStuff(TagStrings.DESTROY_ALL, randTime));    
         }
 
         if (rand <= _chanceToSpawnInvulnerability) 
         {
+            float randTime = Random.Range(0.0f, 1.0f);
             if(!_isPlayerInvulnerable)
             {
-                SpawnStuff(TagStrings.INVULNERABLE);    
+                StartCoroutine(SpawnStuff(TagStrings.INVULNERABLE, randTime));    
             }
 
         }
 
         if (rand <= _chanceToSpawnLudicrousSpeed)
         {
+            float randTime = Random.Range(0.0f, 1.0f);
             if(!_hasLudicrousSpeedToken)
             {
-                SpawnStuff(TagStrings.LUDICROUS_SPEED);    
+                StartCoroutine(SpawnStuff(TagStrings.LUDICROUS_SPEED, randTime));    
             }
 
         }
     }
 
-    private void SpawnStuff(string tag)
+    private IEnumerator SpawnStuff(string tag, float randTime)
     {
         bool canSpawnHere = false;
         Vector3 spawnPos = Vector3.zero;
 
+        yield return new WaitForSeconds(randTime);
 
         while(!canSpawnHere)
         {
@@ -315,11 +331,11 @@ public class GameManager : MonoBehaviour {
                 canSpawnHere = true;
             }
 
-            if(tag == TagStrings.ENEMY)
+            if(tag == TagStrings.LASER_ENEMY || tag == TagStrings.BULLET_ENEMY)
             {
                 foreach (var item in EnemySpawnPositions)
                 {
-                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 1.0f))
+                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 5.0f))
                     {
                         canSpawnHere = true;
                         break;
@@ -333,10 +349,11 @@ public class GameManager : MonoBehaviour {
                     ItemSpawnPositions.Add(spawnPos);
                     canSpawnHere = true;
                 }
-                foreach (var item in EnemySpawnPositions)
+                foreach (var item in ItemSpawnPositions)
                 {
-                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 0.3f))
+                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 1.0f))
                     {
+                        //print(spawnPos + " - " + item);
                         canSpawnHere = true;
                         break;
                     }
@@ -344,7 +361,7 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        if(tag == TagStrings.ENEMY)
+        if(tag == TagStrings.BULLET_ENEMY || tag == TagStrings.LASER_ENEMY)
         {
             EnemySpawnPositions.Add(spawnPos);
             MaintainPositionLists(EnemySpawnPositions);

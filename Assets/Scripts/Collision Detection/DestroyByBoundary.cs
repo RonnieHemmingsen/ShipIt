@@ -7,7 +7,7 @@ public class DestroyByBoundary : MonoBehaviour {
 
     void Awake()
     {
-        _objMan = GameObject.FindObjectOfType<ObjectPoolManager>().GetComponent<ObjectPoolManager>();
+        _objMan = GameObject.FindObjectOfType<ObjectPoolManager>();
     }
 
     void OnTriggerExit(Collider other)

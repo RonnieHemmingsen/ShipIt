@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52c479069bbad4c0b8c9b770171ec831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isDebugInvulne: 1
+  _isDebugInvulne: 0
   _gameSpeed: -5
   _scoreMultiplier: 10
   _spawnWait: 0.5
@@ -137,7 +137,8 @@ MonoBehaviour:
   _speedText: {fileID: 0}
   _spawnValues: {x: 7, y: 0, z: 16}
   _asteroid: {fileID: 172768, guid: 66142ff9f311343cda8cdacd73695717, type: 2}
-  _enemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
+  _laserEnemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
+  _bulletEnemy: {fileID: 116032, guid: 003107d4aa5ff4788905ec4150ab936f, type: 2}
   _invulnePower: {fileID: 187450, guid: fcec80ae7811f41d7954a597bc914bc8, type: 2}
   _destroyAll: {fileID: 199062, guid: 26ea0fc732a1b42839f85b72b1f4e6cc, type: 2}
   _coin: {fileID: 179460, guid: 76ed37fba87964d1db4fd128dc5fcc44, type: 2}

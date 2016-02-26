@@ -8,11 +8,14 @@ TagManager:
   - Hazard
   - Invulnerable
   - Coin
-  - Enemy
+  - LaserEnemy
   - EnemyBolt
   - DestroyAll
   - BigCoin
   - LudicrousSpeed
+  - BulletEnemy
+  - EnemyBullet
+  - Enemy
   layers:
   - Default
   - TransparentFX
