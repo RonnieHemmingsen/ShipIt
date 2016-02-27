@@ -38,7 +38,7 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player hits hazard, both are dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && this.tag == TagStrings.HAZARD && !_GM.DebugInvulne)
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && this.tag == TagStrings.HAZARD && !_GM.DebugInvulne)
         {
             
             print("Death By Hazard");
@@ -50,7 +50,7 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player hits enemy laser and is fucking dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
         {
          
             print("Death by laser");
@@ -61,7 +61,7 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player hits a bullet and is hard pressed for luck
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerInvulnerable && tag == TagStrings.BULLET && !_GM.DebugInvulne)
+        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && tag == TagStrings.BULLET && !_GM.DebugInvulne)
         {
             print("Death by bullet");
             ExplodeAThing(gameObject);
@@ -70,7 +70,7 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Invulnerable player hits hazard
-        if(other.tag == TagStrings.PLAYER && _GM.IsPlayerInvulnerable)
+        if(other.tag == TagStrings.PLAYER && _GM.IsPlayerShielded)
         {
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);

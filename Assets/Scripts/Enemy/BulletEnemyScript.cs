@@ -9,7 +9,6 @@ public class BulletEnemyScript : MonoBehaviour {
     [SerializeField]
     private GameObject _bullet;
 
-    private string _uniqueId;
     private ObjectPoolManager _objPool;
     private EnemyMovement _movement;
     private bool _isAtLocation;
@@ -24,8 +23,6 @@ public class BulletEnemyScript : MonoBehaviour {
 
     void Start()
     {
-        _uniqueId = Guid.NewGuid().ToString();
-        _objPool.CreatePool(300, _bullet, _bullet.tag + _uniqueId);
     }
 	
 	// Update is called once per frame
@@ -54,7 +51,7 @@ public class BulletEnemyScript : MonoBehaviour {
             //Shoot
             if(!_isFiring)
             {
-                EventManager.TriggerStringEvent(EventStrings.START_BULLETENEMY_SHOOTING, _uniqueId);
+                EventManager.TriggerEvent(EventStrings.START_BULLETENEMY_SHOOTING);
                 _isFiring = true;    
             }
 

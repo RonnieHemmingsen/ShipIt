@@ -6,6 +6,8 @@ public static class EventStrings
     public const string PLAYER_DEAD = "PlayerDead";
     public const string HAZARD_KILL = "HazardKill";
 
+    public const string DISPLAY_TUTORIAL = "DisplayTutorial";
+
     public const string ENEMY_DESTROYED = "EnemyDestroyed";
     public const string SPEED_INCREASE = "SpeedIncrease";
     public const string TOGGLE_LASER_ENEMY_SPAWNING = "ToggleLaserEnemySpawning";
@@ -52,4 +54,7 @@ public static class TagStrings
 public static class GameSettings
 {
     public const float CROSSFADE_ALPHA_VALUE = 0.2f;
+    public const string HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED = "HasDestroyAllTokenHelpBeenDisplayed";
+    public const string HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED = "HasShieldTokenHelpBeenDisplayed";
+    public const string HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED = "HasSpeedTokenHelpBeenDisplayed";
 }

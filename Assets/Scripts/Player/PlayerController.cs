@@ -20,8 +20,6 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float _fireRate = 0.5f;
     [SerializeField]
-    private float _jumpRate = 2f;
-    [SerializeField]
     private GameObject _bolt;
     [SerializeField]
     private GameObject _boltSpawnPos;
@@ -31,9 +29,14 @@ public class PlayerController : MonoBehaviour {
     private GameObject _ludicrousSpeedAfterburner;
     [SerializeField]
     private Boundary _boundary;
+    [SerializeField]
+    private AudioSource _engineSound;
+    [SerializeField]
+    private AudioSource _ludicrousSound;
+    [SerializeField]
+    private AudioSource _laserSound;
 
     private Rigidbody _rigidbody;
-    private AudioSource _laserSound;
     private Animator _anim;
     private ObjectPoolManager _objPool;
     private GameManager _GM;
@@ -53,12 +56,6 @@ public class PlayerController : MonoBehaviour {
         set { _shipSpeed = value; }
     }
 
-    public float Tilt
-    {
-        get { return _tilt; }
-        set { _tilt = value; }
-    }
-
     public int NumberOfShots
     {
         get { return _numberOfShots; }
@@ -68,7 +65,6 @@ public class PlayerController : MonoBehaviour {
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
-        _laserSound = GetComponent<AudioSource>();
         _anim = GetComponentInChildren<Animator>();
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
         _GM = GameObject.FindObjectOfType<GameManager>();
@@ -108,12 +104,13 @@ public class PlayerController : MonoBehaviour {
         LudicrousSpeedControl();
         InvulnerabilityControl();
         DestroyAllControl();
+        //_engineSound.Play();
     }
         
     #region controls
     private void MoveControl()
     {
-        //#if UNITY_EDITOR
+        #if UNITY_EDITOR
         _moveHorizontal = Input.GetAxis("Horizontal");
 
         if(Input.GetKeyDown(KeyCode.Space))
@@ -121,9 +118,9 @@ public class PlayerController : MonoBehaviour {
             Fire();
         }
 
-        //#elif UNITY_IOS
+        #elif UNITY_IOS
         _moveHorizontal = Input.acceleration.x;
-        //#endif
+        #endif
 
         Vector3 val = new Vector3(_moveHorizontal, 0 ,0);
         _rigidbody.velocity =  val * ShipSpeed;
@@ -139,21 +136,21 @@ public class PlayerController : MonoBehaviour {
 
         if(_moveHorizontal >= 0)
         {
-        _anim.SetFloat("RightTurn", _moveHorizontal);
-        _anim.SetFloat("LeftTurn", -0.1f);
+            _anim.SetFloat("RightTurn", _moveHorizontal);
+            _anim.SetFloat("LeftTurn", -0.1f);
         }
         else
         {
-        _anim.SetFloat("RightTurn", -0.1f);
+            _anim.SetFloat("RightTurn", -0.1f);
 
-        _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
-        //print(Mathf.Abs(_moveHorizontal));
+            _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
+            //print(Mathf.Abs(_moveHorizontal));
         }          
     }
 
     private void DestroyAllControl()
     {
-        //#if UNITY_EDITOR
+        #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.Z))
         {
             if(_GM.HasDestroyAllToken)
@@ -161,7 +158,7 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
             }
         }
-        //#elif UNITY_IOS
+        #elif UNITY_IOS
         _currentVertical = Input.acceleration.y;
         float difference = _currentVertical - _lastVertical;
         if(difference > 0.5f && _GM.HasDestroyAllToken)
@@ -173,22 +170,22 @@ public class PlayerController : MonoBehaviour {
         {
             _lastVertical = _currentVertical;
         }
-        //#endif
+        #endif
     }
 
     private void InvulnerabilityControl()
     {
-        //#if UNITY_EDITOR
+        #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.LeftControl))
         {
-            if(_GM.HasInvulnerabilityToken)
+            if(_GM.HasShieldToken)
             {
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
             }
         }
-        //#elif UNITY_IOS
+        #elif UNITY_IOS
         Touch[] touches = Input.touches;
-        if(Input.touchCount == 2 && _GM.HasInvulnerabilityToken)
+        if(Input.touchCount == 2 && _GM.HasShieldToken)
         {
             bool leftSideTouch = false;
             bool rightSideTouch = false;
@@ -209,23 +206,23 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);   
             }
         }
-        //#endif
+        #endif
     }
 
     private void LudicrousSpeedControl()
     {
-        //#if UNITY_EDITOR
+        #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if(_GM.HasLudicrousSpeedToken) 
+            if(_GM.HasSpeedToken) 
             {
+                _ludicrousSound.Play();
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
-        //#elif UNITY_IOS
-
+        #elif UNITY_IOS
 
         Touch[] touchy = Input.touches;
         //Shoot once per tap
@@ -252,18 +249,18 @@ public class PlayerController : MonoBehaviour {
         {
             float distance = Vector2.Distance(touchy[0].deltaPosition, _startSwipePosition);
             print("Swipe Distance: " + distance);
-            if(distance > 500 && _GM.HasLudicrousSpeedToken)
+            if(distance > 500 && _GM.HasSpeedToken)
             {
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
-        //#endif
+        #endif
 
     }
     #endregion
-
+    #region effect graphics
     private void InvulnerabilityOn()
     {
         Image im =  _invulnerableForceField.GetComponent<Image>();
@@ -308,6 +305,7 @@ public class PlayerController : MonoBehaviour {
         onComplete();
 
     }
+    #endregion
 
     private void Fire()
     {

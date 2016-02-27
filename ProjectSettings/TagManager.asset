@@ -14,8 +14,7 @@ TagManager:
   - BigCoin
   - LudicrousSpeed
   - BulletEnemy
-  - EnemyBullet
-  - Enemy
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -25,7 +24,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - BoundaryLayer
   - 
   - 
   - 

@@ -17,6 +17,12 @@ public class GameBalancer : MonoBehaviour {
     private int _maxNumberOfLaserEnemies;
     [SerializeField]
     private int _maxNumberOfBulletEnemies;
+    [SerializeField]
+    private float _timeBeforeDestroyToken;
+    [SerializeField]
+    private float _timeBeforeInvulnerabilityToken;
+    [SerializeField]
+    private float _timeBeforeLudicrousSpeedToken;
 
     private GameManager _GM;
     private float _deltaTimeIncrement;
@@ -60,6 +66,11 @@ public class GameBalancer : MonoBehaviour {
         {
             //print("Enemies Timestamp: " + Time.deltaTime);
             EventManager.TriggerEvent(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING);
+        }
+
+        if(Time.time > _timeBeforeBulletEnemiesAppear)
+        {
+            EventManager.TriggerEvent(EventStrings.TOGGLE_BULLET_ENEMY_SPAWNING);
         }
 
         AsteroidToggle();

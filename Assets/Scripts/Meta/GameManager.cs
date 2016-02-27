@@ -20,13 +20,13 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private int _hazardCount = 10;
     [SerializeField]
-    private float _playerInvulnerableTimer = 3.0f;
+    private float _playerShieldedTimer = 3.0f;
     [SerializeField]
-    private float _ludicrousSpeedTimer = 3.0f;
+    private float _SpeedTimer = 3.0f;
     [SerializeField]
-    private float _chanceToSpawnDestroyAll = 0.01f;
+    private float _chanceToSpawnDestroyAllToken = 0.01f;
     [SerializeField]
-    private float _chanceToSpawnInvulnerability = 0.03f;
+    private float _chanceToSpawnShieldToken = 0.03f;
     [SerializeField]
     private float _chanceToSpawnLaserEnemy = 0.08f;
     [SerializeField]
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private float _chanceToSpawnBigCoin = 0.02f;
     [SerializeField]
-    private float _chanceToSpawnLudicrousSpeed = 0.2f;
+    private float _chanceToSpawnSpeedToken = 0.2f;
     [SerializeField]
     private Text _distanceText;
     [SerializeField]
@@ -56,6 +56,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private GameObject _bulletEnemy;
     [SerializeField]
+    private GameObject _bullet;
+    [SerializeField]
     private GameObject _invulnePower;
     [SerializeField]
     private GameObject _destroyAll;
@@ -72,21 +74,24 @@ public class GameManager : MonoBehaviour {
     private List<Vector3> EnemySpawnPositions = new List<Vector3>();
     private float _playDistance = 0;
     private int _destroyedHazards = 0;
-    private bool _isPlayerInvulnerable;
-    private float _deltaInvulneTime;
-    private float _deltaLudicrousSpeedTime;
-    private bool _isDestroyAllSpawned;
+    private bool _isPlayerShielded;
+    private float _deltaShieldTime;
+    private float _deltaSpeedTime;
     private int _coinScore;
     private bool _canSpawnLaserEnemies;
     private bool _canSpawnBulletEnemies;
     private bool _canSpawnAsteroids;
-    private bool _isLudicrousSpeedActive;
-    private bool _hasLudicrousSpeedToken;
+    private bool _isSpeedActive;
+    private bool _hasSpeedToken;
     private bool _hasDestroyAllToken;
-    private bool _hasInvulnerabilityToken;
-    private bool _ludicrousTokenExists;
+    private bool _hasShieldToken;
+    private bool _speedTokenExists;
     private bool _destroyAllTokenExists;
-    private bool _invulnerabilityTokenExists;
+    private bool _shieldTokenExists;
+
+    private bool _hasDestroyAllTokenHelpBeenDisplayed;
+    private bool _hasShieldTokenHelpBeenDisplayed;
+    private bool _hasSpeedTokenHelpBeenDisplayed;
 
     #region Properties
     public bool DebugInvulne
@@ -101,22 +106,22 @@ public class GameManager : MonoBehaviour {
         set { _gameSpeed = value; }
     }
        
-    public bool IsPlayerInvulnerable
+    public bool IsPlayerShielded
     {
-        get { return _isPlayerInvulnerable; }
-        set { _isPlayerInvulnerable = value; }
+        get { return _isPlayerShielded; }
+        set { _isPlayerShielded = value; }
     }
 
-    public bool IsLudicrousSpeedActive
+    public bool IsSpeedActive
     {
-        get { return _isLudicrousSpeedActive; }
-        set { _isLudicrousSpeedActive = value; }
+        get { return _isSpeedActive; }
+        set { _isSpeedActive = value; }
     }
 
-    public bool HasLudicrousSpeedToken
+    public bool HasSpeedToken
     {
-        get { return _hasLudicrousSpeedToken; }
-        set { _hasLudicrousSpeedToken = value; }
+        get { return _hasSpeedToken; }
+        set { _hasSpeedToken = value; }
     }
 
     public bool HasDestroyAllToken
@@ -125,16 +130,16 @@ public class GameManager : MonoBehaviour {
         set { _hasDestroyAllToken = value; }
     }
 
-    public bool HasInvulnerabilityToken
+    public bool HasShieldToken
     {
-        get { return _hasInvulnerabilityToken; }
-        set { _hasInvulnerabilityToken = value; }
+        get { return _hasShieldToken; }
+        set { _hasShieldToken = value; }
     }
 
-    public bool LudicrousTokenExists
+    public bool SpeedTokenExists
     {
-        get { return _ludicrousTokenExists; }
-        set { _ludicrousTokenExists = value; }
+        get { return _speedTokenExists; }
+        set { _speedTokenExists = value; }
     }
 
     public bool DestroyAllTokenExists
@@ -143,10 +148,10 @@ public class GameManager : MonoBehaviour {
         set { _destroyAllTokenExists = value; }
     }
 
-    public bool InvulnerabilityTokenExists
+    public bool ShieldTokenExists
     {
-        get { return _invulnerabilityTokenExists; }
-        set { _invulnerabilityTokenExists = value; }
+        get { return _shieldTokenExists; }
+        set { _shieldTokenExists = value; }
     }
 
 
@@ -167,6 +172,25 @@ public class GameManager : MonoBehaviour {
         get { return _canSpawnBulletEnemies; }
         set { _canSpawnBulletEnemies = value; }
     }
+
+    public bool HasDestroyTokenHelpBeenDisplayed
+    {
+        get { return _hasDestroyAllTokenHelpBeenDisplayed; }
+        set { _hasDestroyAllTokenHelpBeenDisplayed = value; }
+    }
+
+    public bool HasShieldTokenHelpBeenDisplayed
+    {
+        get { return _hasShieldTokenHelpBeenDisplayed; }
+        set { _hasShieldTokenHelpBeenDisplayed = value; }
+    }
+
+    public bool HasSpeedTokenHelpBeenDisplayed
+    {
+        get { return _hasSpeedTokenHelpBeenDisplayed; }
+        set { _hasSpeedTokenHelpBeenDisplayed = value; }
+    }
+
         
     #endregion
 
@@ -197,6 +221,7 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
         _objPool.CreatePool(_zen.MaxNumberOfLaserEnemies, _laserEnemy, _laserEnemy.tag);
         _objPool.CreatePool(_zen.MaxNumberOfLaserEnemies, _bulletEnemy, _bulletEnemy.tag);
+        _objPool.CreatePool(300, _bullet, _bullet.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
 
@@ -205,8 +230,10 @@ public class GameManager : MonoBehaviour {
         _speedText.text = "Speed: 5";
         _scoreText.text = "Score: 0";
 
-        _deltaInvulneTime = _playerInvulnerableTimer;
-        _deltaLudicrousSpeedTime = _ludicrousSpeedTimer;
+        _deltaShieldTime = _playerShieldedTimer;
+        _deltaSpeedTime = _SpeedTimer;
+
+        CheckPlayerPrefs();
 
         InvokeRepeating("SpawnDecider", 1.0f, .5f);
         StartCoroutine(SpawnAsteroidWaves());
@@ -224,6 +251,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StartListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
         EventManager.StartListening(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING, ToggleLaserEnemySpawn);
+        EventManager.StartListening(EventStrings.TOGGLE_BULLET_ENEMY_SPAWNING, ToggleBulletEnemySpawn);
         EventManager.StartListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
         EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StartListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
@@ -247,6 +275,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StopListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
         EventManager.StopListening(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING, ToggleLaserEnemySpawn);
+        EventManager.StopListening(EventStrings.TOGGLE_BULLET_ENEMY_SPAWNING, ToggleBulletEnemySpawn);
         EventManager.StopListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
         EventManager.StopListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StopListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
@@ -262,19 +291,19 @@ public class GameManager : MonoBehaviour {
     {
         _timePlayedText.text = Mathf.RoundToInt(Time.time).ToString();
 
-        if(_isPlayerInvulnerable)
+        if(_isPlayerShielded)
         {
-            _deltaInvulneTime -= Time.deltaTime;
-            if(_deltaInvulneTime < 0)
+            _deltaShieldTime -= Time.deltaTime;
+            if(_deltaShieldTime < 0)
             {
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_OFF);
             }
         }
 
-        if(_isLudicrousSpeedActive)
+        if(_isSpeedActive)
         {
-            _deltaLudicrousSpeedTime -= Time.deltaTime;
-            if(_deltaLudicrousSpeedTime < 0)
+            _deltaSpeedTime -= Time.deltaTime;
+            if(_deltaSpeedTime < 0)
             {
                 EventManager.TriggerEvent(EventStrings.STOP_CAMERA_SHAKE);
                 EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
@@ -318,30 +347,33 @@ public class GameManager : MonoBehaviour {
 
         }
 
-        if (rand <= _chanceToSpawnDestroyAll && !_destroyAllTokenExists) 
+        if (rand <= _chanceToSpawnDestroyAllToken && !_destroyAllTokenExists) 
         {
             float randTime = Random.Range(0.0f, 1.0f);
+
             StartCoroutine(SpawnStuff(TagStrings.DESTROY_ALL, randTime));
             UpdateDestroyAllTokenExistence();
         }
 
-        if (rand <= _chanceToSpawnInvulnerability && !_isPlayerInvulnerable && !_invulnerabilityTokenExists) 
+        if (rand <= _chanceToSpawnShieldToken && !_isPlayerShielded && !_shieldTokenExists) 
         {
             float randTime = Random.Range(0.0f, 1.0f);
+
             StartCoroutine(SpawnStuff(TagStrings.INVULNERABLE, randTime));    
             UpdateInvulnerabilityTokenExistance();
 
 
         }
 
-        if (rand <= _chanceToSpawnLudicrousSpeed && !_isLudicrousSpeedActive && !_ludicrousTokenExists)
+        if (rand <= _chanceToSpawnSpeedToken && !_isSpeedActive && !_speedTokenExists)
         {
             float randTime = Random.Range(0.0f, 1.0f);
+
             StartCoroutine(SpawnStuff(TagStrings.LUDICROUS_SPEED, randTime));    
             UpdateSpeedTokenExistence();
         }
     }
-
+        
     private IEnumerator SpawnAsteroidWaves()
     {
         
@@ -439,19 +471,19 @@ public class GameManager : MonoBehaviour {
     #region toggle player effects
     private void TogglePlayerAtLudicrousSpeed()
     {
-        _isLudicrousSpeedActive = !_isLudicrousSpeedActive;
+        _isSpeedActive = !_isSpeedActive;
     }
 
     private void TogglePlayerIsInvulnerable()
     {
-        _isPlayerInvulnerable = !_isPlayerInvulnerable;
+        _isPlayerShielded = !_isPlayerShielded;
     }
     #endregion
 
     #region Token Availability
     private void UpdateSpeedTokenAvailability()
     {
-        _hasLudicrousSpeedToken = !_hasLudicrousSpeedToken;
+        _hasSpeedToken = !_hasSpeedToken;
     }
 
     private void UpdateDestroyAllTokenAvailability()
@@ -461,14 +493,14 @@ public class GameManager : MonoBehaviour {
 
     private void UpdateInvulnerabilityAvailabilityToken()
     {
-        _hasInvulnerabilityToken = !_hasInvulnerabilityToken;
+        _hasShieldToken = !_hasShieldToken;
     }
     #endregion
 
     #region Token existance
     private void UpdateSpeedTokenExistence()
     {
-        _ludicrousTokenExists = !_ludicrousTokenExists;
+        _speedTokenExists = !_speedTokenExists;
     }
 
     private void UpdateDestroyAllTokenExistence()
@@ -478,7 +510,7 @@ public class GameManager : MonoBehaviour {
 
     private void UpdateInvulnerabilityTokenExistance()
     {
-        _invulnerabilityTokenExists = !_invulnerabilityTokenExists;
+        _shieldTokenExists = !_shieldTokenExists;
     }
     #endregion
 
@@ -486,6 +518,11 @@ public class GameManager : MonoBehaviour {
     private void ToggleLaserEnemySpawn()
     {
         _canSpawnLaserEnemies = !_canSpawnLaserEnemies;
+    }
+
+    private void ToggleBulletEnemySpawn()
+    {
+        _canSpawnBulletEnemies = !_canSpawnBulletEnemies;
     }
 
     private void ToggleAsteroidSpawn()
@@ -549,7 +586,7 @@ public class GameManager : MonoBehaviour {
     {
         TogglePlayerAtLudicrousSpeed();
         TogglePlayerIsInvulnerable();
-        _deltaLudicrousSpeedTime = _ludicrousSpeedTimer;
+        _deltaSpeedTime = _SpeedTimer;
         _gameSpeed += 30;
         _speedText.text = _gameSpeed.ToString();
     }
@@ -563,7 +600,7 @@ public class GameManager : MonoBehaviour {
 
     private void InvulnerabilityOff()
     {
-        _deltaInvulneTime = _playerInvulnerableTimer;
+        _deltaShieldTime = _playerShieldedTimer;
         TogglePlayerIsInvulnerable();
         UpdateInvulnerabilityTokenExistance();
     }
@@ -614,6 +651,24 @@ public class GameManager : MonoBehaviour {
 
             default:
                 break;
+        }
+    }
+
+    private void CheckPlayerPrefs()
+    {
+        if (PlayerPrefs.HasKey(GameSettings.HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED))
+        {
+            _hasDestroyAllTokenHelpBeenDisplayed = true;
+        }
+
+        if (PlayerPrefs.HasKey(GameSettings.HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED))
+        {
+            _hasShieldTokenHelpBeenDisplayed = true;
+        }
+
+        if (PlayerPrefs.HasKey(GameSettings.HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED))
+        {
+            _hasSpeedTokenHelpBeenDisplayed = true;
         }
     }
 

@@ -11,6 +11,7 @@ GameObject:
   - 54: {fileID: 5411836}
   - 65: {fileID: 6569690}
   - 114: {fileID: 11498534}
+  - 114: {fileID: 11421880}
   m_Layer: 0
   m_Name: EnemyBolt
   m_TagString: EnemyBolt
@@ -120,6 +121,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.1, y: 0.02, z: 0.6}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &11421880
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 120256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e45ad80cb4b94e2b9d45312dedc588f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _explosion: {fileID: 100004, guid: 2857e183f4cd3df4e9096e5b578bd32f, type: 2}
 --- !u!114 &11498534
 MonoBehaviour:
   m_ObjectHideFlags: 1

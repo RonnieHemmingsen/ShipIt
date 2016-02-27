@@ -121,15 +121,15 @@ MonoBehaviour:
   _startWait: 1
   _waveWait: 0.15
   _hazardCount: 20
-  _playerInvulnerableTimer: 3
-  _ludicrousSpeedTimer: 5
-  _chanceToSpawnDestroyAll: 0.1
-  _chanceToSpawnInvulnerability: 0.5
+  _playerShieldedTimer: 3
+  _SpeedTimer: 3
+  _chanceToSpawnDestroyAllToken: 0.01
+  _chanceToSpawnShieldToken: 0.03
   _chanceToSpawnLaserEnemy: 0.08
   _chanceToSpawnBulletEnemy: 0.2
   _chanceToSpawnCoin: 0.8
   _chanceToSpawnBigCoin: 0.02
-  _chanceToSpawnLudicrousSpeed: 0.2
+  _chanceToSpawnSpeedToken: 0.2
   _distanceText: {fileID: 0}
   _scoreText: {fileID: 0}
   _killText: {fileID: 0}
@@ -139,6 +139,7 @@ MonoBehaviour:
   _asteroid: {fileID: 172768, guid: 66142ff9f311343cda8cdacd73695717, type: 2}
   _laserEnemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
   _bulletEnemy: {fileID: 116032, guid: 003107d4aa5ff4788905ec4150ab936f, type: 2}
+  _bullet: {fileID: 177416, guid: 4338f9b0d54f64de282c868d25482d04, type: 2}
   _invulnePower: {fileID: 187450, guid: fcec80ae7811f41d7954a597bc914bc8, type: 2}
   _destroyAll: {fileID: 199062, guid: 26ea0fc732a1b42839f85b72b1f4e6cc, type: 2}
   _coin: {fileID: 179460, guid: 76ed37fba87964d1db4fd128dc5fcc44, type: 2}
@@ -159,9 +160,12 @@ MonoBehaviour:
   _speedIncrementValue: 0.1
   _timeBetweenSpeedIncrements: 1
   _timeBeforeLaserEnemiesAppear: 5
-  _timeBeforeBulletEnemiesAppear: 30
+  _timeBeforeBulletEnemiesAppear: 20
   _maxNumberOfLaserEnemies: 3
   _maxNumberOfBulletEnemies: 2
+  _timeBeforeDestroyToken: 0
+  _timeBeforeInvulnerabilityToken: 0
+  _timeBeforeLudicrousSpeedToken: 0
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

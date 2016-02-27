@@ -22,13 +22,13 @@ public class WeaponArray : MonoBehaviour {
 
     void OnEnable()
     {
-        EventManager.StartListeningForStringEvent(EventStrings.START_BULLETENEMY_SHOOTING, StartShooting);
+        EventManager.StartListening(EventStrings.START_BULLETENEMY_SHOOTING, StartShooting);
         EventManager.StartListening(EventStrings.STOP_BULLETENEMY_SHOOTING, StopShooting);
     }
 
     void OnDisable()
     {
-        EventManager.StopListeningForStringEvent(EventStrings.START_BULLETENEMY_SHOOTING, StartShooting);
+        EventManager.StopListening(EventStrings.START_BULLETENEMY_SHOOTING, StartShooting);
         EventManager.StopListening(EventStrings.STOP_BULLETENEMY_SHOOTING, StopShooting);
     }
 
@@ -38,9 +38,8 @@ public class WeaponArray : MonoBehaviour {
 	
 	}
 
-    private void StartShooting(string uniqueId)
+    private void StartShooting()
     {
-        this._uniqueId = uniqueId;
         _canFireWeapon = true;
         StartCoroutine(FireWeapon());
     }
@@ -59,7 +58,7 @@ public class WeaponArray : MonoBehaviour {
             {
                 if(_pipes[i].activeSelf)
                 {
-                    GameObject go = _objPool.GetObjectFromPool(TagStrings.BULLET + _uniqueId);
+                    GameObject go = _objPool.GetObjectFromPool(TagStrings.BULLET);
                     go.transform.position = _pipes[i].transform.position;
                     print(go.transform.rotation.eulerAngles);
 
