@@ -173,16 +173,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxSpeed: -10
   _speedIncrementValue: 0.1
-  _timeBetweenSpeedIncrements: 1
+  _timeBetweenSpeedIncrements: 5
   _timeBetweenDifficultyIncrements: 10
   _timeBetweenToggleIncrements: 10
   _timeBeforeAsteroidsAppear: 3
-  _timeBeforeLaserEnemiesAppear: 5
-  _timeBeforeBulletEnemiesAppear: 20
-  _maxNumberOfLaserEnemies: 3
-  _maxNumberOfBulletEnemies: 2
-  _maxNumberOfAsteroids: 10
   _timeBeforeTokensCanAppear: 3
+  _maxNumberOfLaserEnemies: 1
+  _maxNumberOfBulletEnemies: 1
+  _maxNumberOfAsteroids: 10
+  _maxNumberOfEnemiesOnScreen: 4
   _chanceToSpawnToken: 0.05
   _chanceToSpawnBulletEnemy: 0.2
   _chanceToSpawnLaserEnemy: 0.02

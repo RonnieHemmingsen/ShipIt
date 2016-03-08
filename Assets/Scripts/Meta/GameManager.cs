@@ -211,11 +211,11 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         _objPool.CreatePool(100, _coin, _coin.tag);
-        _objPool.CreatePool(100, _bigCoin, _bigCoin.tag);
+        _objPool.CreatePool(10, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
         _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
-        _objPool.CreatePool(_zen.MaxNumberOfLaserEnemies, _laserEnemy, _laserEnemy.tag);
-        _objPool.CreatePool(_zen.MaxNumberOfLaserEnemies, _bulletEnemy, _bulletEnemy.tag);
+        _objPool.CreatePool(5, _laserEnemy, _laserEnemy.tag);
+        _objPool.CreatePool(5, _bulletEnemy, _bulletEnemy.tag);
         _objPool.CreatePool(300, _bullet, _bullet.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
@@ -442,7 +442,11 @@ public class GameManager : MonoBehaviour {
     #region Engage/Disengage Effects
     private void EngageLudicrousSpeed()
     {
-        UpdateSpeedTokenAvailability();
+        if(!IsStartingGame)
+        {
+            UpdateSpeedTokenAvailability();    
+        }
+
         TogglePlayerAtLudicrousSpeed();
         TogglePlayerIsInvulnerable();
         _gameSpeed -= 30;
@@ -482,10 +486,10 @@ public class GameManager : MonoBehaviour {
                 DecreaseAliveHazardCount();
                 break;
             case "BulletEnemy":
-                EnemyDestroyed(name);
+                DecreaseAliveEnemyCount(name);
                 break;
             case "LaserEnemy":
-                EnemyDestroyed(name);
+                DecreaseAliveEnemyCount(name);
                 break;
             case "Invulnerable":    
                 RemoveTokenFromAliveList(name);

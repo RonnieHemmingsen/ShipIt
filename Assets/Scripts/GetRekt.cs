@@ -24,7 +24,16 @@ public class GetRekt : MonoBehaviour {
 
     private void Explode()
     {
-        EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, tag);   
+        if(tag == TagStrings.HAZARD)
+        {
+            EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
+        }
+
+        if(tag == TagStrings.BULLET_ENEMY || tag == TagStrings.LASER_ENEMY)
+        {
+            EventManager.TriggerStringEvent(EventStrings.ENEMY_DESTROYED, tag);
+        }
+
         Instantiate(_explosion, transform.position, transform.rotation);
         _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
     }

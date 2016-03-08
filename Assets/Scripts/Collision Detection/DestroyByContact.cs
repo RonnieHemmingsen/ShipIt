@@ -47,7 +47,7 @@ public class DestroyByContact : MonoBehaviour {
             Instantiate(_explosion, transform.position, transform.rotation);
             Destroy(other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, tag);
+            EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
 
         }
@@ -108,7 +108,7 @@ public class DestroyByContact : MonoBehaviour {
         //Enemy destroyed by player bolt
         if((tag == TagStrings.LASER_ENEMY || tag == TagStrings.BULLET_ENEMY) && other.tag == TagStrings.BOLT)
         {
-            EventManager.TriggerEvent(EventStrings.ENEMY_DESTROYED);
+            EventManager.TriggerStringEvent(EventStrings.ENEMY_DESTROYED, tag);
             ExplodeAThing(gameObject);
         }
 

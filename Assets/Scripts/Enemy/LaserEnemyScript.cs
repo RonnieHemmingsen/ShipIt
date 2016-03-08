@@ -89,8 +89,7 @@ public class LaserEnemyScript : MonoBehaviour {
             }
             else
             {
-                print("i dont even know..");
-
+                EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, tag);
                 _objPool.ReturnObjectToPool(transform.tag, gameObject);
             }
         }

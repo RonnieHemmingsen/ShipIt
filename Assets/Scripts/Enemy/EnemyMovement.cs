@@ -61,9 +61,10 @@ public class EnemyMovement : MonoBehaviour {
     }
         
 
-    void Awake()
+    void Start()
     {
-        _gotoPos = new Vector3(Random.Range(-_targetPos.x, _targetPos.x), _targetPos.y, _targetPos.z);
+        print(transform.position.ToString());
+        _gotoPos = new Vector3(transform.position.x, transform.position.y, transform.position.z -8);
         _retreatPos = new Vector3(_gotoPos.x, _gotoPos.y, _gotoPos.z + 3.0f);
         _step = _moveSpeed * Time.deltaTime;
     }

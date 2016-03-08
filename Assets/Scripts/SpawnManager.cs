@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class SpawnManager : MonoBehaviour {
 
@@ -29,10 +30,13 @@ public class SpawnManager : MonoBehaviour {
     private GameManager _GM;
     private HazardStates _state;
 
+    private List<Vector3> _enemyPositions;
+
     private float _deltaTimeBetweenAsteroids;
     private float _deltaTimeBetweenLaserEnemies;
     private float _deltaTimeBetweenBulletEnemies;
     private float _deltaTimeBetweenTokenSpawns;
+    private int _currentNumberOfEnemiesOnScreen;
 
 
 	void Awake () {
@@ -43,11 +47,6 @@ public class SpawnManager : MonoBehaviour {
 	
     IEnumerator Start()
     {
-        _deltaTimeBetweenAsteroids = _zen.TimeBeforeAsteroidsCanAppear;
-        _deltaTimeBetweenBulletEnemies = _zen.TimeBeforeBulletEnemiesCanAppear;
-        _deltaTimeBetweenLaserEnemies = _zen.TimeBeforeLaserEnemiesCanAppear;
-
-
         print("Start Hazards");
         _state = HazardStates.Initialise;
 
@@ -87,6 +86,9 @@ public class SpawnManager : MonoBehaviour {
 
     private void Initialise()
     {
+        _enemyPositions = new List<Vector3>();
+        _deltaTimeBetweenAsteroids = _zen.TimeBeforeAsteroidsCanAppear;
+
         _state = HazardStates.Evaluate;
     }
 
@@ -97,7 +99,8 @@ public class SpawnManager : MonoBehaviour {
         _deltaTimeBetweenLaserEnemies -= Time.deltaTime;
         _deltaTimeBetweenTokenSpawns -= Time.deltaTime;
 
-
+        DetermineNumberOfEnemiesAlive();
+        RemoveEnemyPositions();
 
         float rand = Random.value;
 
@@ -111,6 +114,7 @@ public class SpawnManager : MonoBehaviour {
 
         if(_deltaTimeBetweenBulletEnemies <= 0 
             && _GM.BulletEnemiesAlive < _zen.MaxNumberOfBulletEnemies 
+            && _currentNumberOfEnemiesOnScreen < _zen.MaxNumberOfEnemiesOnScreen
             && rand <= _zen.ChanceToSpawnBulletEnemy 
             && _zen.CanSpawnBulletEnemies)
         {
@@ -120,14 +124,17 @@ public class SpawnManager : MonoBehaviour {
 
         if(_deltaTimeBetweenLaserEnemies <= 0 
             && _GM.LaserEnemiesAlive < _zen.MaxNumberOfLaserEnemies 
-            && _zen.CanSpawnLaserEnemies && rand <= _zen.ChanceToSpawnLaserEnemy)
+            && _currentNumberOfEnemiesOnScreen < _zen.MaxNumberOfEnemiesOnScreen
+            && _zen.CanSpawnLaserEnemies 
+            && rand <= _zen.ChanceToSpawnLaserEnemy)
         {
             _deltaTimeBetweenLaserEnemies = Random.Range(_minTimeBetweenLaserEnemySpawn, _maxTimeBetweenLaserEnemySpawn);
             _state = HazardStates.LaserEnemies;
         }
 
         if(_deltaTimeBetweenTokenSpawns <= 0 
-            && _zen.CanSpawnTokens && rand <= _zen.ChanceToSpawnToken)
+            && _zen.CanSpawnTokens 
+            && rand <= _zen.ChanceToSpawnToken)
         {
             _deltaTimeBetweenTokenSpawns = Random.Range(_minTimeBetweenTokenSpawns, _maxTimeBetweenTokenSpawns);
             _state = HazardStates.Tokens;
@@ -163,13 +170,19 @@ public class SpawnManager : MonoBehaviour {
 
     private void LaserEnemies()
     {
-        
-        Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+        bool canSpawnHere = false;
+        Vector3 spawnPos = Vector3.zero;
+
+        while (!canSpawnHere) {
+            spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+            canSpawnHere = CanSpawnHere(spawnPos);
+        }
 
         GameObject GO = _objPool.GetObjectFromPool(TagStrings.LASER_ENEMY);
         if(GO != null)
         {
-            GO.transform.position = spawnPos;    
+            _enemyPositions.Add(spawnPos);
+            GO.transform.position = new Vector3(spawnPos.x, spawnPos.y, spawnPos.z);    
             _GM.LaserEnemiesAlive++;
         }
 
@@ -178,12 +191,19 @@ public class SpawnManager : MonoBehaviour {
 
     private void BulletEnemies()
     {
-        Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+        bool canSpawnHere = false;
+        Vector3 spawnPos = Vector3.zero;
+
+        while (!canSpawnHere) {
+            spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+            canSpawnHere = CanSpawnHere(spawnPos);
+        }
 
         GameObject GO = _objPool.GetObjectFromPool(TagStrings.BULLET_ENEMY);
         if(GO != null)
         {
-            GO.transform.position = spawnPos;    
+            _enemyPositions.Add(spawnPos);
+            GO.transform.position = new Vector3(spawnPos.x, spawnPos.y, spawnPos.z);    
             _GM.BulletEnemiesAlive++;
         }
 
@@ -203,7 +223,6 @@ public class SpawnManager : MonoBehaviour {
             if(GO != null)
             {
                 GO.transform.position = spawnPos;    
-                _GM.BulletEnemiesAlive++;
             }
         }
 
@@ -219,6 +238,30 @@ public class SpawnManager : MonoBehaviour {
         {
             GO.transform.position = spawnPos;    
         }
+    }
+
+    private bool CanSpawnHere(Vector3 spawnPos)
+    {
+        bool farEnough = true;
+
+        if(_enemyPositions.Count == 0)
+        {
+            return farEnough;
+        }
+
+        for (int i = 0; i < _enemyPositions.Count -1; i++)
+        {
+            if(Utilities.DistanceLessThanValueToOther(spawnPos, _enemyPositions[i], 4))
+            {
+                //print("Too close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
+                farEnough = false;
+                break;
+            }
+            //print("Not close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
+
+        }
+
+        return farEnough;
     }
 
     private string GetRandomToken()
@@ -240,11 +283,23 @@ public class SpawnManager : MonoBehaviour {
             if(name == _GM.AliveTokenList[i])
             {
                 return false;
-
             }
         }
 
         return true;
+    }
+
+    private void DetermineNumberOfEnemiesAlive()
+    {
+        _currentNumberOfEnemiesOnScreen = _GM.BulletEnemiesAlive + _GM.LaserEnemiesAlive;
+    }
+
+    private void RemoveEnemyPositions()
+    {
+        if(_enemyPositions.Count > _zen.MaxNumberOfEnemiesOnScreen)
+        {            
+            _enemyPositions.RemoveRange(0, 1);
+        }
     }
 
     public enum HazardStates

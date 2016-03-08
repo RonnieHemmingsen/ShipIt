@@ -16,9 +16,7 @@ public class GameBalancer : MonoBehaviour {
     [SerializeField]
     private float _timeBeforeAsteroidsAppear;
     [SerializeField]
-    private float _timeBeforeLaserEnemiesAppear;
-    [SerializeField]
-    private float _timeBeforeBulletEnemiesAppear;
+    private float _timeBeforeTokensCanAppear;
     [SerializeField]
     private int _maxNumberOfLaserEnemies;
     [SerializeField]
@@ -26,15 +24,15 @@ public class GameBalancer : MonoBehaviour {
     [SerializeField]
     private int _maxNumberOfAsteroids;
     [SerializeField]
-    private float _timeBeforeTokensCanAppear;
+    private int _maxNumberOfEnemiesOnScreen;
     [SerializeField]
-    private float _chanceToSpawnToken = 0.05f;
+    private float _chanceToSpawnToken;
     [SerializeField]
-    private float _chanceToSpawnBulletEnemy = 0.2f;
+    private float _chanceToSpawnBulletEnemy;
     [SerializeField]
-    private float _chanceToSpawnLaserEnemy = 0.02f;
+    private float _chanceToSpawnLaserEnemy;
     [SerializeField]
-    private float _chanceToSpawnAsteroid = 1f;
+    private float _chanceToSpawnAsteroid;
 
     private GameManager _GM;
     private int _difficultySetting;
@@ -49,6 +47,12 @@ public class GameBalancer : MonoBehaviour {
 
 
     #region Properties
+
+    public int MaxNumberOfEnemiesOnScreen
+    {
+        get { return _maxNumberOfEnemiesOnScreen; }
+        set { _maxNumberOfEnemiesOnScreen = value; }
+    }
 
     public int MaxNumberOfAsteroids
     {
@@ -72,18 +76,6 @@ public class GameBalancer : MonoBehaviour {
     {
         get { return _timeBeforeAsteroidsAppear; }
         set { _timeBeforeAsteroidsAppear = value; }
-    }
-
-    public float TimeBeforeLaserEnemiesCanAppear
-    {
-        get { return _timeBeforeLaserEnemiesAppear; }
-        set { _timeBeforeLaserEnemiesAppear = value; }
-    }
-
-    public float TimeBeforeBulletEnemiesCanAppear
-    {
-        get { return _timeBeforeBulletEnemiesAppear; }
-        set { _timeBeforeBulletEnemiesAppear = value; }
     }
         
     public bool CanSpawnTokens
@@ -176,7 +168,7 @@ public class GameBalancer : MonoBehaviour {
                 _difficultySetting++;
                 _maxNumberOfAsteroids++;
 
-                print("Difficulty: " + _difficultySetting + " Asteroids: " + _maxNumberOfAsteroids);
+                //print("Difficulty: " + _difficultySetting + " Asteroids: " + _maxNumberOfAsteroids);
 
             }
 
@@ -186,16 +178,60 @@ public class GameBalancer : MonoBehaviour {
                 _canSpawnAsteroids = true;
             }
 
-            if(_difficultySetting > 2)
+            if(_difficultySetting == 1)
             {
-                //rint("can spawn laser enemies");
+                print("Level: " + _difficultySetting);
+            }
+
+            if(_difficultySetting == 2)
+            {
+                print("Level: " + _difficultySetting);
+
                 _canSpawnLaserEnemies = true;
             }
 
-            if(_difficultySetting > 4)
+            if(_difficultySetting == 3)
             {
-                //print("can spawn bullet enemies");
+                print("Level: " + _difficultySetting);
+                _maxNumberOfLaserEnemies = 2;
+            }
+
+            if(_difficultySetting == 4)
+            {
+                print("Level: " + _difficultySetting);
+                _maxNumberOfLaserEnemies = 3;
                 _canSpawnBulletEnemies = true;
+            }
+
+            if(_difficultySetting == 5)
+            {
+                print("Level: " + _difficultySetting);
+                _canSpawnLaserEnemies = false;
+
+            }
+
+            if(_difficultySetting == 6)
+            {
+                print("Level: " + _difficultySetting);
+                _maxNumberOfBulletEnemies = 3;
+            }
+
+            if(_difficultySetting == 7)
+            {
+                print("Level: " + _difficultySetting);
+            }
+
+            if(_difficultySetting == 8)
+            {
+                print("Level: " + _difficultySetting);
+                _canSpawnLaserEnemies = true;
+                _maxNumberOfLaserEnemies = 2;
+                _maxNumberOfBulletEnemies = 2;
+            }
+
+            if(_difficultySetting == 9)
+            {
+                print("Level: " + _difficultySetting);
             }
 
             if(Time.time > _timeBeforeTokensCanAppear)
@@ -217,7 +253,7 @@ public class GameBalancer : MonoBehaviour {
                     _deltaToggleAllIncrement = _timeBetweenToggleIncrements;
                 }
 
-                print("Toggle: " + _isNothing + " time :" + _deltaToggleAllIncrement);
+                //print("Toggle: " + _isNothing + " time :" + _deltaToggleAllIncrement);
             }
         }
 	}    
