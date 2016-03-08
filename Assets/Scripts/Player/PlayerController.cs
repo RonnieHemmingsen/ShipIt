@@ -14,8 +14,6 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float _shipSpeed = 5f;
     [SerializeField]
-    private float _tilt = 5f;
-    [SerializeField]
     private int _numberOfShots = 10;
     [SerializeField]
     private float _fireRate = 0.5f;
@@ -36,17 +34,19 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private AudioSource _laserSound;
 
+
     private Rigidbody _rigidbody;
-    private Animator _anim;
     private ObjectPoolManager _objPool;
     private GameManager _GM;
-
+    private Animator _anim;
     private float _timeBetweenShots;
     private float _moveHorizontal;
     private float _currentVertical;
     private float _lastVertical;
     private bool _hasFiredTouch;
+    private bool _isStartingGame = true;
     private Vector2 _startSwipePosition;
+
 
 
 
@@ -78,6 +78,8 @@ public class PlayerController : MonoBehaviour {
         EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
+        EventManager.StartListening(GameSettings.GAME_STARTED, GameStarted);
+
     }
 
     void OnDisable()
@@ -86,7 +88,8 @@ public class PlayerController : MonoBehaviour {
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
-        
+
+        EventManager.StopListening(GameSettings.GAME_STARTED, GameStarted);
     }
 
     void Start()
@@ -94,17 +97,19 @@ public class PlayerController : MonoBehaviour {
         _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _objPool.CreatePool(_numberOfShots, _bolt, _bolt.tag);
-        _lastVertical = Input.acceleration.y;
-        _currentVertical = Input.acceleration.y;
     }
 
     void FixedUpdate()
     {
-        MoveControl();
-        LudicrousSpeedControl();
-        InvulnerabilityControl();
-        DestroyAllControl();
-        //_engineSound.Play();
+        if(!_isStartingGame)
+        {
+            MoveControl();
+            LudicrousSpeedControl();
+            ShieldControl();
+            DestroyAllControl();
+            //_engineSound.Play();    
+        }
+
     }
         
     #region controls
@@ -136,14 +141,14 @@ public class PlayerController : MonoBehaviour {
 
         if(_moveHorizontal >= 0)
         {
-            _anim.SetFloat("RightTurn", _moveHorizontal);
-            _anim.SetFloat("LeftTurn", -0.1f);
+            //_anim.SetFloat("RightTurn", _moveHorizontal);
+            //_anim.SetFloat("LeftTurn", -0.1f);
         }
         else
         {
-            _anim.SetFloat("RightTurn", -0.1f);
+            //_anim.SetFloat("RightTurn", -0.1f);
 
-            _anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
+            //_anim.SetFloat("LeftTurn", Mathf.Abs(_moveHorizontal));
             //print(Mathf.Abs(_moveHorizontal));
         }          
     }
@@ -161,7 +166,7 @@ public class PlayerController : MonoBehaviour {
         #elif UNITY_IOS
         _currentVertical = Input.acceleration.y;
         float difference = _currentVertical - _lastVertical;
-        if(difference > 0.5f && _GM.HasDestroyAllToken)
+        if(difference > 0.3f && _GM.HasDestroyAllToken)
         {
             print("Difference: " + difference);
             EventManager.TriggerEvent(EventStrings.GET_REKT);
@@ -173,7 +178,7 @@ public class PlayerController : MonoBehaviour {
         #endif
     }
 
-    private void InvulnerabilityControl()
+    private void ShieldControl()
     {
         #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.LeftControl))
@@ -265,7 +270,7 @@ public class PlayerController : MonoBehaviour {
     {
         Image im =  _invulnerableForceField.GetComponent<Image>();
 
-        StartCoroutine(FadeInAndOut(1f, im, () =>
+        StartCoroutine(Utilities.FadeInAndOut(1f, im, () =>
         {
          //Not a damned thing... this time.   
         }));   
@@ -274,7 +279,7 @@ public class PlayerController : MonoBehaviour {
     private void InvulnerabilityOff()
     {
         Image im =  _invulnerableForceField.GetComponent<Image>();
-        StartCoroutine(FadeInAndOut(0f, im, () => {
+        StartCoroutine(Utilities.FadeInAndOut(0f, im, () => {
             //Dont actually need this anymore, but leaving it in 
             // so I dont have to fucking research next time.
             //_invulnerableForceField.SetActive(false);    
@@ -286,24 +291,14 @@ public class PlayerController : MonoBehaviour {
     {
         print("engage");
         Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
-        StartCoroutine(FadeInAndOut(1, im, () => {}));
+        StartCoroutine(Utilities.FadeInAndOut(1, im, () => {}));
     }
 
     private void DisengageLudicrousSpeed()
     {
         print("disengage");
         Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
-        StartCoroutine(FadeInAndOut(0, im, () => {}));
-    }
-        
-
-    IEnumerator FadeInAndOut(float fadeToValue, Image im, Action onComplete)
-    {
-        
-        im.CrossFadeAlpha(fadeToValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);
-        yield return new WaitForSeconds(GameSettings.CROSSFADE_ALPHA_VALUE);
-        onComplete();
-
+        StartCoroutine(Utilities.FadeInAndOut(0, im, () => {}));
     }
     #endregion
 
@@ -317,5 +312,11 @@ public class PlayerController : MonoBehaviour {
             _laserSound.Play();
         }
     }
+
+    private void GameStarted()
+    {
+        _isStartingGame = false;
+    }
+
      
 }

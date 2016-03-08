@@ -24,6 +24,7 @@ public class GetRekt : MonoBehaviour {
 
     private void Explode()
     {
+        EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, tag);   
         Instantiate(_explosion, transform.position, transform.rotation);
         _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
     }

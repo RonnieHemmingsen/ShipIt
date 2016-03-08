@@ -5,39 +5,16 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
-
-    public static GameManager instance;
+    
     [SerializeField]
     private bool _isDebugInvulne = true;
     [SerializeField]
     private float _gameSpeed = -5.0f;
     [SerializeField]
-    private float _spawnWait = 1.5f;
-    [SerializeField]
-    private float _startWait = 1f;
-    [SerializeField]
-    private float _waveWait = 3f;
-    [SerializeField]
-    private int _hazardCount = 10;
-    [SerializeField]
     private float _playerShieldedTimer = 3.0f;
     [SerializeField]
     private float _SpeedTimer = 3.0f;
-    [SerializeField]
-    private float _chanceToSpawnDestroyAllToken = 0.01f;
-    [SerializeField]
-    private float _chanceToSpawnShieldToken = 0.03f;
-    [SerializeField]
-    private float _chanceToSpawnLaserEnemy = 0.08f;
-    [SerializeField]
-    private float _chanceToSpawnBulletEnemy = 0.2f;
-    [SerializeField]
-    private float _chanceToSpawnCoin = 1f;
-    [SerializeField]
-    private float _chanceToSpawnBigCoin = 0.02f;
-    [SerializeField]
-    private float _chanceToSpawnSpeedToken = 0.2f;
-    [SerializeField]
+ [SerializeField]
     private Text _distanceText;
     [SerializeField]
     private Text _scoreText;
@@ -70,17 +47,16 @@ public class GameManager : MonoBehaviour {
 
     private GameBalancer _zen;
     private ObjectPoolManager _objPool;
-    private List<Vector3> ItemSpawnPositions = new List<Vector3>();
-    private List<Vector3> EnemySpawnPositions = new List<Vector3>();
+    private List<string> _aliveTokenList;
     private float _playDistance = 0;
     private int _destroyedHazards = 0;
+    private int _bulletEnemiesAlive;
+    private int _laserEnemiesAlive;
+    private int _asteroidsAlive;
     private bool _isPlayerShielded;
     private float _deltaShieldTime;
     private float _deltaSpeedTime;
     private int _coinScore;
-    private bool _canSpawnLaserEnemies;
-    private bool _canSpawnBulletEnemies;
-    private bool _canSpawnAsteroids;
     private bool _isSpeedActive;
     private bool _hasSpeedToken;
     private bool _hasDestroyAllToken;
@@ -88,16 +64,31 @@ public class GameManager : MonoBehaviour {
     private bool _speedTokenExists;
     private bool _destroyAllTokenExists;
     private bool _shieldTokenExists;
-
+    private bool _isSpawningAsteroids;
+    private bool _hasSpawnStarted;
     private bool _hasDestroyAllTokenHelpBeenDisplayed;
     private bool _hasShieldTokenHelpBeenDisplayed;
     private bool _hasSpeedTokenHelpBeenDisplayed;
+    private bool _isStartingGame = true;
 
     #region Properties
+
+    public List<string> AliveTokenList
+    {
+        get { return _aliveTokenList; }
+        set { _aliveTokenList = value; }
+    }
+
     public bool DebugInvulne
     {
         get { return _isDebugInvulne; }
         set { _isDebugInvulne = value; }
+    }
+
+    public int CoinScore
+    {
+        get { return _coinScore; }
+        set { _coinScore = value; }
     }
         
     public float GameSpeed
@@ -154,25 +145,6 @@ public class GameManager : MonoBehaviour {
         set { _shieldTokenExists = value; }
     }
 
-
-    public bool CanSpawnAsteroids
-    {
-        get { return _canSpawnAsteroids; }
-        set { _canSpawnAsteroids = value; }
-    }
-
-    public bool CanSpawnLaserEnemies
-    {
-        get { return _canSpawnLaserEnemies; }
-        set { _canSpawnLaserEnemies = value; }
-    }
-
-    public bool CanSpawnBulletEnemies
-    {
-        get { return _canSpawnBulletEnemies; }
-        set { _canSpawnBulletEnemies = value; }
-    }
-
     public bool HasDestroyTokenHelpBeenDisplayed
     {
         get { return _hasDestroyAllTokenHelpBeenDisplayed; }
@@ -191,22 +163,45 @@ public class GameManager : MonoBehaviour {
         set { _hasSpeedTokenHelpBeenDisplayed = value; }
     }
 
+    public int LaserEnemiesAlive
+    {
+        get { return _laserEnemiesAlive; }
+        set { _laserEnemiesAlive = value; }
+    }
+
+    public int BulletEnemiesAlive
+    {
+        get { return _bulletEnemiesAlive; }
+        set { _bulletEnemiesAlive = value; }
+    }
+
+    public int AsteroidsAlive
+    {
+        get { return _asteroidsAlive; }
+        set { _asteroidsAlive = value; }
+    }
+
+    public bool IsStartingGame
+    {
+        get { return _isStartingGame; }
+        set { _isStartingGame = value; }
+    }
         
     #endregion
 
     void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-        } else
-        {
-            if(this != instance)
-                Destroy(this.gameObject);
-        }
-
-        DontDestroyOnLoad(this);
-
+//        if (instance == null)
+//        {
+//            instance = this;
+//        } else
+//        {
+//            if(this != instance)
+//                Destroy(this.gameObject);
+//        }
+//
+//        DontDestroyOnLoad(this);
+//
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
         _zen = GetComponent<GameBalancer>();
     }
@@ -233,34 +228,39 @@ public class GameManager : MonoBehaviour {
         _deltaShieldTime = _playerShieldedTimer;
         _deltaSpeedTime = _SpeedTimer;
 
+        _aliveTokenList = new List<string>();
+
         CheckPlayerPrefs();
 
-        InvokeRepeating("SpawnDecider", 1.0f, .5f);
-        StartCoroutine(SpawnAsteroidWaves());
+
 
 	}
-
+    #region Enable /Disable Events
     void OnEnable()
     {
         EventManager.StartListening(EventStrings.PLAYER_DEAD, GameOver);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
         EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
         EventManager.StartListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
-        EventManager.StartListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+
         EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StartListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
-        EventManager.StartListening(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING, ToggleLaserEnemySpawn);
-        EventManager.StartListening(EventStrings.TOGGLE_BULLET_ENEMY_SPAWNING, ToggleBulletEnemySpawn);
-        EventManager.StartListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
         EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StartListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
         EventManager.StartListening(EventStrings.GRAB_INVUNERABILITY_TOKEN, UpdateInvulnerabilityAvailabilityToken);
         EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
         EventManager.StartListening(EventStrings.GET_REKT, UpdateDestroyAllTokenAvailability);
+        EventManager.StartListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
 
+
+        EventManager.StartListening(GameSettings.GAME_STARTED, GameStarted);
+
+        EventManager.StartListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+        EventManager.StartListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
         EventManager.StartListeningForStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, ResetToken);
+        EventManager.StartListeningForStringEvent(EventStrings.ENEMY_OUT_OF_BOUNDS, DecreaseAliveEnemyCount);
         
     }
 
@@ -270,26 +270,31 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed);
         EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
         EventManager.StopListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
-        EventManager.StopListening(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
         EventManager.StopListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
-        EventManager.StopListening(EventStrings.TOGGLE_LASER_ENEMY_SPAWNING, ToggleLaserEnemySpawn);
-        EventManager.StopListening(EventStrings.TOGGLE_BULLET_ENEMY_SPAWNING, ToggleBulletEnemySpawn);
-        EventManager.StopListening(EventStrings.TOGGLE_ASTEROID_SPAWNING, ToggleAsteroidSpawn);
         EventManager.StopListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StopListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
         EventManager.StopListening(EventStrings.GRAB_INVUNERABILITY_TOKEN, UpdateInvulnerabilityAvailabilityToken);
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
         EventManager.StopListening(EventStrings.GET_REKT, UpdateDestroyAllTokenAvailability);
+        EventManager.StopListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
 
+        EventManager.StopListening(GameSettings.GAME_STARTED, GameStarted);
+
+        EventManager.StopListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
+        EventManager.StopListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
         EventManager.StopListeningForStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, ResetToken);
+        EventManager.StopListeningForStringEvent(EventStrings.ENEMY_OUT_OF_BOUNDS, DecreaseAliveEnemyCount);
     }
+    #endregion
 
     void Update()
     {
         _timePlayedText.text = Mathf.RoundToInt(Time.time).ToString();
+            
 
         if(_isPlayerShielded)
         {
@@ -309,164 +314,58 @@ public class GameManager : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
             }
         }
-            
+
         CalculatePlayDistance();
     }
 
-    #region Spawn methods
-    private void SpawnDecider()
+
+    #region Token Availability
+    public void UpdateSpeedTokenAvailability()
     {
-        float rand = Random.value;
-
-        if(rand <= _chanceToSpawnCoin) 
-        {
-            StartCoroutine(SpawnStuff(TagStrings.COIN, 0));    
-        }
-
-        if(rand <= _chanceToSpawnBigCoin)
-        {
-            StartCoroutine(SpawnStuff(TagStrings.BIG_COIN, 0));
-        }
-
-        if (rand <= _chanceToSpawnBulletEnemy) 
-        {
-            float randTime = Random.Range(0.0f, 1.0f);
-            if(_canSpawnBulletEnemies)
-            {
-                StartCoroutine(SpawnStuff(TagStrings.BULLET_ENEMY, randTime));   
-            }
-        }
-
-        if (rand <= _chanceToSpawnLaserEnemy) 
-        {
-            float randTime = Random.Range(0.0f, 1.0f);
-            if(_canSpawnLaserEnemies)
-            {
-                StartCoroutine(SpawnStuff(TagStrings.LASER_ENEMY, randTime));   
-            }
-
-        }
-
-        if (rand <= _chanceToSpawnDestroyAllToken && !_destroyAllTokenExists) 
-        {
-            float randTime = Random.Range(0.0f, 1.0f);
-
-            StartCoroutine(SpawnStuff(TagStrings.DESTROY_ALL, randTime));
-            UpdateDestroyAllTokenExistence();
-        }
-
-        if (rand <= _chanceToSpawnShieldToken && !_isPlayerShielded && !_shieldTokenExists) 
-        {
-            float randTime = Random.Range(0.0f, 1.0f);
-
-            StartCoroutine(SpawnStuff(TagStrings.INVULNERABLE, randTime));    
-            UpdateInvulnerabilityTokenExistance();
-
-
-        }
-
-        if (rand <= _chanceToSpawnSpeedToken && !_isSpeedActive && !_speedTokenExists)
-        {
-            float randTime = Random.Range(0.0f, 1.0f);
-
-            StartCoroutine(SpawnStuff(TagStrings.LUDICROUS_SPEED, randTime));    
-            UpdateSpeedTokenExistence();
-        }
-    }
-        
-    private IEnumerator SpawnAsteroidWaves()
-    {
-        
-        yield return new WaitForSeconds(_startWait);
-        while(_canSpawnAsteroids)
-        {
-            for (int i = 0; i < _hazardCount; i++)
-            {
-                Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
-
-                GameObject GO = _objPool.GetObjectFromPool(TagStrings.HAZARD);
-                if(GO != null)
-                {
-                    GO.transform.position = spawnPos;    
-                }
-                yield return new WaitForSeconds(_spawnWait);
-
-            }    
-            yield return new WaitForSeconds(_waveWait);
-        }
+        _hasSpeedToken = !_hasSpeedToken;
     }
 
-    private IEnumerator SpawnStuff(string tag, float randTime)
+    public void UpdateDestroyAllTokenAvailability()
     {
-        bool canSpawnHere = false;
-        Vector3 spawnPos = Vector3.zero;
+        _hasDestroyAllToken = !_hasDestroyAllToken;
+    }
 
-        yield return new WaitForSeconds(randTime);
-
-        while(!canSpawnHere)
-        {
-            spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
-
-            if(EnemySpawnPositions.Count == 0)
-            {
-                EnemySpawnPositions.Add(spawnPos);
-                canSpawnHere = true;
-            }
-
-            if(tag == TagStrings.LASER_ENEMY || tag == TagStrings.BULLET_ENEMY)
-            {
-                foreach (var item in EnemySpawnPositions)
-                {
-                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 5.0f))
-                    {
-                        canSpawnHere = true;
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                if(ItemSpawnPositions.Count == 0)
-                {
-                    ItemSpawnPositions.Add(spawnPos);
-                    canSpawnHere = true;
-                }
-                foreach (var item in ItemSpawnPositions)
-                {
-                    if(Utilities.DistanceLessThanValueToOther(spawnPos, item, 1.0f))
-                    {
-                        //print(spawnPos + " - " + item);
-                        canSpawnHere = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if(tag == TagStrings.BULLET_ENEMY || tag == TagStrings.LASER_ENEMY)
-        {
-            EnemySpawnPositions.Add(spawnPos);
-            MaintainPositionLists(EnemySpawnPositions);
-        }
-        else
-        {
-            ItemSpawnPositions.Add(spawnPos);
-            MaintainPositionLists(ItemSpawnPositions);
-        }
-
-        GameObject GO = _objPool.GetObjectFromPool(tag);
-        if(GO != null)
-        {
-            GO.transform.position = spawnPos; 
-        }
-        else
-        {
-            //debug only
-            print("Attempted to spawn null object: " + tag);
-        }
-
+    public void UpdateInvulnerabilityAvailabilityToken()
+    {
+        _hasShieldToken = !_hasShieldToken;
     }
     #endregion
+
+    #region Token existance
+    public void UpdateSpeedTokenExistence()
+    {
+        _speedTokenExists = !_speedTokenExists;
+        if(!_speedTokenExists)
+        {
+            RemoveTokenFromAliveList(TagStrings.LUDICROUS_SPEED);
+        }
+    }
+
+    public void UpdateDestroyAllTokenExistence()
+    {
+        _destroyAllTokenExists = !_destroyAllTokenExists;
+        if(!_destroyAllTokenExists)
+        {
+            RemoveTokenFromAliveList(TagStrings.DESTROY_ALL);
+        }
+    }
+
+    public void UpdateInvulnerabilityTokenExistance()
+    {
+        _shieldTokenExists = !_shieldTokenExists;
+
+        if(!_shieldTokenExists)
+        {
+            RemoveTokenFromAliveList(TagStrings.INVULNERABLE);
+        }
+    }
+    #endregion
+
 
     #region toggle player effects
     private void TogglePlayerAtLudicrousSpeed()
@@ -480,65 +379,31 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
-    #region Token Availability
-    private void UpdateSpeedTokenAvailability()
-    {
-        _hasSpeedToken = !_hasSpeedToken;
-    }
-
-    private void UpdateDestroyAllTokenAvailability()
-    {
-        _hasDestroyAllToken = !_hasDestroyAllToken;
-    }
-
-    private void UpdateInvulnerabilityAvailabilityToken()
-    {
-        _hasShieldToken = !_hasShieldToken;
-    }
-    #endregion
-
-    #region Token existance
-    private void UpdateSpeedTokenExistence()
-    {
-        _speedTokenExists = !_speedTokenExists;
-    }
-
-    private void UpdateDestroyAllTokenExistence()
-    {
-        _destroyAllTokenExists = !_destroyAllTokenExists;
-    }
-
-    private void UpdateInvulnerabilityTokenExistance()
-    {
-        _shieldTokenExists = !_shieldTokenExists;
-    }
-    #endregion
-
-    #region Toggle Obstacle Spawn
-    private void ToggleLaserEnemySpawn()
-    {
-        _canSpawnLaserEnemies = !_canSpawnLaserEnemies;
-    }
-
-    private void ToggleBulletEnemySpawn()
-    {
-        _canSpawnBulletEnemies = !_canSpawnBulletEnemies;
-    }
-
-    private void ToggleAsteroidSpawn()
-    {
-        _canSpawnAsteroids = !_canSpawnAsteroids;
-
-        if(_canSpawnAsteroids)
-        {
-            StartCoroutine(SpawnAsteroidWaves());
-        }
-    }
-    #endregion
 
     #region Update Scores and stats
+
+    private void DecreaseAliveHazardCount()
+    {
+        _asteroidsAlive--;
+    }
+
+    private void DecreaseAliveEnemyCount(string enemyType)
+    {
+        switch (enemyType)
+        {
+            case "BulletEnemy":
+                _bulletEnemiesAlive--;
+                break;
+            case "LaserEnemy":
+                _laserEnemiesAlive--;
+                break;
+            default:
+                break;
+        }
+    }
     private void UpdateHazardDestroyed()
     {
+        DecreaseAliveHazardCount();
         _destroyedHazards += 1;
         _coinScore += 5;
         _scoreText.text = "Score: " + _coinScore.ToString();
@@ -557,8 +422,10 @@ public class GameManager : MonoBehaviour {
         _scoreText.text = "Score: " +_coinScore.ToString();
     }
 
-    private void EnemyDestroyed()
+    private void EnemyDestroyed(string tag)
     {
+        DecreaseAliveEnemyCount(tag);
+
         _destroyedHazards += 1;
         _coinScore += 10;
         _scoreText.text = "Score: " + _coinScore.ToString(); 
@@ -607,6 +474,33 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     #region Maintain Game
+    private void UpdateAliveList(string name)
+    {
+        switch (name)
+        {
+            case "Hazard":
+                DecreaseAliveHazardCount();
+                break;
+            case "BulletEnemy":
+                EnemyDestroyed(name);
+                break;
+            case "LaserEnemy":
+                EnemyDestroyed(name);
+                break;
+            case "Invulnerable":    
+                RemoveTokenFromAliveList(name);
+                break;
+            case "DestroyAll":
+                RemoveTokenFromAliveList(name);
+                break;
+                case "LudicrousSpeed":
+                RemoveTokenFromAliveList(name);
+                break;
+            default:
+                break;
+        }
+    }
+
     private void UpdateGameSpeed()
     {
         _gameSpeed -= 0.1f;
@@ -615,21 +509,25 @@ public class GameManager : MonoBehaviour {
 
     private void GameOver()
     {
-        this.enabled = false;
-        Destroy(this.gameObject);
-
-        SceneManager.LoadScene("Game");
-        //_lvlMan.LoadLevel("Start Menu");
-
         print("You died");
+        StartCoroutine(WaitForDeath());
     }
     #endregion
+
+
+    private IEnumerator WaitForDeath()
+    {
+        yield return new WaitForSeconds(0.5f);
+        EventManager.TriggerEvent(EventStrings.ENABLE_GAMEOVER_MENU);
+
+
+    }
 
     private void MaintainPositionLists(List<Vector3> list)
     {
         //print("List count : " +list.Count);
 
-        if(list.Count < 5)
+        if(list.Count < 10)
             return;
 
         list.RemoveAt(0);
@@ -652,6 +550,23 @@ public class GameManager : MonoBehaviour {
             default:
                 break;
         }
+    }
+
+    private void RemoveTokenFromAliveList(string name)
+    {
+        for (int i = 0; i < _aliveTokenList.Count; i++)
+        {
+            if(name == _aliveTokenList[i])
+            {
+                _aliveTokenList.Remove(_aliveTokenList[i]);
+                break;
+            }
+        }
+    }
+
+    private void GameStarted()
+    {
+        _isStartingGame = false;
     }
 
     private void CheckPlayerPrefs()

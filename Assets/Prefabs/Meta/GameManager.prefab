@@ -11,6 +11,7 @@ GameObject:
   - 114: {fileID: 11471706}
   - 82: {fileID: 8259420}
   - 114: {fileID: 11474278}
+  - 114: {fileID: 11467944}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -104,6 +105,31 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
+--- !u!114 &11467944
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 155730}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f95ff70923ce4b25a3c3a8eeabeb55a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _spawnValues: {x: 7, y: 0, z: 16}
+  _minTimeBetweenAsteroidSpawn: 0.1
+  _maxTimeBetweenAsteroidSpawn: 0.8
+  _minTimeBetweenLaserEnemySpawn: 5
+  _maxTimeBetweenLaserEnemySpawn: 10
+  _minTimeBetweenBulletEnemySpawn: 5
+  _maxTimeBetweenBulletEnemySpawn: 15
+  _minTimeBetweenTokenSpawns: 5
+  _maxTimeBetweenTokenSpawns: 10
+  _tokenArray:
+  - Invulnerable
+  - DestroyAll
+  - LudicrousSpeed
+  - BigCoin
 --- !u!114 &11471706
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -115,21 +141,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52c479069bbad4c0b8c9b770171ec831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isDebugInvulne: 0
+  _isDebugInvulne: 1
   _gameSpeed: -5
-  _spawnWait: 0.5
-  _startWait: 1
-  _waveWait: 0.15
-  _hazardCount: 20
   _playerShieldedTimer: 3
   _SpeedTimer: 3
-  _chanceToSpawnDestroyAllToken: 0.01
-  _chanceToSpawnShieldToken: 0.03
-  _chanceToSpawnLaserEnemy: 0.08
-  _chanceToSpawnBulletEnemy: 0.2
-  _chanceToSpawnCoin: 0.8
-  _chanceToSpawnBigCoin: 0.02
-  _chanceToSpawnSpeedToken: 0.2
   _distanceText: {fileID: 0}
   _scoreText: {fileID: 0}
   _killText: {fileID: 0}
@@ -159,13 +174,19 @@ MonoBehaviour:
   _maxSpeed: -10
   _speedIncrementValue: 0.1
   _timeBetweenSpeedIncrements: 1
+  _timeBetweenDifficultyIncrements: 10
+  _timeBetweenToggleIncrements: 10
+  _timeBeforeAsteroidsAppear: 3
   _timeBeforeLaserEnemiesAppear: 5
   _timeBeforeBulletEnemiesAppear: 20
   _maxNumberOfLaserEnemies: 3
   _maxNumberOfBulletEnemies: 2
-  _timeBeforeDestroyToken: 0
-  _timeBeforeInvulnerabilityToken: 0
-  _timeBeforeLudicrousSpeedToken: 0
+  _maxNumberOfAsteroids: 10
+  _timeBeforeTokensCanAppear: 3
+  _chanceToSpawnToken: 0.05
+  _chanceToSpawnBulletEnemy: 0.2
+  _chanceToSpawnLaserEnemy: 0.02
+  _chanceToSpawnAsteroid: 1
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

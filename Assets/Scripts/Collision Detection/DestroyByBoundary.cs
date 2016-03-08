@@ -16,6 +16,11 @@ public class DestroyByBoundary : MonoBehaviour {
         {
             EventManager.TriggerStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, other.tag);
         }
+
+        if(other.tag == TagStrings.HAZARD)
+        {
+            EventManager.TriggerEvent(EventStrings.HAZARD_OUT_OF_BOUNDS);
+        }
         _objMan.ReturnObjectToPool(other.tag, other.gameObject);
     }
 }

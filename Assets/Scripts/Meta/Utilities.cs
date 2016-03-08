@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
+using System;
 
 public class Utilities : MonoBehaviour {
 
@@ -17,8 +19,19 @@ public class Utilities : MonoBehaviour {
 
     public static int RandomIntGenerator(int from, int to)
     {
-        int random = Random.Range(from, to +1);
+        int random = UnityEngine.Random.Range(from, to +1);
         return random;
 
     }
+
+    public static IEnumerator FadeInAndOut(float fadeToValue, Image im, Action onComplete)
+    {
+
+        im.CrossFadeAlpha(fadeToValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);
+        yield return new WaitForSeconds(GameSettings.CROSSFADE_ALPHA_VALUE);
+        onComplete();
+
+    }
+
+
 }

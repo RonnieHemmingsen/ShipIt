@@ -31,6 +31,13 @@ public static class EventStrings
     public const string START_BULLETENEMY_SHOOTING = "StartBulletEnemyShooting";
     public const string STOP_BULLETENEMY_SHOOTING = "StopBulletEnemyShooting";
 
+    public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";
+    public const string DISABLE_GAMEOVER_MENU = "DisableGameoverMenu";
+
+    public const string REMOVE_FROM_ALIVE_LIST = "RemoveFromAliveList";
+
+    public const string HAZARD_OUT_OF_BOUNDS = "HazardOutOfBounds";
+    public const string ENEMY_OUT_OF_BOUNDS = "EnemyOutOfBounds";
     public const string TOKEN_OUT_OF_BOUNDS = "TokenOutOfBounds";
 }
 
@@ -57,4 +64,7 @@ public static class GameSettings
     public const string HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED = "HasDestroyAllTokenHelpBeenDisplayed";
     public const string HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED = "HasShieldTokenHelpBeenDisplayed";
     public const string HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED = "HasSpeedTokenHelpBeenDisplayed";
+    public const string LOAD_LEVEL_GAME = "Game";
+    public const string LOAD_LEVEL_MENU = "Start Menu";
+    public const string GAME_STARTED = "Game Started";
 }

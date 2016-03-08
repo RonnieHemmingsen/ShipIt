@@ -30,11 +30,13 @@ public class DestroyByContact : MonoBehaviour {
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
-        //Bullet hits a hazard
+        //Enemy bullet hits a hazard
         if(other.tag == TagStrings.HAZARD && tag == TagStrings.BULLET)
         {
             ExplodeAThing(other.gameObject);
             ExplodeAThing(gameObject);
+            EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
+
         }
 
         //Player hits hazard, both are dead.
@@ -45,6 +47,7 @@ public class DestroyByContact : MonoBehaviour {
             Instantiate(_explosion, transform.position, transform.rotation);
             Destroy(other.gameObject);
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, tag);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
 
         }

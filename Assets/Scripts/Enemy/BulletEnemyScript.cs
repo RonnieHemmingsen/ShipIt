@@ -86,6 +86,7 @@ public class BulletEnemyScript : MonoBehaviour {
             }
             else
             {
+                EventManager.TriggerStringEvent(EventStrings.ENEMY_OUT_OF_BOUNDS, tag);
                 _objPool.ReturnObjectToPool(transform.tag, gameObject);
             }
         }

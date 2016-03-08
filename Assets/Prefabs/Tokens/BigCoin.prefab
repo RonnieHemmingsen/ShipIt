@@ -26,11 +26,11 @@ GameObject:
   m_Component:
   - 4: {fileID: 457814}
   - 54: {fileID: 5461656}
-  - 114: {fileID: 11425068}
   - 114: {fileID: 11451924}
   - 136: {fileID: 13674898}
   - 114: {fileID: 11464990}
   - 114: {fileID: 11470712}
+  - 114: {fileID: 11487890}
   m_Layer: 0
   m_Name: BigCoin
   m_TagString: BigCoin
@@ -60,7 +60,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 159992}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.1, y: 0.027, z: 0}
+  m_LocalPosition: {x: -0.1, y: 0.044, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 442110}
@@ -139,18 +139,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
---- !u!114 &11425068
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 137594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70f5f544be1414f6e82992c5894a8a65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tumble: 8
 --- !u!114 &11451924
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -188,6 +176,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosion: {fileID: 118436, guid: fe01f3d57c0ee4cdba9855f643785815, type: 2}
+--- !u!114 &11487890
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 137594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70f5f544be1414f6e82992c5894a8a65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tumble: 8
 --- !u!136 &13674898
 CapsuleCollider:
   m_ObjectHideFlags: 1
