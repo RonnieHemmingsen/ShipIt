@@ -17,6 +17,9 @@ public class EnemyMovement : MonoBehaviour {
     private Vector3 _gotoPos;
     private Vector3 _retreatPos;
     private float _step;
+    private float _deltaTimeBeforeShooting;
+    private float _deltaShootingTime;
+    private float _deltaTimeBeforeRetreating;
 
     public float MoveSpeed
     {
@@ -26,20 +29,20 @@ public class EnemyMovement : MonoBehaviour {
 
     public float TimeBeforeShooting
     {
-        get { return _timeBeforeShooting; }
-        set { _timeBeforeShooting = value; }
+        get { return _deltaTimeBeforeShooting; }
+        set { _deltaTimeBeforeShooting = value; }
     }
 
     public float ShootingTime
     {
-        get { return _shootingTime; }
-        set { _shootingTime = value; }
+        get { return _deltaShootingTime; }
+        set { _deltaShootingTime = value; }
     }
 
     public float TimeBeforeRetreating
     {
-        get { return _timeBeforeRetreating; }
-        set { _timeBeforeRetreating = value; }
+        get { return _deltaTimeBeforeRetreating; }
+        set { _deltaTimeBeforeRetreating = value; }
     }
 
     public Vector3 GoToPosition
@@ -59,11 +62,18 @@ public class EnemyMovement : MonoBehaviour {
         get { return _step; }
         set { _step = value; }
     }
-        
+
+    void OnEnable()
+    {
+        _deltaShootingTime = _shootingTime;
+        _deltaTimeBeforeRetreating = _timeBeforeRetreating;
+        _deltaTimeBeforeShooting = _timeBeforeShooting;
+    }
 
     void Start()
     {
-        print(transform.position.ToString());
+
+        
         _gotoPos = new Vector3(transform.position.x, transform.position.y, transform.position.z -8);
         _retreatPos = new Vector3(_gotoPos.x, _gotoPos.y, _gotoPos.z + 3.0f);
         _step = _moveSpeed * Time.deltaTime;

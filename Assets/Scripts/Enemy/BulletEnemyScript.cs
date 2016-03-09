@@ -20,9 +20,12 @@ public class BulletEnemyScript : MonoBehaviour {
         _movement = GetComponent<EnemyMovement>();
         _objPool = FindObjectOfType<ObjectPoolManager>();
     }
-
-    void Start()
+        
+    void OnDisable()
     {
+        _isAtLocation = false;
+        _isReadyToRetreat = false;
+        _isFiring = false;
     }
 	
 	// Update is called once per frame

@@ -180,50 +180,50 @@ public class GameBalancer : MonoBehaviour {
 
             if(_difficultySetting == 1)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
             }
 
             if(_difficultySetting == 2)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
 
                 _canSpawnLaserEnemies = true;
             }
 
             if(_difficultySetting == 3)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
                 _maxNumberOfLaserEnemies = 2;
             }
 
             if(_difficultySetting == 4)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
                 _maxNumberOfLaserEnemies = 3;
                 _canSpawnBulletEnemies = true;
             }
 
             if(_difficultySetting == 5)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
                 _canSpawnLaserEnemies = false;
 
             }
 
             if(_difficultySetting == 6)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
                 _maxNumberOfBulletEnemies = 3;
             }
 
             if(_difficultySetting == 7)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
             }
 
             if(_difficultySetting == 8)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
                 _canSpawnLaserEnemies = true;
                 _maxNumberOfLaserEnemies = 2;
                 _maxNumberOfBulletEnemies = 2;
@@ -231,7 +231,7 @@ public class GameBalancer : MonoBehaviour {
 
             if(_difficultySetting == 9)
             {
-                print("Level: " + _difficultySetting);
+                //print("Level: " + _difficultySetting);
             }
 
             if(Time.time > _timeBeforeTokensCanAppear)

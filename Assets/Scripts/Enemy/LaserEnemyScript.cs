@@ -8,7 +8,6 @@ public class LaserEnemyScript : MonoBehaviour {
 
     private ObjectPoolManager _objPool;
     private EnemyMovement _movement;
-    private Vector3 _laserPos;
     private bool _isAtLocation;
     private bool _isReadyToRetreat;
     private bool _isLaserActive;
@@ -20,12 +19,9 @@ public class LaserEnemyScript : MonoBehaviour {
         _objPool = FindObjectOfType<ObjectPoolManager>();
         _movement = GetComponent<EnemyMovement>();
 
+
 	}
 
-    void OnEnable()
-    {
-        _laserPos = new Vector3(_movement.GoToPosition.x + 0.05f, _movement.GoToPosition.y, _movement.GoToPosition.z + -6.5f);
-    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -47,7 +43,7 @@ public class LaserEnemyScript : MonoBehaviour {
         {
             //Power up lazooors
             _movement.TimeBeforeShooting -= Time.deltaTime;
-            //print(3 + " - " + _timeBeforeShooting);
+            //print(3 + " - " + _movement.ShootingTime);
         }
 
         if(_isAtLocation && _movement.TimeBeforeShooting < 0 && _movement.ShootingTime > 0)
@@ -55,7 +51,7 @@ public class LaserEnemyScript : MonoBehaviour {
             //Shoot
             if(!_isLaserActive)
             {
-                _thisLaserBeam = Instantiate(_laserBeam, _laserPos, Quaternion.identity) as GameObject;    
+                _laserBeam.SetActive(true);
                 _isLaserActive = true;
             }
 
@@ -66,9 +62,8 @@ public class LaserEnemyScript : MonoBehaviour {
 
         if(_movement.ShootingTime < 0)
         {
-            Destroy(_thisLaserBeam);
+            _laserBeam.SetActive(false);
             _isLaserActive = false;
-            //_laserBeam.SetActive(false);
             _isReadyToRetreat = true;
             //print(5);
         }

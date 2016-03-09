@@ -244,22 +244,22 @@ public class SpawnManager : MonoBehaviour {
     {
         bool farEnough = true;
 
-        if(_enemyPositions.Count == 0)
-        {
-            return farEnough;
-        }
-
-        for (int i = 0; i < _enemyPositions.Count -1; i++)
-        {
-            if(Utilities.DistanceLessThanValueToOther(spawnPos, _enemyPositions[i], 4))
-            {
-                //print("Too close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
-                farEnough = false;
-                break;
-            }
-            //print("Not close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
-
-        }
+//        if(_enemyPositions.Count == 0)
+//        {
+//            return farEnough;
+//        }
+//
+//        for (int i = 0; i < _enemyPositions.Count -1; i++)
+//        {
+//            if(Utilities.DistanceLessThanValueToOther(spawnPos, _enemyPositions[i], 4))
+//            {
+//                //print("Too close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
+//                farEnough = false;
+//                break;
+//            }
+//            //print("Not close: " + Vector3.Distance(spawnPos, _enemyPositions[i]));
+//
+//        }
 
         return farEnough;
     }

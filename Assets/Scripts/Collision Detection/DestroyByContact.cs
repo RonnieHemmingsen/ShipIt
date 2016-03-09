@@ -14,7 +14,7 @@ public class DestroyByContact : MonoBehaviour {
     void Awake()
     {
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
-        _GM = GameObject.FindObjectOfType<GameManager>().GetComponent<GameManager>();
+        _GM = GameObject.FindObjectOfType<GameManager>();
     }
 
     void OnTriggerEnter(Collider other)
