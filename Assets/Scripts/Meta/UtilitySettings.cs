@@ -39,6 +39,8 @@ public static class EventStrings
     public const string HAZARD_OUT_OF_BOUNDS = "HazardOutOfBounds";
     public const string ENEMY_OUT_OF_BOUNDS = "EnemyOutOfBounds";
     public const string TOKEN_OUT_OF_BOUNDS = "TokenOutOfBounds";
+
+    public const string USER_LOGGED_IN = "UserLoggedIn";
 }
 
 //fairly important to keep consistent with tag manager!!
@@ -61,10 +63,15 @@ public static class TagStrings
 public static class GameSettings
 {
     public const float CROSSFADE_ALPHA_VALUE = 0.2f;
+
     public const string HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED = "HasDestroyAllTokenHelpBeenDisplayed";
     public const string HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED = "HasShieldTokenHelpBeenDisplayed";
     public const string HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED = "HasSpeedTokenHelpBeenDisplayed";
+    public const string LOAD_PROGRESS_TEXT = "Loading: ";
     public const string LOAD_LEVEL_GAME = "Game";
     public const string LOAD_LEVEL_MENU = "Start Menu";
     public const string GAME_STARTED = "Game Started";
+
+    public const string COIN_SCORE = "CoinScore";
+    public const string TRAVEL_SCORE = "TravelScore";
 }

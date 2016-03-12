@@ -48,7 +48,7 @@ GameObject:
   - 82: {fileID: 8223870}
   - 82: {fileID: 8287572}
   - 82: {fileID: 8214280}
-  - 114: {fileID: 11476884}
+  - 114: {fileID: 11428382}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -581,7 +581,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shipSpeed: 20
-  _tilt: 7
   _numberOfShots: 10
   _fireRate: 0.15
   _bolt: {fileID: 115052, guid: 56416625578d04cde8ca229efe590815, type: 2}
@@ -625,6 +624,20 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11428382
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 119838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e5c7a1cb33614f93b373a67d9d90f17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startPos: {x: 0, y: 0, z: -5}
+  endPos: {x: 0, y: 0, z: -1.2}
+  speed: 5
 --- !u!114 &11443574
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -641,19 +654,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &11476884
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 119838}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0da9f0e4c56e442db3148972ff89ec7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotateSpeed: -200
-  clockwiseRotation: 0
 --- !u!136 &13674916
 CapsuleCollider:
   m_ObjectHideFlags: 1

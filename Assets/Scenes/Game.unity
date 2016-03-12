@@ -41,7 +41,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 6
-  m_GIWorkflowMode: 1
+  m_GIWorkflowMode: 0
   m_LightmapsMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -2709,22 +2709,6 @@ Prefab:
       propertyPath: _speedText
       value: 
       objectReference: {fileID: 1933239261}
-    - target: {fileID: 11474278, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _timeBetweenSpeedIncrements
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11474278, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _maxNumberOfEnemiesOnScreen
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11474278, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _maxNumberOfLaserEnemies
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11474278, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _maxNumberOfBulletEnemies
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
   m_IsPrefabParent: 0

@@ -141,7 +141,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52c479069bbad4c0b8c9b770171ec831, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _isDebugInvulne: 1
+  _isDebugInvulne: 0
   _gameSpeed: -5
   _playerShieldedTimer: 3
   _SpeedTimer: 3
@@ -173,9 +173,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxSpeed: -10
   _speedIncrementValue: 0.1
-  _timeBetweenSpeedIncrements: 5
+  _timeBetweenSpeedIncrements: 2
   _timeBetweenDifficultyIncrements: 10
-  _timeBetweenToggleIncrements: 10
+  _timeBetweenToggleIncrements: 5
   _timeBeforeAsteroidsAppear: 3
   _timeBeforeTokensCanAppear: 3
   _maxNumberOfLaserEnemies: 1

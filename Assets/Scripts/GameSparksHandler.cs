@@ -8,7 +8,14 @@ using Facebook.Unity;
 
 public class GameSparksHandler : MonoBehaviour {
 
+    private HighScoreLoader _entries;
+
     void Awake()
+    {
+        _entries = FindObjectOfType<HighScoreLoader>();
+    }
+
+    public void CheckFacebookStatus()
     {
         if(!FB.IsInitialized)
         {
@@ -19,6 +26,7 @@ public class GameSparksHandler : MonoBehaviour {
             FacebookLogin();
         }
     }
+
 
     public void FacebookLogin()
     {
@@ -41,6 +49,9 @@ public class GameSparksHandler : MonoBehaviour {
                 else
                 {
                     print("GS FB login succesful");
+
+                    _entries.Login();
+                    
                 }
             });
         }

@@ -19,24 +19,18 @@ public class DestroyByBoundary : MonoBehaviour {
         {
             EventManager.TriggerStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, other.tag);
             _objMan.ReturnObjectToPool(other.tag, other.gameObject);
-        }
 
-        if(other.tag == TagStrings.HAZARD)
+        }else if(other.tag == TagStrings.HAZARD)
         {
             EventManager.TriggerEvent(EventStrings.HAZARD_OUT_OF_BOUNDS);
             _objMan.ReturnObjectToPool(other.tag, other.gameObject);
-        }
 
-        if(other.tag == TagStrings.COIN)
-        {
-            _objMan.ReturnObjectToPool(other.tag, other.gameObject);   
-        }
-
-        if(other.tag == TagStrings.BULLET_ENEMY || other.tag == TagStrings.LASER_ENEMY)
+        }else if(other.tag == TagStrings.BULLET_ENEMY || other.tag == TagStrings.LASER_ENEMY)
         {
             EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, other.tag);
+        }else
+        {
+        _objMan.ReturnObjectToPool(other.tag, other.gameObject);   
         }
-
-
     }
 }

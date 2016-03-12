@@ -9,9 +9,15 @@ public class LeaderBoardEntry : MonoBehaviour {
     [SerializeField]
     private Text _score;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
+    public Text Name
+    {
+        get { return _name; }
+        set { _name = value; }
+    }
+
+    public Text Score
+    {
+        get { return _score; }
+        set { _score = value; }
+    }
 }

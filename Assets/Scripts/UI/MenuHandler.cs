@@ -5,6 +5,7 @@ using UnityEngine.Advertisements;
 using System.Collections;
 using GameSparks.Api.Requests;
 using GameSparks.Api.Responses;
+using GameSparks.Core;
 
 public class MenuHandler : MonoBehaviour {
 
@@ -90,16 +91,23 @@ public class MenuHandler : MonoBehaviour {
 
     private void PostScore()
     {
-        new LogEventRequest_SCORE_EVENT().Set_SCORE_ATTR(_GM.CoinScore).Send((response) => 
+        if(GS.Authenticated)
         {
-            if(response.HasErrors)
+            new LogEventRequest_SCORE_EVENT().Set_SCORE_ATTR(_GM.CoinScore).Send((response) => 
             {
-                print("score not posted");
-            }
-            else
-            {
-                print("score posted");
-            }
-        });
+                if(response.HasErrors)
+                {
+                    print("score not posted");
+                }
+                else
+                {
+                    print("score posted");
+                }
+            });
+        }
+
+        PersistentDataManager.SaveFloatValue(GameSettings.COIN_SCORE, _GM.CoinScore);
+        PersistentDataManager.SaveFloatValue(GameSettings.TRAVEL_SCORE, _GM.TravelDistance);
+
     }
 }

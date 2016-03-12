@@ -45,10 +45,9 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private GameObject _ludicrousToken;
 
-    private GameBalancer _zen;
     private ObjectPoolManager _objPool;
     private List<string> _aliveTokenList;
-    private float _playDistance = 0;
+    private float _travelDistance = 0;
     private int _destroyedHazards = 0;
     private int _bulletEnemiesAlive;
     private int _laserEnemiesAlive;
@@ -89,6 +88,12 @@ public class GameManager : MonoBehaviour {
     {
         get { return _coinScore; }
         set { _coinScore = value; }
+    }
+
+    public float TravelDistance
+    {
+        get { return _travelDistance; }
+        set { _travelDistance = value; }
     }
         
     public float GameSpeed
@@ -203,10 +208,7 @@ public class GameManager : MonoBehaviour {
 //        DontDestroyOnLoad(this);
 //
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
-        _zen = GetComponent<GameBalancer>();
     }
-
-
 
 	// Use this for initialization
 	void Start () {
@@ -434,8 +436,8 @@ public class GameManager : MonoBehaviour {
 
     private void CalculatePlayDistance()
     {
-        _playDistance = Mathf.Abs(_gameSpeed * Time.time / 100);
-        _distanceText.text = _playDistance.ToString("F1");
+        _travelDistance = Mathf.Abs(_gameSpeed * Time.time / 100);
+        _distanceText.text = _travelDistance.ToString("F1");
     }
     #endregion
 
@@ -447,6 +449,7 @@ public class GameManager : MonoBehaviour {
             UpdateSpeedTokenAvailability();    
         }
 
+        //StartCoroutine(Vibrate(_SpeedTimer));
         TogglePlayerAtLudicrousSpeed();
         TogglePlayerIsInvulnerable();
         _gameSpeed -= 30;
@@ -518,13 +521,21 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
+    private IEnumerator Vibrate(float vibrateTimes)
+    {
+        
+        while (vibrateTimes >= 0)
+        {
+            vibrateTimes--;
+            Handheld.Vibrate();
+            yield return new WaitForSeconds(.6f);
+        }
+    }
 
     private IEnumerator WaitForDeath()
     {
         yield return new WaitForSeconds(0.5f);
         EventManager.TriggerEvent(EventStrings.ENABLE_GAMEOVER_MENU);
-
-
     }
 
     private void MaintainPositionLists(List<Vector3> list)
