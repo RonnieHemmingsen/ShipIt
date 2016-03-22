@@ -5,13 +5,21 @@ using System.Collections.Generic;
 using System;
 
 [Serializable]
+public class ObjectEvent : UnityEvent<GameObject>
+{}
+
+[Serializable]
 public class StringEvent : UnityEvent<string>
-{
-    
-}
+{}
+
+[Serializable]
+public class IntEvent : UnityEvent<int>
+{}
 
 public class EventManager : MonoBehaviour {
 
+    private Dictionary<string, ObjectEvent> objectEventDictionary;
+    private Dictionary<string, IntEvent> intEventDictionary;
     private Dictionary<string, StringEvent> stringEventDictionary;
     private Dictionary<string, UnityEvent> eventDictionary;
     private static EventManager _eventManager;
@@ -48,6 +56,16 @@ public class EventManager : MonoBehaviour {
         if(stringEventDictionary == null)
         {
             stringEventDictionary = new Dictionary<string, StringEvent>();
+        }
+
+        if(intEventDictionary == null)
+        {
+            intEventDictionary = new Dictionary<string, IntEvent>();
+        }
+
+        if(objectEventDictionary == null)
+        {
+            objectEventDictionary = new Dictionary<string, ObjectEvent>();
         }
     }
 
@@ -125,6 +143,84 @@ public class EventManager : MonoBehaviour {
             thisEvent.Invoke(param);
         }
             
+    }
+    #endregion
+
+    #region int event
+    public static void StartListeningForIntEvent(string eventName, UnityAction<int> listener)
+    {
+        IntEvent thisEvent = null;
+        if (instance.intEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.AddListener(listener);   
+        }
+        else
+        {
+            thisEvent = new IntEvent();
+            thisEvent.AddListener(listener);
+            instance.intEventDictionary.Add(eventName, thisEvent);
+        }
+    }
+
+    public static void StopListeningForIntEvent(string eventName, UnityAction<int> listener)
+    {
+        if(_eventManager == null) return;
+
+        IntEvent thisEvent = null;
+
+        if(instance.intEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.RemoveListener(listener);
+        }
+    }
+
+    public static void TriggerIntEvent(string eventName, int param)
+    {
+        IntEvent thisEvent = null;
+        if(instance.intEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.Invoke(param);
+        }
+
+    }
+    #endregion
+
+    #region "Object Event"
+    public static void StartListeningForObjectEvent(string eventName, UnityAction<GameObject> listener)
+    {
+        ObjectEvent thisEvent = null;
+        if (instance.objectEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.AddListener(listener);   
+        }
+        else
+        {
+            thisEvent = new ObjectEvent();
+            thisEvent.AddListener(listener);
+            instance.objectEventDictionary.Add(eventName, thisEvent);
+        }
+    }
+
+    public static void StopListeningForObjectEvent(string eventName, UnityAction<GameObject> listener)
+    {
+        if(_eventManager == null) return;
+
+        ObjectEvent thisEvent = null;
+
+        if(instance.objectEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.RemoveListener(listener);
+        }
+    }
+
+    public static void TriggerObjectEvent(string eventName, GameObject param)
+    {
+        ObjectEvent thisEvent = null;
+        if(instance.objectEventDictionary.TryGetValue(eventName, out thisEvent))
+        {
+            thisEvent.Invoke(param);
+        }
+
     }
     #endregion
 

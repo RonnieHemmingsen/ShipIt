@@ -34,7 +34,6 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private AudioSource _laserSound;
 
-
     private Rigidbody _rigidbody;
     private ObjectPoolManager _objPool;
     private GameManager _GM;
@@ -46,6 +45,7 @@ public class PlayerController : MonoBehaviour {
     private bool _hasFiredTouch;
     private bool _isStartingGame = true;
     private Vector2 _startSwipePosition;
+    private bool _shieldIsFading;
 
 
 
@@ -68,7 +68,6 @@ public class PlayerController : MonoBehaviour {
         _anim = GetComponentInChildren<Animator>();
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
         _GM = GameObject.FindObjectOfType<GameManager>();
-
     }
 
     void OnEnable()
@@ -94,7 +93,7 @@ public class PlayerController : MonoBehaviour {
 
     void Start()
     {
-        _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
+        _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0f);
         _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
         _objPool.CreatePool(_numberOfShots, _bolt, _bolt.tag);
     }
@@ -161,6 +160,7 @@ public class PlayerController : MonoBehaviour {
             if(_GM.HasDestroyAllToken)
             {
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
+                EventManager.TriggerStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, ObjectStrings.DESTROY_ALL);
             }
         }
         #elif UNITY_IOS
@@ -170,6 +170,7 @@ public class PlayerController : MonoBehaviour {
         {
             print("Difference: " + difference);
             EventManager.TriggerEvent(EventStrings.GET_REKT);
+            EventManager.TriggerStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, ObjectStrings.DESTROY_ALL);
         }
         else
         {
@@ -223,6 +224,7 @@ public class PlayerController : MonoBehaviour {
             {
                 _ludicrousSound.Play();
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
@@ -243,20 +245,21 @@ public class PlayerController : MonoBehaviour {
         }
 
         //check if swipe has started -cache location
-        if(Input.touchCount == 2 && touchy[0].phase == TouchPhase.Began && touchy[1].phase == TouchPhase.Began)
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began)
         {
             _startSwipePosition = touchy[0].position;
             print("Start Position: " + _startSwipePosition);
         }
 
         //Check if swipe has progressed, trigger ludicrous speed if appropriate
-        if(Input.touchCount == 2 && touchy[0].phase == TouchPhase.Moved && touchy[1].phase == TouchPhase.Moved)
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Moved)
         {
             float distance = Vector2.Distance(touchy[0].deltaPosition, _startSwipePosition);
             print("Swipe Distance: " + distance);
             if(distance > 500 && _GM.HasSpeedToken)
             {
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
                 EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
@@ -269,22 +272,22 @@ public class PlayerController : MonoBehaviour {
     private void InvulnerabilityOn()
     {
         Image im =  _invulnerableForceField.GetComponent<Image>();
+        _shieldIsFading = true;
+        _invulnerableForceField.SetActive(true);   
+        StartCoroutine(FadeInAndOutOverTime(1f, 0.3f, im, _GM.PlayerShieldTime));
 
-        StartCoroutine(Utilities.FadeInAndOut(1f, im, () =>
-        {
-         //Not a damned thing... this time.   
-        }));   
     }
 
     private void InvulnerabilityOff()
     {
-        Image im =  _invulnerableForceField.GetComponent<Image>();
-        StartCoroutine(Utilities.FadeInAndOut(0f, im, () => {
-            //Dont actually need this anymore, but leaving it in 
-            // so I dont have to fucking research next time.
-            //_invulnerableForceField.SetActive(false);    
-        }));
-
+        _shieldIsFading = false;
+        _invulnerableForceField.SetActive(false);   
+//        Image im =  _invulnerableForceField.GetComponent<Image>();
+//        StartCoroutine(Utilities.FadeInAndOut(0f, im, () => {
+//            //Dont actually need this anymore, but leaving it in 
+//            // so I dont have to fucking research next time.
+//            //_invulnerableForceField.SetActive(false);    
+//        }));
     }
 
     private void EngageLudicrousSpeed()
@@ -306,11 +309,42 @@ public class PlayerController : MonoBehaviour {
     {
         if (Time.time > _timeBetweenShots)
         {
-            GameObject go = _objPool.GetObjectFromPool(TagStrings.BOLT);
+            GameObject go = _objPool.GetObjectFromPool(ObjectStrings.BOLT);
             go.transform.position = _boltSpawnPos.transform.position;
             _timeBetweenShots = Time.time + _fireRate;
             _laserSound.Play();
         }
+    }
+
+    private IEnumerator FadeInAndOutOverTime(float maxValue, float minValue, Image im, float fadeTime)
+    {
+        float time = 0;
+        float deltaCrossfade = 0;
+        bool fadeIn = true;
+
+        do
+        {
+            time += Time.deltaTime;
+            deltaCrossfade += Time.deltaTime;
+
+            if (fadeIn) {
+                im.CrossFadeAlpha(maxValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);        
+            }else
+            {
+                im.CrossFadeAlpha(minValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);
+            }
+
+
+            if(deltaCrossfade >= GameSettings.CROSSFADE_ALPHA_VALUE)
+            {
+                fadeIn = !fadeIn;
+                deltaCrossfade = 0;
+            }
+
+            yield return new WaitForSeconds(0.03f);
+
+        } while (time <= fadeTime && _shieldIsFading);
+
     }
 
     private void GameStarted()

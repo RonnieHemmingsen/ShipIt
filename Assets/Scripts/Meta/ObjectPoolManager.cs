@@ -23,7 +23,7 @@ public class ObjectPoolManager : MonoBehaviour {
                 Destroy(this.gameObject);
         }
 
-        //DontDestroyOnLoad(this);
+        DontDestroyOnLoad(this);
 
         if(_objPool == null)
         {

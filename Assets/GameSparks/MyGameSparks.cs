@@ -9,6 +9,81 @@ using GameSparks.Api.Responses;
 //THIS FILE IS AUTO GENERATED, DO NOT MODIFY!!
 
 namespace GameSparks.Api.Requests{
+	public class LogEventRequest_ADD_COL : GSTypedRequest<LogEventRequest_ADD_COL, LogEventResponse>
+	{
+	
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogEventResponse (response);
+		}
+		
+		public LogEventRequest_ADD_COL() : base("LogEventRequest"){
+			request.AddString("eventKey", "ADD_COL");
+		}
+	}
+	
+	public class LogChallengeEventRequest_ADD_COL : GSTypedRequest<LogChallengeEventRequest_ADD_COL, LogChallengeEventResponse>
+	{
+		public LogChallengeEventRequest_ADD_COL() : base("LogChallengeEventRequest"){
+			request.AddString("eventKey", "ADD_COL");
+		}
+		
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogChallengeEventResponse (response);
+		}
+		
+		/// <summary>
+		/// The challenge ID instance to target
+		/// </summary>
+		public LogChallengeEventRequest_ADD_COL SetChallengeInstanceId( String challengeInstanceId )
+		{
+			request.AddString("challengeInstanceId", challengeInstanceId);
+			return this;
+		}
+	}
+	
+	public class LogEventRequest_GET_DATA : GSTypedRequest<LogEventRequest_GET_DATA, LogEventResponse>
+	{
+	
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogEventResponse (response);
+		}
+		
+		public LogEventRequest_GET_DATA() : base("LogEventRequest"){
+			request.AddString("eventKey", "GET_DATA");
+		}
+		
+		public LogEventRequest_GET_DATA Set_PLAYER_ID( string value )
+		{
+			request.AddString("PLAYER_ID", value);
+			return this;
+		}
+	}
+	
+	public class LogChallengeEventRequest_GET_DATA : GSTypedRequest<LogChallengeEventRequest_GET_DATA, LogChallengeEventResponse>
+	{
+		public LogChallengeEventRequest_GET_DATA() : base("LogChallengeEventRequest"){
+			request.AddString("eventKey", "GET_DATA");
+		}
+		
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogChallengeEventResponse (response);
+		}
+		
+		/// <summary>
+		/// The challenge ID instance to target
+		/// </summary>
+		public LogChallengeEventRequest_GET_DATA SetChallengeInstanceId( String challengeInstanceId )
+		{
+			request.AddString("challengeInstanceId", challengeInstanceId);
+			return this;
+		}
+		public LogChallengeEventRequest_GET_DATA Set_PLAYER_ID( string value )
+		{
+			request.AddString("PLAYER_ID", value);
+			return this;
+		}
+	}
+	
 	public class LogEventRequest_SCORE_EVENT : GSTypedRequest<LogEventRequest_SCORE_EVENT, LogEventResponse>
 	{
 	
@@ -22,6 +97,11 @@ namespace GameSparks.Api.Requests{
 		public LogEventRequest_SCORE_EVENT Set_SCORE_ATTR( long value )
 		{
 			request.AddNumber("SCORE_ATTR", value);
+			return this;
+		}			
+		public LogEventRequest_SCORE_EVENT Set_TRAVEL_ATTR( long value )
+		{
+			request.AddNumber("TRAVEL_ATTR", value);
 			return this;
 		}			
 	}
@@ -49,6 +129,54 @@ namespace GameSparks.Api.Requests{
 			request.AddNumber("SCORE_ATTR", value);
 			return this;
 		}			
+		public LogChallengeEventRequest_SCORE_EVENT Set_TRAVEL_ATTR( long value )
+		{
+			request.AddNumber("TRAVEL_ATTR", value);
+			return this;
+		}			
+	}
+	
+	public class LogEventRequest_SET_DATA : GSTypedRequest<LogEventRequest_SET_DATA, LogEventResponse>
+	{
+	
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogEventResponse (response);
+		}
+		
+		public LogEventRequest_SET_DATA() : base("LogEventRequest"){
+			request.AddString("eventKey", "SET_DATA");
+		}
+		public LogEventRequest_SET_DATA Set_PLAYER_DATA( GSData value )
+		{
+			request.AddObject("PLAYER_DATA", value);
+			return this;
+		}			
+	}
+	
+	public class LogChallengeEventRequest_SET_DATA : GSTypedRequest<LogChallengeEventRequest_SET_DATA, LogChallengeEventResponse>
+	{
+		public LogChallengeEventRequest_SET_DATA() : base("LogChallengeEventRequest"){
+			request.AddString("eventKey", "SET_DATA");
+		}
+		
+		protected override GSTypedResponse BuildResponse (GSObject response){
+			return new LogChallengeEventResponse (response);
+		}
+		
+		/// <summary>
+		/// The challenge ID instance to target
+		/// </summary>
+		public LogChallengeEventRequest_SET_DATA SetChallengeInstanceId( String challengeInstanceId )
+		{
+			request.AddString("challengeInstanceId", challengeInstanceId);
+			return this;
+		}
+		public LogChallengeEventRequest_SET_DATA Set_PLAYER_DATA( GSData value )
+		{
+			request.AddObject("PLAYER_DATA", value);
+			return this;
+		}
+		
 	}
 	
 }

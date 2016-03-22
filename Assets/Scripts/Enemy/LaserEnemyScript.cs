@@ -18,9 +18,14 @@ public class LaserEnemyScript : MonoBehaviour {
         
         _objPool = FindObjectOfType<ObjectPoolManager>();
         _movement = GetComponent<EnemyMovement>();
-
-
 	}
+
+    void OnEnable()
+    {
+        _isAtLocation = false;
+        _isReadyToRetreat = false;
+        _isLaserActive = false;
+    }
 
 	
 	// Update is called once per frame

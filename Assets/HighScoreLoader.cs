@@ -42,7 +42,7 @@ public class HighScoreLoader : MonoBehaviour {
 	
     private void GetLeaderBoard()
     {
-        new LeaderboardDataRequest().SetLeaderboardShortCode("HIGH_SCORE_LB").
+        new LeaderboardDataRequest().SetLeaderboardShortCode(BackendVariables.HIGHSCORE_BOARD).
         SetEntryCount(_numberOfEntries).
         Send((response) => {
         
@@ -54,11 +54,11 @@ public class HighScoreLoader : MonoBehaviour {
                 _thisEntry = GO.GetComponent<LeaderBoardEntry>();
 
                 _thisEntry.Name.text = entry.UserName.ToString();
-                _thisEntry.Score.text = entry.GetNumberValue("SCORE_ATTR").ToString();
+                _thisEntry.Score.text = entry.GetNumberValue(BackendVariables.TRAVELSCORE_ATTRIBUTE).ToString();
                 GO.transform.SetParent(this.transform,false);
 
                 GO.transform.position = this.transform.position + _deltaPos;
-                print(GO.GetComponent<RectTransform>().rect.height);
+                //print(GO.GetComponent<RectTransform>().rect.height);
                 _deltaPos = _deltaPos + new Vector3(0, -(_entryRect.height + _yPadding), 0);
                 _leaderboardHeight += GO.GetComponent<RectTransform>().rect.height;
 

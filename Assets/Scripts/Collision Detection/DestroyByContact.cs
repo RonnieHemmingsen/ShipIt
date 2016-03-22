@@ -22,7 +22,7 @@ public class DestroyByContact : MonoBehaviour {
 
         //print("This: " + this.tag + " - Other: " + other.tag);
         //Player bolt hits a hazzard
-        if(other.tag == TagStrings.BOLT && this.tag == TagStrings.HAZARD)
+        if(other.tag == ObjectStrings.BOLT && this.tag == ObjectStrings.HAZARD)
         {
             Instantiate(_explosion, transform.position, transform.rotation);
             _objPool.ReturnObjectToPool(other.tag, other.gameObject);
@@ -31,7 +31,7 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Enemy bullet hits a hazard
-        if(other.tag == TagStrings.HAZARD && tag == TagStrings.BULLET)
+        if(other.tag == ObjectStrings.HAZARD && tag == ObjectStrings.BULLET)
         {
             ExplodeAThing(other.gameObject);
             ExplodeAThing(gameObject);
@@ -40,31 +40,30 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Player hits hazard, both are dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && this.tag == TagStrings.HAZARD && !_GM.DebugInvulne)
+        if(other.tag == ObjectStrings.PLAYER && !_GM.IsPlayerShielded && this.tag == ObjectStrings.HAZARD && !_GM.DebugInvulne)
         {
             
             print("Death By Hazard");
-            Instantiate(_explosion, transform.position, transform.rotation);
+            ExplodeAThing(gameObject);
             Destroy(other.gameObject);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
 
         }
 
         //Player hits enemy laser and is fucking dead.
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && tag == TagStrings.ENEMY_BOLT && !_GM.DebugInvulne)
+        if(other.tag == ObjectStrings.PLAYER && !_GM.IsPlayerShielded && tag == ObjectStrings.ENEMY_BOLT && !_GM.DebugInvulne)
         {
-         
             print("Death by laser");
-            Instantiate(_explosion, transform.position, transform.rotation);
+            ExplodeAThing(gameObject);
             Destroy(other.gameObject);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
 
         //Player hits a bullet and is hard pressed for luck
-        if(other.tag == TagStrings.PLAYER && !_GM.IsPlayerShielded && tag == TagStrings.BULLET && !_GM.DebugInvulne)
+        if(other.tag == ObjectStrings.PLAYER && !_GM.IsPlayerShielded && tag == ObjectStrings.BULLET && !_GM.DebugInvulne)
         {
             print("Death by bullet");
             ExplodeAThing(gameObject);
@@ -73,66 +72,73 @@ public class DestroyByContact : MonoBehaviour {
         }
 
         //Invulnerable player hits hazard
-        if(other.tag == TagStrings.PLAYER && _GM.IsPlayerShielded)
+        if(other.tag == ObjectStrings.PLAYER && _GM.IsPlayerShielded)
         {
-            Instantiate(_explosion, transform.position, transform.rotation);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            ExplodeAThing(gameObject);
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
-        //Player grabs invulnerable powerup
-        if(tag == TagStrings.INVULNERABLE && other.tag == TagStrings.PLAYER)
-        {
-            print(tag);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
-            EventManager.TriggerEvent(EventStrings.GRAB_INVUNERABILITY_TOKEN);
-        }
-
         //Player grabs coin
-        if(tag == TagStrings.COIN && other.tag == TagStrings.PLAYER)
+        if(tag == ObjectStrings.COIN && other.tag == ObjectStrings.PLAYER)
         {
+            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
             EventManager.TriggerEvent(EventStrings.GRAB_COIN);
-            Instantiate(_explosion, transform.position, transform.rotation);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            ExplodeAThing(gameObject);
         }
 
         //player grabs big coin
-        if(tag == TagStrings.BIG_COIN && other.tag == TagStrings.PLAYER)
+        if(tag == ObjectStrings.BIG_COIN && other.tag == ObjectStrings.PLAYER)
         {
+            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
             EventManager.TriggerEvent(EventStrings.GRAB_BIG_COIN);
-            Instantiate(_explosion, transform.position, transform.rotation);
-            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            ExplodeAThing(gameObject);
             
         }
 
         //Enemy destroyed by player bolt
-        if((tag == TagStrings.LASER_ENEMY || tag == TagStrings.BULLET_ENEMY) && other.tag == TagStrings.BOLT)
+        if((tag == ObjectStrings.LASER_ENEMY || tag == ObjectStrings.BULLET_ENEMY) && other.tag == ObjectStrings.BOLT)
         {
             EventManager.TriggerStringEvent(EventStrings.ENEMY_DESTROYED, tag);
             ExplodeAThing(gameObject);
         }
 
         // Player Grabs DestroyAll
-        if(this.tag == TagStrings.DESTROY_ALL && other.tag == TagStrings.PLAYER)
+        if(this.tag == ObjectStrings.DESTROY_ALL && other.tag == ObjectStrings.PLAYER)
         {
-            print("DestroyAll");
-
+            print(tag);
+            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
             EventManager.TriggerEvent(EventStrings.GRAB_DESTROY_ALL_TOKEN);
             ExplodeAThing(gameObject);
         }
 
-        //Grab ludicrous speed token
-        if(this.tag == TagStrings.LUDICROUS_SPEED && other.tag == TagStrings.PLAYER)
+        //Player grabs invulnerable powerup
+        if(tag == ObjectStrings.INVULNERABLE && other.tag == ObjectStrings.PLAYER)
         {
             print(tag);
+            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
+
+            _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
+            EventManager.TriggerEvent(EventStrings.GRAB_INVUNERABILITY_TOKEN);
+        }
+
+        //Grab ludicrous speed token
+        if(this.tag == ObjectStrings.LUDICROUS_SPEED && other.tag == ObjectStrings.PLAYER)
+        {
+            print(tag);
+            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
             EventManager.TriggerEvent(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN);
             ExplodeAThing(this.gameObject);
         }
     }
 
-    private void ExplodeAThing(GameObject hazard)
+    private void ExplodeAThing(GameObject obj)
     {
-        Instantiate(_explosion, hazard.transform.position, hazard.transform.rotation);
-        _objPool.ReturnObjectToPool(hazard.tag, hazard);
+        Instantiate(_explosion, obj.transform.position, obj.transform.rotation);
+        _objPool.ReturnObjectToPool(obj.tag, obj);
     }
 }

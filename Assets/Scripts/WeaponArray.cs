@@ -58,7 +58,7 @@ public class WeaponArray : MonoBehaviour {
             {
                 if(_pipes[i].activeSelf)
                 {
-                    GameObject go = _objPool.GetObjectFromPool(TagStrings.BULLET);
+                    GameObject go = _objPool.GetObjectFromPool(ObjectStrings.BULLET);
                     go.transform.position = _pipes[i].transform.position;
                     //print(go.transform.rotation.eulerAngles);
 

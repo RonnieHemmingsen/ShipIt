@@ -25,21 +25,21 @@ public class DisplayTutorial : MonoBehaviour {
 
     private void DiscoverSelf()
     {
-        if(tag == TagStrings.DESTROY_ALL && !_GM.HasDestroyTokenHelpBeenDisplayed)
+        if(tag == ObjectStrings.DESTROY_ALL && !_GM.HasDestroyTokenHelpBeenDisplayed)
         {
             print(transform.root.name + " - " + transform.root.tag);
             DisplayButton();
             _GM.HasDestroyTokenHelpBeenDisplayed = true;   
             PlayerPrefs.SetString(GameSettings.HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED, "true");
         }
-        else if(tag == TagStrings.INVULNERABLE && !_GM.HasShieldTokenHelpBeenDisplayed) 
+        else if(tag == ObjectStrings.INVULNERABLE && !_GM.HasShieldTokenHelpBeenDisplayed) 
         {
             print(transform.root.name + " - " + transform.root.tag);
             DisplayButton();
             _GM.HasShieldTokenHelpBeenDisplayed = true;
             PlayerPrefs.SetString(GameSettings.HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED, "true");
         }
-        else if(tag == TagStrings.LUDICROUS_SPEED && !_GM.HasSpeedTokenHelpBeenDisplayed)
+        else if(tag == ObjectStrings.LUDICROUS_SPEED && !_GM.HasSpeedTokenHelpBeenDisplayed)
         {
             print(transform.root.name + " - " + transform.root.tag);
             DisplayButton();

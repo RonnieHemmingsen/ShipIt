@@ -24,7 +24,7 @@ public class Mover : MonoBehaviour {
 	// Use this for initialization
 	void OnEnable () {
 
-        if(transform.tag != TagStrings.BOLT)
+        if(transform.tag != ObjectStrings.BOLT)
         {
             _rigidbody.velocity = transform.forward * _GM.GameSpeed; //speed afhængig af GM.
         }

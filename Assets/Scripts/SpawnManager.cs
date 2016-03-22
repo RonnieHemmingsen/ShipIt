@@ -157,7 +157,7 @@ public class SpawnManager : MonoBehaviour {
         //print("Asteroids");
         Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
 
-        GameObject GO = _objPool.GetObjectFromPool(TagStrings.HAZARD);
+        GameObject GO = _objPool.GetObjectFromPool(ObjectStrings.HAZARD);
         if(GO != null)
         {
             GO.transform.position = spawnPos;
@@ -178,7 +178,7 @@ public class SpawnManager : MonoBehaviour {
             canSpawnHere = CanSpawnHere(spawnPos);
         }
 
-        GameObject GO = _objPool.GetObjectFromPool(TagStrings.LASER_ENEMY);
+        GameObject GO = _objPool.GetObjectFromPool(ObjectStrings.LASER_ENEMY);
         if(GO != null)
         {
             _enemyPositions.Add(spawnPos);
@@ -199,7 +199,7 @@ public class SpawnManager : MonoBehaviour {
             canSpawnHere = CanSpawnHere(spawnPos);
         }
 
-        GameObject GO = _objPool.GetObjectFromPool(TagStrings.BULLET_ENEMY);
+        GameObject GO = _objPool.GetObjectFromPool(ObjectStrings.BULLET_ENEMY);
         if(GO != null)
         {
             _enemyPositions.Add(spawnPos);
@@ -233,7 +233,7 @@ public class SpawnManager : MonoBehaviour {
     {
         Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
 
-        GameObject GO = _objPool.GetObjectFromPool(TagStrings.COIN);
+        GameObject GO = _objPool.GetObjectFromPool(ObjectStrings.COIN);
         if(GO != null)
         {
             GO.transform.position = spawnPos;    

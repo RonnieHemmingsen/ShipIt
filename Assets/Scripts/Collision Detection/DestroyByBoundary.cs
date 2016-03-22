@@ -12,20 +12,20 @@ public class DestroyByBoundary : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
-        if(other.tag == TagStrings.DESTROY_ALL 
-            || other.tag == TagStrings.INVULNERABLE 
-            || other.tag == TagStrings.LUDICROUS_SPEED 
-            || other.tag == TagStrings.BIG_COIN)
+        if(other.tag == ObjectStrings.DESTROY_ALL 
+            || other.tag == ObjectStrings.INVULNERABLE 
+            || other.tag == ObjectStrings.LUDICROUS_SPEED 
+            || other.tag == ObjectStrings.BIG_COIN)
         {
             EventManager.TriggerStringEvent(EventStrings.TOKEN_OUT_OF_BOUNDS, other.tag);
             _objMan.ReturnObjectToPool(other.tag, other.gameObject);
 
-        }else if(other.tag == TagStrings.HAZARD)
+        }else if(other.tag == ObjectStrings.HAZARD)
         {
             EventManager.TriggerEvent(EventStrings.HAZARD_OUT_OF_BOUNDS);
             _objMan.ReturnObjectToPool(other.tag, other.gameObject);
 
-        }else if(other.tag == TagStrings.BULLET_ENEMY || other.tag == TagStrings.LASER_ENEMY)
+        }else if(other.tag == ObjectStrings.BULLET_ENEMY || other.tag == ObjectStrings.LASER_ENEMY)
         {
             EventManager.TriggerStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, other.tag);
         }else

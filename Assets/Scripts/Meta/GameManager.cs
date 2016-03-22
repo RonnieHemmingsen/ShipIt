@@ -7,23 +7,16 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour {
     
     [SerializeField]
-    private bool _isDebugInvulne = true;
+    private bool _isDebugInvulne;
     [SerializeField]
-    private float _gameSpeed = -5.0f;
+    private float _timeUntilPermaDeath;
     [SerializeField]
-    private float _playerShieldedTimer = 3.0f;
+    private float _gameSpeed;
     [SerializeField]
-    private float _SpeedTimer = 3.0f;
- [SerializeField]
-    private Text _distanceText;
+    private float _playerShieldedTime;
     [SerializeField]
-    private Text _scoreText;
-    [SerializeField]
-    private Text _killText;
-    [SerializeField]
-    private Text _timePlayedText;
-    [SerializeField]
-    private Text _speedText;
+    private float _SpeedTimer;
+
     [SerializeField]
     private Vector3 _spawnValues;
     [SerializeField]
@@ -44,18 +37,22 @@ public class GameManager : MonoBehaviour {
     private GameObject _bigCoin;
     [SerializeField]
     private GameObject _ludicrousToken;
+    [SerializeField]
+    private GameObject _tweenText;
+    [SerializeField]
+    private Text _countdownText;
 
     private ObjectPoolManager _objPool;
     private List<string> _aliveTokenList;
-    private float _travelDistance = 0;
-    private int _destroyedHazards = 0;
+    private float _currentTravelDistance;
+    private int _destroyedHazards;
     private int _bulletEnemiesAlive;
     private int _laserEnemiesAlive;
     private int _asteroidsAlive;
     private bool _isPlayerShielded;
     private float _deltaShieldTime;
     private float _deltaSpeedTime;
-    private int _coinScore;
+    private int _currentCoinScore;
     private bool _isSpeedActive;
     private bool _hasSpeedToken;
     private bool _hasDestroyAllToken;
@@ -68,9 +65,16 @@ public class GameManager : MonoBehaviour {
     private bool _hasDestroyAllTokenHelpBeenDisplayed;
     private bool _hasShieldTokenHelpBeenDisplayed;
     private bool _hasSpeedTokenHelpBeenDisplayed;
+    private bool _isPlayerDead;
+    private int _playerDeathCount;
     private bool _isStartingGame = true;
 
     #region Properties
+
+    public float PlayerShieldTime
+    {
+        get { return _playerShieldedTime; }
+    }
 
     public List<string> AliveTokenList
     {
@@ -84,16 +88,16 @@ public class GameManager : MonoBehaviour {
         set { _isDebugInvulne = value; }
     }
 
-    public int CoinScore
+    public int CurrentCoinScore
     {
-        get { return _coinScore; }
-        set { _coinScore = value; }
+        get { return _currentCoinScore; }
+        set { _currentCoinScore = value; }
     }
 
-    public float TravelDistance
+    public float CurrentTravelDistance
     {
-        get { return _travelDistance; }
-        set { _travelDistance = value; }
+        get { return _currentTravelDistance; }
+        set { _currentTravelDistance = value; }
     }
         
     public float GameSpeed
@@ -191,22 +195,27 @@ public class GameManager : MonoBehaviour {
         get { return _isStartingGame; }
         set { _isStartingGame = value; }
     }
+
+    public bool IsPlayerDead
+    {
+        get { return _isPlayerDead; }
+        set { _isPlayerDead = value; }
+    }
+
+    public int PlayerDeathCount
+    {
+        get { return _playerDeathCount; }
+    }
+
+    public float TimeUntilPermaDeath
+    {
+        get { return _timeUntilPermaDeath; }
+    }
         
     #endregion
 
     void Awake()
     {
-//        if (instance == null)
-//        {
-//            instance = this;
-//        } else
-//        {
-//            if(this != instance)
-//                Destroy(this.gameObject);
-//        }
-//
-//        DontDestroyOnLoad(this);
-//
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
     }
 
@@ -221,29 +230,27 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(300, _bullet, _bullet.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
+        _objPool.CreatePool(10, _tweenText, ObjectStrings.TWEEN_TEXT_OUT);
 
-        _killText.text = "Kills: 0";
-        _distanceText.text = "Distance: 0";
-        _speedText.text = "Speed: 5";
-        _scoreText.text = "Score: 0";
 
-        _deltaShieldTime = _playerShieldedTimer;
+
+        _deltaShieldTime = _playerShieldedTime;
         _deltaSpeedTime = _SpeedTimer;
 
         _aliveTokenList = new List<string>();
 
         CheckPlayerPrefs();
 
+        EventManager.TriggerEvent(EventStrings.GET_GAME_MANAGER);
 
 
 	}
     #region Enable /Disable Events
     void OnEnable()
     {
-        EventManager.StartListening(EventStrings.PLAYER_DEAD, GameOver);
+        EventManager.StartListening(EventStrings.PLAYER_DEAD, PlayerDied);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
-        EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
-        EventManager.StartListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
+
 
         EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
@@ -255,6 +262,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
         EventManager.StartListening(EventStrings.GET_REKT, UpdateDestroyAllTokenAvailability);
         EventManager.StartListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
+        EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
 
         EventManager.StartListening(GameSettings.GAME_STARTED, GameStarted);
@@ -268,10 +276,7 @@ public class GameManager : MonoBehaviour {
 
     void OnDisable()
     {
-        EventManager.StopListening(EventStrings.PLAYER_DEAD, GameOver);
-        EventManager.StopListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed);
-        EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
-        EventManager.StopListening(EventStrings.GRAB_BIG_COIN, UpdateBigCoinScore);
+        EventManager.StopListening(EventStrings.PLAYER_DEAD, PlayerDied);
 
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
@@ -283,6 +288,7 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicousSpeed);
         EventManager.StopListening(EventStrings.GET_REKT, UpdateDestroyAllTokenAvailability);
         EventManager.StopListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
+        EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
         EventManager.StopListening(GameSettings.GAME_STARTED, GameStarted);
 
@@ -295,18 +301,23 @@ public class GameManager : MonoBehaviour {
 
     void Update()
     {
-        _timePlayedText.text = Mathf.RoundToInt(Time.time).ToString();
-            
 
-        if(_isPlayerShielded)
+
+        if(_isPlayerShielded && !_isSpeedActive)
         {
             _deltaShieldTime -= Time.deltaTime;
             if(_deltaShieldTime < 0)
             {
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_OFF);
             }
+            else
+            {
+                _countdownText.enabled = true;
+                _countdownText.text = "Shield Time:" + Mathf.RoundToInt(_deltaShieldTime).ToString();
+            }
         }
 
+        //if speed is active, so is shield.
         if(_isSpeedActive)
         {
             _deltaSpeedTime -= Time.deltaTime;
@@ -314,10 +325,22 @@ public class GameManager : MonoBehaviour {
             {
                 EventManager.TriggerEvent(EventStrings.STOP_CAMERA_SHAKE);
                 EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
+                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_OFF);
+            } 
+            else
+            {
+                if(!IsStartingGame)
+                {
+                    _countdownText.enabled = true;
+                    _countdownText.text = "Speed Time:" + Mathf.RoundToInt(_deltaSpeedTime).ToString();    
+                }
+
             }
         }
-
-        CalculatePlayDistance();
+        if(!IsStartingGame)
+        {
+            CalculatePlayDistance();
+        }
     }
 
 
@@ -344,7 +367,7 @@ public class GameManager : MonoBehaviour {
         _speedTokenExists = !_speedTokenExists;
         if(!_speedTokenExists)
         {
-            RemoveTokenFromAliveList(TagStrings.LUDICROUS_SPEED);
+            RemoveTokenFromAliveList(ObjectStrings.LUDICROUS_SPEED);
         }
     }
 
@@ -353,7 +376,7 @@ public class GameManager : MonoBehaviour {
         _destroyAllTokenExists = !_destroyAllTokenExists;
         if(!_destroyAllTokenExists)
         {
-            RemoveTokenFromAliveList(TagStrings.DESTROY_ALL);
+            RemoveTokenFromAliveList(ObjectStrings.DESTROY_ALL);
         }
     }
 
@@ -363,7 +386,7 @@ public class GameManager : MonoBehaviour {
 
         if(!_shieldTokenExists)
         {
-            RemoveTokenFromAliveList(TagStrings.INVULNERABLE);
+            RemoveTokenFromAliveList(ObjectStrings.INVULNERABLE);
         }
     }
     #endregion
@@ -406,38 +429,31 @@ public class GameManager : MonoBehaviour {
     private void UpdateHazardDestroyed()
     {
         DecreaseAliveHazardCount();
-        _destroyedHazards += 1;
-        _coinScore += 5;
-        _scoreText.text = "Score: " + _coinScore.ToString();
+        _destroyedHazards++;
 
     }
 
     private void UpdateCoinScore()
     {
-        _coinScore += 1;
-        _scoreText.text = "Score: " + _coinScore.ToString();
+        _currentCoinScore++;
     }
 
     private void UpdateBigCoinScore()
     {
-        _coinScore += 100;
-        _scoreText.text = "Score: " +_coinScore.ToString();
+        _currentCoinScore += GameSettings.BIG_COIN_VALUE;
     }
 
     private void EnemyDestroyed(string tag)
     {
         DecreaseAliveEnemyCount(tag);
+        _destroyedHazards += GameSettings.SMALL_COIN_VALUE;
 
-        _destroyedHazards += 1;
-        _coinScore += 10;
-        _scoreText.text = "Score: " + _coinScore.ToString(); 
 
     }
 
     private void CalculatePlayDistance()
     {
-        _travelDistance = Mathf.Abs(_gameSpeed * Time.time / 100);
-        _distanceText.text = _travelDistance.ToString("F1");
+        _currentTravelDistance += Mathf.Abs(_gameSpeed * Time.deltaTime);
     }
     #endregion
 
@@ -451,22 +467,20 @@ public class GameManager : MonoBehaviour {
 
         //StartCoroutine(Vibrate(_SpeedTimer));
         TogglePlayerAtLudicrousSpeed();
-        TogglePlayerIsInvulnerable();
         _gameSpeed -= 30;
-        _speedText.text = _gameSpeed.ToString();
+
     }
 
     private void DisengageLudicousSpeed()
     {
         TogglePlayerAtLudicrousSpeed();
-        TogglePlayerIsInvulnerable();
         _deltaSpeedTime = _SpeedTimer;
         _gameSpeed += 30;
-        _speedText.text = _gameSpeed.ToString();
     }
 
     private void InvulnerabilityOn()
     {
+
         UpdateInvulnerabilityAvailabilityToken();
         TogglePlayerIsInvulnerable();
 
@@ -474,7 +488,8 @@ public class GameManager : MonoBehaviour {
 
     private void InvulnerabilityOff()
     {
-        _deltaShieldTime = _playerShieldedTimer;
+        _countdownText.enabled = false;
+        _deltaShieldTime = _playerShieldedTime;
         TogglePlayerIsInvulnerable();
         UpdateInvulnerabilityTokenExistance();
     }
@@ -511,12 +526,13 @@ public class GameManager : MonoBehaviour {
     private void UpdateGameSpeed()
     {
         _gameSpeed -= 0.1f;
-        _speedText.text = Mathf.Abs(_gameSpeed).ToString("F1");
     }
 
-    private void GameOver()
+    private void PlayerDied()
     {
         print("You died");
+        _isPlayerDead = true;
+        _playerDeathCount++;
         StartCoroutine(WaitForDeath());
     }
     #endregion
@@ -552,13 +568,13 @@ public class GameManager : MonoBehaviour {
     {
         switch (tag)
         {
-            case TagStrings.INVULNERABLE:
+            case ObjectStrings.INVULNERABLE:
                 UpdateInvulnerabilityTokenExistance();
                 break;
-            case TagStrings.DESTROY_ALL:
+            case ObjectStrings.DESTROY_ALL:
                 UpdateDestroyAllTokenExistence();
                 break;
-            case TagStrings.LUDICROUS_SPEED:
+            case ObjectStrings.LUDICROUS_SPEED:
                 UpdateSpeedTokenExistence();
                 break;
 

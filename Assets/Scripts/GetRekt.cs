@@ -24,12 +24,12 @@ public class GetRekt : MonoBehaviour {
 
     private void Explode()
     {
-        if(tag == TagStrings.HAZARD)
+        if(tag == ObjectStrings.HAZARD)
         {
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
         }
 
-        if(tag == TagStrings.BULLET_ENEMY || tag == TagStrings.LASER_ENEMY)
+        if(tag == ObjectStrings.BULLET_ENEMY || tag == ObjectStrings.LASER_ENEMY)
         {
             EventManager.TriggerStringEvent(EventStrings.ENEMY_DESTROYED, tag);
         }

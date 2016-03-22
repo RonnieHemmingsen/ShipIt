@@ -26,11 +26,9 @@ public class Utilities : MonoBehaviour {
 
     public static IEnumerator FadeInAndOut(float fadeToValue, Image im, Action onComplete)
     {
-
         im.CrossFadeAlpha(fadeToValue, GameSettings.CROSSFADE_ALPHA_VALUE, false);
         yield return new WaitForSeconds(GameSettings.CROSSFADE_ALPHA_VALUE);
         onComplete();
-
     }
 
 

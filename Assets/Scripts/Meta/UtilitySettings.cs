@@ -40,12 +40,19 @@ public static class EventStrings
     public const string ENEMY_OUT_OF_BOUNDS = "EnemyOutOfBounds";
     public const string TOKEN_OUT_OF_BOUNDS = "TokenOutOfBounds";
 
+    public const string TEXT_TWEEN = "TextTween";
+
+    public const string ADD_TO_GLOBAL_COINSCORE = "AddToGlobalCoinScore";
+    public const string SUBTRACT_FROM_GLOBAL_COINSCORE = "SubtractFromGlobalCoinScore";
+
     public const string USER_LOGGED_IN = "UserLoggedIn";
+    public const string GET_GAME_MANAGER = "GetGameManager";
 }
 
 //fairly important to keep consistent with tag manager!!
-public static class TagStrings
+public static class ObjectStrings
 {
+    //These are tags
     public const string HAZARD = "Hazard";
     public const string PLAYER = "Player";
     public const string LASER_ENEMY = "LaserEnemy";
@@ -58,6 +65,10 @@ public static class TagStrings
     public const string BULLET = "Bullet";
     public const string BIG_COIN = "BigCoin";
     public const string LUDICROUS_SPEED = "LudicrousSpeed";
+
+    //These are not tags
+    public const string TWEEN_TEXT_OUT = "TweenTextOut";
+
 }
    
 public static class GameSettings
@@ -71,7 +82,34 @@ public static class GameSettings
     public const string LOAD_LEVEL_GAME = "Game";
     public const string LOAD_LEVEL_MENU = "Start Menu";
     public const string GAME_STARTED = "Game Started";
+    public const string SAVE_PATH = "/thefutureinfo.dat";
+    public const string SAVE_DATA = "SaveData";
+    public const string LOAD_DATA = "LoadData";
 
-    public const string COIN_SCORE = "CoinScore";
-    public const string TRAVEL_SCORE = "TravelScore";
+    public const int SMALL_COIN_VALUE = 1;
+    public const int BIG_COIN_VALUE = 50;
+
+    public const int COST_OF_DEATH = 500;
+}
+
+public static class BackendVariables
+{
+    public const string HIGHSCORE_BOARD = "HIGH_SCORE_LB";
+    
+    public const string TRAVELSCORE_ATTRIBUTE = "TRAVEL_ATTR";
+    public const string COINSCORE_ATTRIBUTE = "SCORE_ATTR";
+
+    public const string PLAYER_DATA = "playerState";
+    public const string PLAYER_DATA_TIMESTAMP = "TimeStamp";
+    public const string PLAYER_DATA_COINS = "Coins";
+    public const string PLAYER_DATA_LAST_TRAVEL = "LastTravelDist";
+    public const string PLAYER_DATA_MAX_TRAVEL = "MaxTravelDist";
+}
+
+public static class TextStrings
+{
+    public const string DESTROY_ALL_AQUIRED = "Destroy everything!";
+    public const string INVULNERABILITY_AQUIRED = "Shield Aquired!";
+    public const string SPEED_AQUIRED = "Ludicrous Speed /n Available!";
+    public const string COIN_AQUIRED = "+1";
 }

@@ -49,8 +49,9 @@ public class GameSparksHandler : MonoBehaviour {
                 else
                 {
                     print("GS FB login succesful");
-
+                    PlayerData.instance.UserId = response.UserId;
                     _entries.Login();
+                    EventManager.TriggerEvent(GameSettings.LOAD_DATA);
                     
                 }
             });
@@ -60,7 +61,6 @@ public class GameSparksHandler : MonoBehaviour {
 
     public static void CheckGameSparksStatus()
     {
-        
     }
 
     public static void AuthenticateUser(string userName, string password)
@@ -78,6 +78,7 @@ public class GameSparksHandler : MonoBehaviour {
             else
             {
                 print("user authenticated");
+
                 isAuthenticated = true;
             }
         });
