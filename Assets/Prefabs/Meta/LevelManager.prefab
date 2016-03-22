@@ -11,8 +11,6 @@ GameObject:
   - 114: {fileID: 11445448}
   - 82: {fileID: 8297500}
   - 114: {fileID: 11478946}
-  - 114: {fileID: 11435550}
-  - 114: {fileID: 11446912}
   m_Layer: 0
   m_Name: LevelManager
   m_TagString: Untagged
@@ -107,17 +105,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &11435550
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 185256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 806262dc35bf249318d3d32534f29671, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11445448
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -127,17 +114,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 914b8a75977ed47209fdf798a93ddac3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &11446912
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 185256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9bc75de4d2b7a444ca6a02bf2bb0291d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &11478946

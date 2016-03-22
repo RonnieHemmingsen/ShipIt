@@ -31,5 +31,15 @@ public class Utilities : MonoBehaviour {
         onComplete();
     }
 
+    public static void Pause()
+    {
+        Time.timeScale = 0;
+    }
+
+    public static void UnPause()
+    {
+        Time.timeScale = 1;
+    }
+
 
 }

@@ -72,6 +72,7 @@ public class EventManager : MonoBehaviour {
     #region "Standard Event"
     public static void StartListening(string eventName, UnityAction listener)
     {
+       
         UnityEvent thisEvent = null;
         if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
         {

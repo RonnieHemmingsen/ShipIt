@@ -6,6 +6,14 @@ public class LevelManager : MonoBehaviour {
 
     private static LevelManager instance = null;
 
+    private bool _wasStartMenuUpdated;
+    private bool _isStartMenuActive;
+
+    public bool IsStartMenuActive {
+        get { return _isStartMenuActive; }
+        set { _isStartMenuActive = value; }
+    }
+
     void Awake()
     {
         if (instance != null) {
@@ -24,14 +32,47 @@ public class LevelManager : MonoBehaviour {
         //GameSparksHandler.AuthenticateUser("FB Player", "pw");
     }
 
-	public void LoadLevel(string name){
-		Debug.Log ("New Level load: " + name);
-        SceneManager.LoadScene(name, LoadSceneMode.Single);
-	}
+    void OnEnable()
+    {
+        EventManager.StartListening(GameSettings.BOOT_GAME, ToggleStartMenu);
+        EventManager.StartListening(GameSettings.GAME_OVER, ResetGame);
+    }
 
-	public void QuitRequest(){
-		Debug.Log ("Quit requested");
-		Application.Quit ();
-	}
+    void OnDisable()
+    {
+        EventManager.StopListening(GameSettings.BOOT_GAME, ToggleStartMenu);
+        EventManager.StopListening(GameSettings.GAME_OVER, ResetGame);
+    }
+
+    void Update()
+    {
+        if(!_wasStartMenuUpdated && _isStartMenuActive)
+        {
+            if (!SceneManager.SetActiveScene(SceneManager.GetSceneByName("Start Menu")))
+            {
+                _wasStartMenuUpdated = false;
+            }else
+            {
+                _wasStartMenuUpdated = true;
+            }
+        }
+    }
+
+
+    private void ToggleStartMenu()
+    {
+        _isStartMenuActive = true;
+        _wasStartMenuUpdated = false;
+    }
+
+    private void ResetGame()
+    {
+        SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        SceneManager.LoadScene("Start Menu", LoadSceneMode.Additive);
+
+        ToggleStartMenu();
+
+    }
+        
 
 }

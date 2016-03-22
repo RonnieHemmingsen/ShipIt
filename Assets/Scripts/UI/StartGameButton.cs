@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class StartGameButton : MonoBehaviour {
 
     [SerializeField]
     private GameObject _mainMenu;
-    [SerializeField]
-    private GameObject _loadScreenUI;
 
     private LevelManager _lvlMan;
     private LoadScreen _loadScreen;
@@ -16,7 +15,7 @@ public class StartGameButton : MonoBehaviour {
 
     void Awake()
     {
-        _loadScreen = FindObjectOfType<LoadScreen>();
+        _lvlMan = FindObjectOfType<LevelManager>();
         _me = GetComponent<Button>();
     }
 
@@ -24,10 +23,13 @@ public class StartGameButton : MonoBehaviour {
     {
 
         _me.onClick.AddListener(delegate {
-            //_lvlMan.LoadLevel(GameSettings.LOAD_LEVEL_GAME);
             _mainMenu.SetActive(false);
-            _loadScreenUI.SetActive(true);
-            _loadScreen.StartLoadSequence(GameSettings.LOAD_LEVEL_GAME);
+            EventManager.TriggerEvent(GameSettings.START_GAME);
+            _lvlMan.IsStartMenuActive = false;
+            Scene gamescene = SceneManager.GetSceneByName("Game");
+            SceneManager.SetActiveScene(gamescene);
+
+
         });
 	}
 	

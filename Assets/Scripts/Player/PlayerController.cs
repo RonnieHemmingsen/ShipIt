@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour {
         EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
-        EventManager.StartListening(GameSettings.GAME_STARTED, GameStarted);
+        EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
 
     }
 
@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour {
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
-        EventManager.StopListening(GameSettings.GAME_STARTED, GameStarted);
+        EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
     }
 
     void Start()
@@ -226,7 +226,6 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
-                EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
         #elif UNITY_IOS
@@ -261,7 +260,6 @@ public class PlayerController : MonoBehaviour {
                 EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
                 EventManager.TriggerEvent(EventStrings.GET_REKT);
-                EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
             }
         }
         #endif
@@ -293,6 +291,7 @@ public class PlayerController : MonoBehaviour {
     private void EngageLudicrousSpeed()
     {
         print("engage");
+        EventManager.TriggerEvent(EventStrings.START_CAMERA_SHAKE);
         Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
         StartCoroutine(Utilities.FadeInAndOut(1, im, () => {}));
     }
@@ -300,6 +299,7 @@ public class PlayerController : MonoBehaviour {
     private void DisengageLudicrousSpeed()
     {
         print("disengage");
+        EventManager.TriggerEvent(EventStrings.STOP_CAMERA_SHAKE);
         Image im = _ludicrousSpeedAfterburner.GetComponent<Image>();
         StartCoroutine(Utilities.FadeInAndOut(0, im, () => {}));
     }

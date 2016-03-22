@@ -32,11 +32,12 @@ public class EndGameMenuHandler : MonoBehaviour {
 	void Start () {
         
         _payWithCoins.onClick.AddListener(delegate {
-            
-            EventManager.TriggerIntEvent(EventStrings.SUBTRACT_FROM_GLOBAL_COINSCORE, GameSettings.COST_OF_DEATH); 
-            _GM.IsPlayerDead = false;
 
-            Time.timeScale = 1;
+            _survivesDeath = true;
+            EventManager.TriggerIntEvent(EventStrings.SUBTRACT_FROM_GLOBAL_COINSCORE, GameSettings.COST_OF_DEATH); 
+            EventManager.TriggerEvent(GameSettings.START_GAME);
+            EventManager.TriggerEvent(EventStrings.GET_REKT);
+            Utilities.UnPause();
             
         });
 
@@ -44,7 +45,7 @@ public class EndGameMenuHandler : MonoBehaviour {
             //TODO; Implement adds
             ShowAd();
             print("Show ad");
-            _GM.IsPlayerDead = false;
+            _survivesDeath = true;
 
         });
 
@@ -71,7 +72,7 @@ public class EndGameMenuHandler : MonoBehaviour {
         _payWithAds.gameObject.SetActive(true);
         _payWithCoins.gameObject.SetActive(true); 
 
-
+        StartCoroutine(WaitForPermaDeath());
 
         if(GameSettings.COST_OF_DEATH > _data.GlobalCoinScore || _GM.PlayerDeathCount > 1)
         {
@@ -80,7 +81,7 @@ public class EndGameMenuHandler : MonoBehaviour {
 
         }
 
-        Time.timeScale = 0;
+        Utilities.Pause();
     }
 
     private void DisableMenu()
@@ -101,14 +102,20 @@ public class EndGameMenuHandler : MonoBehaviour {
 
     private IEnumerator WaitForPermaDeath()
     {
-        float time = 0;
+        float time = Time.unscaledDeltaTime;
+        float endTime = time + _GM.TimeUntilPermaDeath;
 
         do {
-            time += Time.deltaTime;
+            time += Time.unscaledDeltaTime;
             yield return new WaitForEndOfFrame();
-        } while (time < _GM.TimeUntilPermaDeath);
+        } while (time < endTime);
 
-        _lvlMan.LoadLevel(GameSettings.LOAD_LEVEL_MENU);
+        if(!_survivesDeath)
+        {
+            Utilities.UnPause();
+            EventManager.TriggerEvent(GameSettings.GAME_OVER);
+            EventManager.TriggerEvent(GameSettings.SAVE_DATA);  
+        }
 
     }
 
@@ -127,7 +134,7 @@ public class EndGameMenuHandler : MonoBehaviour {
 //
 
 
-        EventManager.TriggerEvent(GameSettings.SAVE_DATA);
+
         //PersistentDataManager.SavePlayerData(GameSettings.COIN_SCORE, _GM.CurrentCoinScore);
     }
 

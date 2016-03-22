@@ -64,7 +64,7 @@ public class PersistentDataManager : MonoBehaviour {
 
         offlineData = LoadOfflinePlayerData();
 
-        if (GS.Authenticated)
+        if (GS.Authenticated && userId != null)
         {
             new LogEventRequest_GET_DATA().Set_PLAYER_ID(userId).Send((response) => {
                 if(!response.HasErrors)
@@ -133,7 +133,6 @@ public class PersistentDataManager : MonoBehaviour {
 
     private static IEnumerator SaveOnlinePlayerDataAsync(int coins, float maxTravel, float lastTravel)
     {
-        bool hasFinished = false;
         string message = "";
         //We create a GSRequestData variable
         //by using jsonDataToSend.Add() we can add in any variable we choose

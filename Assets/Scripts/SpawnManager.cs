@@ -52,33 +52,35 @@ public class SpawnManager : MonoBehaviour {
 
         while(true)
         {
-            switch (_state)
+            if(!_GM.IsStartingGame)
             {
-                case HazardStates.Initialise:
-                    Initialise();
-                    break;
-                case HazardStates.Evaluate:
-                    Evaluate();
-                    break;
-                case HazardStates.Nothing:
-                    Nothing();
-                    break;
-                case HazardStates.Asteroids:
-                    Asteroids();
-                    break;
-                case HazardStates.LaserEnemies:
-                    LaserEnemies();
-                    break;
-                case HazardStates.BulletEnemies:
-                    BulletEnemies();
-                    break;
-                case HazardStates.Tokens:
-                    Tokens();
-                    break;
-                default:
-                    break;
+                switch (_state)
+                {
+                    case HazardStates.Initialise:
+                        Initialise();
+                        break;
+                    case HazardStates.Evaluate:
+                        Evaluate();
+                        break;
+                    case HazardStates.Nothing:
+                        Nothing();
+                        break;
+                    case HazardStates.Asteroids:
+                        Asteroids();
+                        break;
+                    case HazardStates.LaserEnemies:
+                        LaserEnemies();
+                        break;
+                    case HazardStates.BulletEnemies:
+                        BulletEnemies();
+                        break;
+                    case HazardStates.Tokens:
+                        Tokens();
+                        break;
+                    default:
+                        break;
+                }
             }
-
             yield return 0;
         }
 

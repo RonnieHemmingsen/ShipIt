@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour {
     private GameObject _tweenText;
     [SerializeField]
     private Text _countdownText;
+    [SerializeField]
+    private GameObject _gameUI;
 
     private ObjectPoolManager _objPool;
     private List<string> _aliveTokenList;
@@ -248,6 +250,7 @@ public class GameManager : MonoBehaviour {
     #region Enable /Disable Events
     void OnEnable()
     {
+        EventManager.StartListening(GameSettings.START_GAME, InstantiatePlayer);
         EventManager.StartListening(EventStrings.PLAYER_DEAD, PlayerDied);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
 
@@ -265,7 +268,8 @@ public class GameManager : MonoBehaviour {
         EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
 
-        EventManager.StartListening(GameSettings.GAME_STARTED, GameStarted);
+        EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
+        EventManager.StartListening(GameSettings.GAME_OVER, GameEnded);
 
         EventManager.StartListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StartListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
@@ -276,6 +280,7 @@ public class GameManager : MonoBehaviour {
 
     void OnDisable()
     {
+        EventManager.StopListening(GameSettings.START_GAME, InstantiatePlayer);
         EventManager.StopListening(EventStrings.PLAYER_DEAD, PlayerDied);
 
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
@@ -290,7 +295,8 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
         EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
-        EventManager.StopListening(GameSettings.GAME_STARTED, GameStarted);
+        EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
+        EventManager.StopListening(GameSettings.GAME_OVER, GameEnded);
 
         EventManager.StopListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StopListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
@@ -595,9 +601,22 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    private void InstantiatePlayer()
+    {
+        _isPlayerDead = false;
+        _isStartingGame = true;
+        GetComponent<CreatePlayer>().Create();
+    }
+
     private void GameStarted()
     {
+        _gameUI.SetActive(true);
         _isStartingGame = false;
+    }
+
+    private void GameEnded()
+    {
+       
     }
 
     private void CheckPlayerPrefs()

@@ -12,7 +12,12 @@ public class GameSparksHandler : MonoBehaviour {
 
     void Awake()
     {
-        _entries = FindObjectOfType<HighScoreLoader>();
+        //_entries = FindObjectOfType<HighScoreLoader>();
+    }
+
+    void Start()
+    {
+        CheckFacebookStatus();
     }
 
     public void CheckFacebookStatus()
@@ -50,7 +55,7 @@ public class GameSparksHandler : MonoBehaviour {
                 {
                     print("GS FB login succesful");
                     PlayerData.instance.UserId = response.UserId;
-                    _entries.Login();
+                    //_entries.Login();
                     EventManager.TriggerEvent(GameSettings.LOAD_DATA);
                     
                 }

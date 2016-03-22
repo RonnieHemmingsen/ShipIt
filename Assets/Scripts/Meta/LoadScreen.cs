@@ -20,7 +20,7 @@ public class LoadScreen : MonoBehaviour {
 
         if(SceneManager.GetActiveScene().buildIndex == 0)
         {
-            StartCoroutine(DisplayLoadingScreen(GameSettings.LOAD_LEVEL_MENU, true));    
+            //StartCoroutine(DisplayLoadingScreen(GameSettings.LOAD_LEVEL_MENU, true));    
         }
 
 

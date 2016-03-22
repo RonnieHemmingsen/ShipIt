@@ -35,7 +35,14 @@ public class ObjectPoolManager : MonoBehaviour {
 
     public void CreatePool(int size, GameObject prefab, string poolName)
     {
-        _pools.Add(poolName, _objPool.CreatePool(size, prefab));
+        try
+        {
+            _pools.Add(poolName, _objPool.CreatePool(size, prefab));   
+        } catch (System.Exception ex)
+        {
+            print(ex + " - " + poolName);
+        }
+
     }
 
     public GameObject GetObjectFromPool(string poolName)

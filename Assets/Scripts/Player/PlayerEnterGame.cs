@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerEnterGame : MonoBehaviour {
 
+
     [SerializeField]
     private Vector3 startPos;
     [SerializeField]
@@ -11,11 +12,11 @@ public class PlayerEnterGame : MonoBehaviour {
     private float speed;
 
 
-	// Use this for initialization
-	void Start () {
+    private void Start()
+    {
         StartCoroutine(StartingGame());
-	}
-	
+    }
+
     private IEnumerator StartingGame()
     {
         bool moving = false;
@@ -38,7 +39,7 @@ public class PlayerEnterGame : MonoBehaviour {
 
         EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
         yield return new WaitForSeconds(0.5f);
-        EventManager.TriggerEvent(GameSettings.GAME_STARTED);
+        EventManager.TriggerEvent(GameSettings.GAME_HAS_STARTED);
         
 
 

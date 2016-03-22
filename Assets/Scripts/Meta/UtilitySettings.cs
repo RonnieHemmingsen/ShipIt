@@ -79,9 +79,11 @@ public static class GameSettings
     public const string HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED = "HasShieldTokenHelpBeenDisplayed";
     public const string HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED = "HasSpeedTokenHelpBeenDisplayed";
     public const string LOAD_PROGRESS_TEXT = "Loading: ";
-    public const string LOAD_LEVEL_GAME = "Game";
-    public const string LOAD_LEVEL_MENU = "Start Menu";
-    public const string GAME_STARTED = "Game Started";
+    public const string PAUSE_GAME = "PauseGame";
+    public const string START_GAME = "StartGame";
+    public const string BOOT_GAME = "BootGame";
+    public const string GAME_OVER = "GameOver";
+    public const string GAME_HAS_STARTED = "GameHasStarted";
     public const string SAVE_PATH = "/thefutureinfo.dat";
     public const string SAVE_DATA = "SaveData";
     public const string LOAD_DATA = "LoadData";
@@ -89,7 +91,7 @@ public static class GameSettings
     public const int SMALL_COIN_VALUE = 1;
     public const int BIG_COIN_VALUE = 50;
 
-    public const int COST_OF_DEATH = 500;
+    public const int COST_OF_DEATH = 5;
 }
 
 public static class BackendVariables
