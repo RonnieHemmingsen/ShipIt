@@ -23,6 +23,8 @@ public class PersistentDataManager : MonoBehaviour {
             instance = this;
             GameObject.DontDestroyOnLoad (this.gameObject);
         }
+
+        Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
     }
 
     public static void SaveToLeaderBoard(float maxTravel)
@@ -57,12 +59,12 @@ public class PersistentDataManager : MonoBehaviour {
     {
         Data onlineData = null;
         Data offlineData = null;
-        Data validData = null;
+        bool isOnlineDataLegit = false;
         bool hasFinished = false;
 
         print("loading stuff!");
 
-        offlineData = LoadOfflinePlayerData();
+        offlineData = new Data(LoadOfflinePlayerData());
 
         if (GS.Authenticated && userId != null)
         {
@@ -103,7 +105,9 @@ public class PersistentDataManager : MonoBehaviour {
         else
         {
             //Player not signed in. use offlinedata
-            validData = offlineData;
+            isOnlineDataLegit = false;
+            hasFinished = true;
+            print("User Offline, using offline data");   
         }
 
 
@@ -114,18 +118,25 @@ public class PersistentDataManager : MonoBehaviour {
             {
                 //if the offline data is newer, save it to online.
                 instance.StartCoroutine(SaveOnlinePlayerDataAsync(offlineData.globalCoinScore, offlineData.lastTravelScore, offlineData.highestTravelScore));
-                validData = offlineData;
+                isOnlineDataLegit = false;
+                print("Offline data newer. Using that.");
 
             } else
             {
-                validData = onlineData;
+                SaveOfflinePlayerData(onlineData.globalCoinScore, onlineData.lastTravelScore, onlineData.highestTravelScore);
+                isOnlineDataLegit = true;
 
             }
         }
 
-        if(hasFinished)
+        //print("returning " + onlineData.timeStamp + " - " + onlineData.globalCoinScore + "Is online data: " + isOnlineDataLegit);
+        if(hasFinished && isOnlineDataLegit)
         {
-            callback(validData);    
+            callback(onlineData);    
+        }
+        else if(hasFinished && !isOnlineDataLegit)
+        {
+            callback(offlineData);
         }
 
     }
@@ -168,48 +179,6 @@ public class PersistentDataManager : MonoBehaviour {
         }
 
     }
-    //OI!! GØR SOM DU GJORDE MED SAVE FUNKTIONEN!!
-    private static IEnumerator LoadOnlinePlayerDataAsync(string userId, Action<Data> callback)
-    {
-        Data data = new Data();
-        bool hasFinished = false;
-        if(GS.Authenticated)
-        {
-            new LogEventRequest_GET_DATA().Set_PLAYER_ID(userId).Send((response) => {
-                if(!response.HasErrors)
-                {
-                    data.timeStamp = new DateTime((long)response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_TIMESTAMP));
-                    data.globalCoinScore = (int) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_COINS);
-                    data.lastTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_LAST_TRAVEL);
-                    data.highestTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_MAX_TRAVEL);    
-
-                    print("TimeStamp: " + data.timeStamp);
-                    hasFinished = true;
-                }
-                else
-                {
-                    print("Error retrieving player data: " + response.Errors.ToString());
-                    hasFinished = true;
-                }
-
-
-            });
-            while (!hasFinished)
-            {
-                yield return new WaitForEndOfFrame();    
-            }
-
-
-            if(hasFinished)
-            {
-                yield return(data);
-            }
-        }
-    }
 
     #region offline data
     private static void SaveOfflinePlayerData(int coins, float lastTravel, float highestTravel)
@@ -242,7 +211,7 @@ public class PersistentDataManager : MonoBehaviour {
         }
         else
         {
-            return null;
+            return new Data();
         }
     }
     #endregion
@@ -257,6 +226,17 @@ public class PersistentDataManager : MonoBehaviour {
 [Serializable]
 public class Data
 {
+    public Data()
+    {}
+
+    public Data(Data dat)
+    {
+        timeStamp = dat.timeStamp;
+        globalCoinScore = dat.globalCoinScore;
+        lastTravelScore = dat.lastTravelScore;
+        highestTravelScore = dat.highestTravelScore;
+
+    }
     public DateTime timeStamp;
     public int globalCoinScore;
     public float lastTravelScore;

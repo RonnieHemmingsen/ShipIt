@@ -16,7 +16,8 @@ public class OnlineButton : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         _me.onClick.AddListener(delegate {
-            _GSHandler.CheckFacebookStatus();
+            _GSHandler.StartFacebookLogin();
+            print("her");
         });
 
 

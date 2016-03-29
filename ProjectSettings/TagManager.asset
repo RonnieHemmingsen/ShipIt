@@ -15,6 +15,7 @@ TagManager:
   - LudicrousSpeed
   - BulletEnemy
   - Bullet
+  - BoltToken
   layers:
   - Default
   - TransparentFX

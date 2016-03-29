@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour {
     private float _playerShieldedTime;
     [SerializeField]
     private float _SpeedTimer;
+    [SerializeField]
+    private int _maxNumberOfBolts;
 
     [SerializeField]
     private Vector3 _spawnValues;
@@ -37,6 +39,8 @@ public class GameManager : MonoBehaviour {
     private GameObject _bigCoin;
     [SerializeField]
     private GameObject _ludicrousToken;
+    [SerializeField]
+    private GameObject _boltToken;
     [SerializeField]
     private GameObject _tweenText;
     [SerializeField]
@@ -213,6 +217,12 @@ public class GameManager : MonoBehaviour {
     {
         get { return _timeUntilPermaDeath; }
     }
+
+    public int MaxNumberOfBullets
+    {
+        get { return _maxNumberOfBolts; }
+        set { _maxNumberOfBolts = value; }
+    }
         
     #endregion
 
@@ -232,6 +242,7 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(300, _bullet, _bullet.tag);
         _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
+        _objPool.CreatePool(30, _boltToken, _boltToken.tag);
         _objPool.CreatePool(10, _tweenText, ObjectStrings.TWEEN_TEXT_OUT);
 
 
@@ -243,7 +254,7 @@ public class GameManager : MonoBehaviour {
 
         CheckPlayerPrefs();
 
-        EventManager.TriggerEvent(EventStrings.GET_GAME_MANAGER);
+        EventManager.TriggerEvent(EventStrings.GET_GAME_MANAGER); 
 
 
 	}
@@ -257,7 +268,8 @@ public class GameManager : MonoBehaviour {
 
         EventManager.StartListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StartListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
-        EventManager.StartListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
+        EventManager.StartListening(EventStrings.SPEED_INCREASE, IncreaseGameSpeed);
+        EventManager.StartListening(EventStrings.SPEED_DECREASE, DecreaseGameSpeed);
         EventManager.StartListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StartListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
         EventManager.StartListening(EventStrings.GRAB_INVUNERABILITY_TOKEN, UpdateInvulnerabilityAvailabilityToken);
@@ -285,7 +297,8 @@ public class GameManager : MonoBehaviour {
 
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
         EventManager.StopListening(EventStrings.INVULNERABILITY_OFF, InvulnerabilityOff);
-        EventManager.StopListening(EventStrings.SPEED_INCREASE, UpdateGameSpeed);
+        EventManager.StopListening(EventStrings.SPEED_INCREASE, IncreaseGameSpeed);
+        EventManager.StopListening(EventStrings.SPEED_DECREASE, DecreaseGameSpeed);
         EventManager.StopListening(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN, UpdateSpeedTokenAvailability);
         EventManager.StopListening(EventStrings.GRAB_DESTROY_ALL_TOKEN, UpdateDestroyAllTokenAvailability);
         EventManager.StopListening(EventStrings.GRAB_INVUNERABILITY_TOKEN, UpdateInvulnerabilityAvailabilityToken);
@@ -329,7 +342,7 @@ public class GameManager : MonoBehaviour {
             _deltaSpeedTime -= Time.deltaTime;
             if(_deltaSpeedTime < 0)
             {
-                EventManager.TriggerEvent(EventStrings.STOP_CAMERA_SHAKE);
+                
                 EventManager.TriggerEvent(EventStrings.DISENGAGE_LUDICROUS_SPEED);
                 EventManager.TriggerEvent(EventStrings.INVULNERABILITY_OFF);
             } 
@@ -348,7 +361,6 @@ public class GameManager : MonoBehaviour {
             CalculatePlayDistance();
         }
     }
-
 
     #region Token Availability
     public void UpdateSpeedTokenAvailability()
@@ -529,9 +541,18 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    private void UpdateGameSpeed()
+    private void IncreaseGameSpeed()
     {
         _gameSpeed -= 0.1f;
+    }
+
+    private void DecreaseGameSpeed()
+    {
+        if(_gameSpeed <= -5.5)
+        {
+            _gameSpeed += 0.5f;    
+        }
+
     }
 
     private void PlayerDied()

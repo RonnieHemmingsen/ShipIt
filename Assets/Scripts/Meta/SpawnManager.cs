@@ -23,6 +23,10 @@ public class SpawnManager : MonoBehaviour {
     [SerializeField]
     private float _maxTimeBetweenTokenSpawns;
     [SerializeField]
+    private float _minTimeBetweenBoltTokenSpawns;
+    [SerializeField]
+    private float _maxTimeBetweenBoltTokenSpawns;
+    [SerializeField]
     private string[] _tokenArray;
 
     private GameBalancer _zen;
@@ -36,6 +40,7 @@ public class SpawnManager : MonoBehaviour {
     private float _deltaTimeBetweenLaserEnemies;
     private float _deltaTimeBetweenBulletEnemies;
     private float _deltaTimeBetweenTokenSpawns;
+    private float _deltaTimeBetweenBoltTokenSpawns;
     private int _currentNumberOfEnemiesOnScreen;
 
 
@@ -77,6 +82,9 @@ public class SpawnManager : MonoBehaviour {
                     case HazardStates.Tokens:
                         Tokens();
                         break;
+                    case HazardStates.BoltTokenSpawns:
+                        Bolts();
+                        break;
                     default:
                         break;
                 }
@@ -100,6 +108,7 @@ public class SpawnManager : MonoBehaviour {
         _deltaTimeBetweenBulletEnemies -= Time.deltaTime;
         _deltaTimeBetweenLaserEnemies -= Time.deltaTime;
         _deltaTimeBetweenTokenSpawns -= Time.deltaTime;
+        _deltaTimeBetweenBoltTokenSpawns -= Time.deltaTime;
 
         DetermineNumberOfEnemiesAlive();
         RemoveEnemyPositions();
@@ -140,6 +149,12 @@ public class SpawnManager : MonoBehaviour {
         {
             _deltaTimeBetweenTokenSpawns = Random.Range(_minTimeBetweenTokenSpawns, _maxTimeBetweenTokenSpawns);
             _state = HazardStates.Tokens;
+        }
+
+        if(_deltaTimeBetweenBoltTokenSpawns <= 0 && _zen.CanSpawnTokens)
+        {
+            _deltaTimeBetweenBoltTokenSpawns = Random.Range(_minTimeBetweenBoltTokenSpawns, _maxTimeBetweenBoltTokenSpawns);
+            _state = HazardStates.BoltTokenSpawns;
         }
 
         if(_zen.IsNothing)
@@ -242,6 +257,18 @@ public class SpawnManager : MonoBehaviour {
         }
     }
 
+    private void Bolts()
+    {
+        Vector3 spawnPos = new Vector3(Random.Range(-_spawnValues.x, _spawnValues.x), _spawnValues.y, _spawnValues.z);
+
+        GameObject GO = _objPool.GetObjectFromPool(ObjectStrings.BOLT_TOKEN);
+        if(GO != null)
+        {
+            GO.transform.position = spawnPos;    
+        }
+        _state = HazardStates.Evaluate;
+    }
+
     private bool CanSpawnHere(Vector3 spawnPos)
     {
         bool farEnough = true;
@@ -312,6 +339,7 @@ public class SpawnManager : MonoBehaviour {
         Asteroids,
         LaserEnemies,
         BulletEnemies,
+        BoltTokenSpawns,
         Tokens
     }
 }

@@ -14,13 +14,17 @@ public class GameUIHandler : MonoBehaviour {
     private Text _timePlayedText;
     [SerializeField]
     private Text _speedText;
+    [SerializeField]
+    private Text _boltCount;
 
     private GameManager _GM;
+    private PlayerController _PC;
 
 
     void Awake()
     {
         _GM = FindObjectOfType<GameManager>();
+        _PC = FindObjectOfType<PlayerController>();
     }
 
 	// Use this for initialization
@@ -28,6 +32,7 @@ public class GameUIHandler : MonoBehaviour {
 	
         _distanceText.text = "Distance: 0";
         _scoreText.text = "0";
+        _boltCount.text = "";
 	}
 	
 	// Update is called once per frame
@@ -37,5 +42,6 @@ public class GameUIHandler : MonoBehaviour {
         _distanceText.text = _GM.CurrentTravelDistance.ToString("F1");
         _scoreText.text = _GM.CurrentCoinScore.ToString(); 
         _speedText.text = _GM.GameSpeed.ToString();
+        _boltCount.text = _PC.CurrentNumberOfBolts.ToString();
 	}
 }

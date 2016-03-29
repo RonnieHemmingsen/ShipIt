@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49f4d5fbc6f184c9faef4d662115b8ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
+  _player: {fileID: 140932, guid: 919b6b0143d4f4cca86aa91f354138cc, type: 2}
   _startPos: {x: 0, y: 0, z: -5}
 --- !u!114 &11467944
 MonoBehaviour:
@@ -139,6 +139,8 @@ MonoBehaviour:
   _maxTimeBetweenBulletEnemySpawn: 15
   _minTimeBetweenTokenSpawns: 5
   _maxTimeBetweenTokenSpawns: 10
+  _minTimeBetweenBoltTokenSpawns: 5
+  _maxTimeBetweenBoltTokenSpawns: 10
   _tokenArray:
   - Invulnerable
   - DestroyAll
@@ -158,8 +160,9 @@ MonoBehaviour:
   _isDebugInvulne: 0
   _timeUntilPermaDeath: 5
   _gameSpeed: -5
-  _playerShieldedTime: 10
+  _playerShieldedTime: 5
   _SpeedTimer: 3
+  _maxNumberOfBolts: 10
   _spawnValues: {x: 7, y: 0, z: 16}
   _asteroid: {fileID: 172768, guid: 66142ff9f311343cda8cdacd73695717, type: 2}
   _laserEnemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
@@ -170,6 +173,7 @@ MonoBehaviour:
   _coin: {fileID: 179460, guid: 76ed37fba87964d1db4fd128dc5fcc44, type: 2}
   _bigCoin: {fileID: 137594, guid: 966e81172a8654e0d94809cba051e97a, type: 2}
   _ludicrousToken: {fileID: 164614, guid: e3bb05aca73274d62b40a1e1eb112f8f, type: 2}
+  _boltToken: {fileID: 104500, guid: a7f9cdf33d97e4202815e24080a7d5b6, type: 2}
   _tweenText: {fileID: 172726, guid: 85f64368c236c476a9a6c16c41338988, type: 2}
   _countdownText: {fileID: 0}
   _gameUI: {fileID: 0}
@@ -184,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 580b355e03739485cbe88fe033d9f879, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxSpeed: -10
+  _maxSpeed: -15
   _speedIncrementValue: 0.1
   _timeBetweenSpeedIncrements: 2
   _timeBetweenDifficultyIncrements: 10
@@ -196,6 +200,7 @@ MonoBehaviour:
   _maxNumberOfAsteroids: 15
   _maxNumberOfEnemiesOnScreen: 4
   _chanceToSpawnToken: 0.05
+  _chanceToSpawnBoltToken: 1
   _chanceToSpawnBulletEnemy: 0.2
   _chanceToSpawnLaserEnemy: 0.2
   _chanceToSpawnAsteroid: 1

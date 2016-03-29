@@ -77,6 +77,9 @@ public class TweenTextOut : MonoBehaviour {
             case ObjectStrings.LUDICROUS_SPEED:
                 whoAmI = TextStrings.SPEED_AQUIRED;
                 break;
+            case ObjectStrings.BOLT_TOKEN:
+                whoAmI = TextStrings.BOLT_AQUIRED;
+                break;
             default:
                 break;
         }

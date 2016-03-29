@@ -1049,6 +1049,121 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!1001 &901014017
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 401610, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 7543cdf5cf8d24a85b22a72c28753675, type: 2}
+  m_IsPrefabParent: 0
+--- !u!1 &1050961208
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 1050961211}
+  - 222: {fileID: 1050961210}
+  - 114: {fileID: 1050961209}
+  m_Layer: 5
+  m_Name: BoltCount
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1050961209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1050961208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.03137255, g: 0.4784314, b: 0.7294118, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_FontData:
+    m_Font: {fileID: 12800000, guid: db5b2540461254e19aef189cbca098cf, type: 3}
+    m_FontSize: 35
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 0
+    m_MaxSize: 230
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: Bolts
+--- !u!222 &1050961210
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1050961208}
+--- !u!224 &1050961211
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1050961208}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5.9}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1695957921}
+  m_RootOrder: 9
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 17.499992}
+  m_SizeDelta: {x: 50, y: 35}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1101759504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,6 +1295,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 11467944, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
+      propertyPath: _tokenArray.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 403386, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1210,28 +1329,20 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 403386, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
       propertyPath: m_RootOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 11471706, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _playerShieldedTimer
-      value: 10
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 11471706, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
       propertyPath: _countdownText
       value: 
       objectReference: {fileID: 333740493}
     - target: {fileID: 11471706, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _playerShieldedTime
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 11408366, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
-      propertyPath: _player
-      value: 
-      objectReference: {fileID: 140932, guid: 919b6b0143d4f4cca86aa91f354138cc, type: 2}
-    - target: {fileID: 11471706, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
       propertyPath: _gameUI
       value: 
       objectReference: {fileID: 1687511872}
+    - target: {fileID: 11467944, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
+      propertyPath: _tokenArray.Array.data[3]
+      value: BigCoin
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dff0a7d70b4b1461ab8adbd7dd174871, type: 2}
   m_IsPrefabParent: 0
@@ -1873,6 +1984,7 @@ MonoBehaviour:
   _killText: {fileID: 290050974}
   _timePlayedText: {fileID: 2094828243}
   _speedText: {fileID: 1933239261}
+  _boltCount: {fileID: 1050961209}
 --- !u!1 &1695957917
 GameObject:
   m_ObjectHideFlags: 0
@@ -1966,6 +2078,7 @@ RectTransform:
   - {fileID: 687477478}
   - {fileID: 1710977674}
   - {fileID: 333740492}
+  - {fileID: 1050961211}
   m_Father: {fileID: 1687511873}
   m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}

@@ -91,11 +91,19 @@ public class DestroyByContact : MonoBehaviour {
         //player grabs big coin
         if(tag == ObjectStrings.BIG_COIN && other.tag == ObjectStrings.PLAYER)
         {
-            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
-            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
+            HouseKeeping();
             EventManager.TriggerEvent(EventStrings.GRAB_BIG_COIN);
             ExplodeAThing(gameObject);
             
+        }
+
+        //player picks up bullet
+        if(tag == ObjectStrings.BOLT_TOKEN && other.tag == ObjectStrings.PLAYER)
+        {
+            HouseKeeping();
+            EventManager.TriggerEvent(EventStrings.GRAB_BOLT_TOKEN);
+            ExplodeAThing(gameObject);
+
         }
 
         //Enemy destroyed by player bolt
@@ -109,8 +117,7 @@ public class DestroyByContact : MonoBehaviour {
         if(this.tag == ObjectStrings.DESTROY_ALL && other.tag == ObjectStrings.PLAYER)
         {
             print(tag);
-            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
-            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
+            HouseKeeping();
             EventManager.TriggerEvent(EventStrings.GRAB_DESTROY_ALL_TOKEN);
             ExplodeAThing(gameObject);
         }
@@ -119,9 +126,7 @@ public class DestroyByContact : MonoBehaviour {
         if(tag == ObjectStrings.INVULNERABLE && other.tag == ObjectStrings.PLAYER)
         {
             print(tag);
-            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
-            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
-
+            HouseKeeping();
             _objPool.ReturnObjectToPool(gameObject.tag, gameObject);
             EventManager.TriggerEvent(EventStrings.GRAB_INVUNERABILITY_TOKEN);
         }
@@ -130,11 +135,17 @@ public class DestroyByContact : MonoBehaviour {
         if(this.tag == ObjectStrings.LUDICROUS_SPEED && other.tag == ObjectStrings.PLAYER)
         {
             print(tag);
-            _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
-            EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
+            HouseKeeping();
             EventManager.TriggerEvent(EventStrings.GRAB_LUDICROUS_SPEED_TOKEN);
             ExplodeAThing(this.gameObject);
         }
+    }
+
+    private void HouseKeeping()
+    {
+        _objPool.GetObjectFromPool(ObjectStrings.TWEEN_TEXT_OUT);
+        EventManager.TriggerObjectEvent(EventStrings.TEXT_TWEEN, gameObject);
+        EventManager.TriggerEvent(EventStrings.SPEED_DECREASE);
     }
 
     private void ExplodeAThing(GameObject obj)

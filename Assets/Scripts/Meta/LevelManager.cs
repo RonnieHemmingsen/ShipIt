@@ -6,7 +6,7 @@ public class LevelManager : MonoBehaviour {
 
     private static LevelManager instance = null;
 
-    private bool _wasStartMenuUpdated;
+    private bool _hasActiveSceneUpdated;
     private bool _isStartMenuActive;
 
     public bool IsStartMenuActive {
@@ -29,41 +29,46 @@ public class LevelManager : MonoBehaviour {
 
     void Start()
     {
-        //GameSparksHandler.AuthenticateUser("FB Player", "pw");
     }
 
     void OnEnable()
     {
-        EventManager.StartListening(GameSettings.BOOT_GAME, ToggleStartMenu);
+        EventManager.StartListening(GameSettings.UPDATE_ACTIVE_SCENE, ToggleStartMenu);
         EventManager.StartListening(GameSettings.GAME_OVER, ResetGame);
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(GameSettings.BOOT_GAME, ToggleStartMenu);
+        EventManager.StopListening(GameSettings.UPDATE_ACTIVE_SCENE, ToggleStartMenu);
         EventManager.StopListening(GameSettings.GAME_OVER, ResetGame);
     }
 
     void Update()
     {
-        if(!_wasStartMenuUpdated && _isStartMenuActive)
+        if(SceneManager.GetActiveScene().name != GameSettings.BOOT_SCENE)
         {
-            if (!SceneManager.SetActiveScene(SceneManager.GetSceneByName("Start Menu")))
+            if(!_hasActiveSceneUpdated && _isStartMenuActive)
             {
-                _wasStartMenuUpdated = false;
-            }else
+                print(SceneManager.GetActiveScene().name);
+                SceneManager.SetActiveScene(SceneManager.GetSceneByName(GameSettings.MAIN_MENU_SCENE));
+                print(SceneManager.GetActiveScene().name);
+                _hasActiveSceneUpdated = true;
+                
+            }
+            if(!_hasActiveSceneUpdated && !_isStartMenuActive)
             {
-                _wasStartMenuUpdated = true;
+                SceneManager.SetActiveScene(SceneManager.GetSceneByName(GameSettings.GAME_SCENE));
+                _hasActiveSceneUpdated = true;
             }
         }
     }
 
-
     private void ToggleStartMenu()
     {
-        _isStartMenuActive = true;
-        _wasStartMenuUpdated = false;
+        _isStartMenuActive = !_isStartMenuActive;
+        _hasActiveSceneUpdated = false;
     }
+
 
     private void ResetGame()
     {

@@ -42,7 +42,7 @@ public class LoadScreen : MonoBehaviour {
         _loadPercentage.SetActive(true);
         Text txt = _loadPercentage.GetComponent<Text>();
 
-        txt.text = GameSettings.LOAD_PROGRESS_TEXT + _loadProgress + "%";
+        //txt.text = GameSettings.LOAD_PROGRESS_TEXT + _loadProgress + "%";
         _progressBar.transform.localScale = new Vector3(_loadProgress, 1, 1);
 
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);

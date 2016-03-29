@@ -28,6 +28,8 @@ public class GameBalancer : MonoBehaviour {
     [SerializeField]
     private float _chanceToSpawnToken;
     [SerializeField]
+    private float _chanceToSpawnBoltToken;
+    [SerializeField]
     private float _chanceToSpawnBulletEnemy;
     [SerializeField]
     private float _chanceToSpawnLaserEnemy;

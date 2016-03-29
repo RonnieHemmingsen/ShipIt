@@ -10,6 +10,7 @@ public static class EventStrings
 
     public const string ENEMY_DESTROYED = "EnemyDestroyed";
     public const string SPEED_INCREASE = "SpeedIncrease";
+    public const string SPEED_DECREASE = "SpeedDecrease";
     public const string TOGGLE_LASER_ENEMY_SPAWNING = "ToggleLaserEnemySpawning";
     public const string TOGGLE_BULLET_ENEMY_SPAWNING = "ToggleBulletEnemySpawning";
     public const string TOGGLE_ASTEROID_SPAWNING = "ToggleAsteroidSpawning";
@@ -19,6 +20,8 @@ public static class EventStrings
     public const string GRAB_LUDICROUS_SPEED_TOKEN = "GrabLudicrousSpeedToken";
     public const string GRAB_INVUNERABILITY_TOKEN = "GrabInvulnerabilityToken";
     public const string GRAB_DESTROY_ALL_TOKEN = "GrabDestroyAllToken";
+    public const string GRAB_BOLT_TOKEN = "GrabBoltToken";
+    public const string BOLT_TOKEN_USED = "BoltTokenUsed";
 
     public const string ENGAGE_LUDICROUS_SPEED = "LudicrousSpeedOn";
     public const string DISENGAGE_LUDICROUS_SPEED = "LudicrousSpeedOff";
@@ -65,28 +68,51 @@ public static class ObjectStrings
     public const string BULLET = "Bullet";
     public const string BIG_COIN = "BigCoin";
     public const string LUDICROUS_SPEED = "LudicrousSpeed";
+    public const string BOLT_TOKEN = "BoltToken";
 
     //These are not tags
     public const string TWEEN_TEXT_OUT = "TweenTextOut";
 
+
+}
+
+public static class AnimatorStrings
+{
+    public const string TRIGGER_FB_SPINNER_ON = "StartFBSpin";
+    public const string TRIGGER_FB_SPINNER_OFF = "StopFBSpin";
 }
    
 public static class GameSettings
 {
     public const float CROSSFADE_ALPHA_VALUE = 0.2f;
 
+    public const string GAME_SCENE = "Game";
+    public const string MAIN_MENU_SCENE = "Start Menu";
+    public const string BOOT_SCENE = "BootScene";
+    public const string URL_CHECK = "http://google.com";
+    public const string ONLINE_BUTTON_PRESSED = "OnlineButtonPressed";
+    public const string LOGGED_IN_TO_GAMESPARKS = "LoggedInToGamesparks";
+    public const string FACEBOOK_INIT_DONE = "FacebookInitDone";
+
     public const string HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED = "HasDestroyAllTokenHelpBeenDisplayed";
     public const string HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED = "HasShieldTokenHelpBeenDisplayed";
     public const string HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED = "HasSpeedTokenHelpBeenDisplayed";
-    public const string LOAD_PROGRESS_TEXT = "Loading: ";
+
+    public const string START_SPINNER = "StartSpinner";
+    public const string STOP_SPINNER = "StopSpinner";
+    public const string UPDATE_LOGGED_IN_MENU = "UpdateLoggedInMenu";
+
+
     public const string PAUSE_GAME = "PauseGame";
     public const string START_GAME = "StartGame";
-    public const string BOOT_GAME = "BootGame";
+    public const string UPDATE_ACTIVE_SCENE = "BootGame";
     public const string GAME_OVER = "GameOver";
     public const string GAME_HAS_STARTED = "GameHasStarted";
+
     public const string SAVE_PATH = "/thefutureinfo.dat";
     public const string SAVE_DATA = "SaveData";
     public const string LOAD_DATA = "LoadData";
+
 
     public const int SMALL_COIN_VALUE = 1;
     public const int BIG_COIN_VALUE = 50;
@@ -110,8 +136,9 @@ public static class BackendVariables
 
 public static class TextStrings
 {
-    public const string DESTROY_ALL_AQUIRED = "Destroy everything!";
-    public const string INVULNERABILITY_AQUIRED = "Shield Aquired!";
-    public const string SPEED_AQUIRED = "Ludicrous Speed /n Available!";
+    public const string DESTROY_ALL_AQUIRED = "Destroy All The Things!";
+    public const string INVULNERABILITY_AQUIRED = "Shield!";
+    public const string SPEED_AQUIRED = "Ludicrous Speed!";
+    public const string BOLT_AQUIRED = "+1 Bolt!";
     public const string COIN_AQUIRED = "+1";
 }

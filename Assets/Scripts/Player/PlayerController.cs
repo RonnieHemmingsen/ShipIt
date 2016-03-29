@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float _shipSpeed = 5f;
     [SerializeField]
-    private int _numberOfShots = 10;
+    private int _numberOfShotsToSpawn = 10;
     [SerializeField]
     private float _fireRate = 0.5f;
     [SerializeField]
@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour {
     private bool _isStartingGame = true;
     private Vector2 _startSwipePosition;
     private bool _shieldIsFading;
+    private int _currentNumberOfBolts;
 
 
 
@@ -55,13 +56,12 @@ public class PlayerController : MonoBehaviour {
         get { return _shipSpeed; }
         set { _shipSpeed = value; }
     }
-
-    public int NumberOfShots
-    {
-        get { return _numberOfShots; }
-        set { _numberOfShots = value; }
-    }
         
+    public int CurrentNumberOfBolts
+    {
+        get { return _currentNumberOfBolts; }
+        set { _currentNumberOfBolts = value; }
+    }
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -77,6 +77,8 @@ public class PlayerController : MonoBehaviour {
         EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
+        EventManager.StartListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
+
         EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
 
     }
@@ -88,6 +90,8 @@ public class PlayerController : MonoBehaviour {
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
+        EventManager.StopListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
+
         EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
     }
 
@@ -95,7 +99,13 @@ public class PlayerController : MonoBehaviour {
     {
         _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0f);
         _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
-        _objPool.CreatePool(_numberOfShots, _bolt, _bolt.tag);
+        _objPool.CreatePool(_numberOfShotsToSpawn, _bolt, _bolt.tag);
+        _currentNumberOfBolts = _GM.MaxNumberOfBullets;
+    }
+
+    void OnDestroy()
+    {
+        _objPool.ClearPool(_bolt.tag);
     }
 
     void FixedUpdate()
@@ -117,13 +127,27 @@ public class PlayerController : MonoBehaviour {
         #if UNITY_EDITOR
         _moveHorizontal = Input.GetAxis("Horizontal");
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space) && CanFire())
         {
             Fire();
+            SubtractBoltFromPlayer();
         }
 
+
         #elif UNITY_IOS
-        _moveHorizontal = Input.acceleration.x;
+        Touch[] touchy = Input.touches;
+        //Shoot once per tap
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch && CanFire())
+        {
+            _hasFiredTouch = true;
+            Fire();
+            SubtractBoltFromPlayer();
+        }
+        //reset on tap end
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Ended && _hasFiredTouch)
+        {
+            _hasFiredTouch = false;
+        }
         #endif
 
         Vector3 val = new Vector3(_moveHorizontal, 0 ,0);
@@ -230,20 +254,9 @@ public class PlayerController : MonoBehaviour {
         }
         #elif UNITY_IOS
 
-        Touch[] touchy = Input.touches;
-        //Shoot once per tap
-        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch)
-        {
-            _hasFiredTouch = true;
-            Fire();
-        }
-        //reset on tap end
-        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Ended && _hasFiredTouch)
-        {
-            _hasFiredTouch = false;
-        }
 
         //check if swipe has started -cache location
+        Touch[] touchy = Input.touches;
         if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began)
         {
             _startSwipePosition = touchy[0].position;
@@ -266,6 +279,26 @@ public class PlayerController : MonoBehaviour {
 
     }
     #endregion
+
+    private void AddBoltToPlayer()
+    {
+        if (_currentNumberOfBolts + 1 <= _GM.MaxNumberOfBullets)
+        {
+            _currentNumberOfBolts++;
+        }
+    }
+
+    private void SubtractBoltFromPlayer()
+    {
+        _currentNumberOfBolts--;
+    }
+
+    private bool CanFire()
+    {
+        return _currentNumberOfBolts > 0 ? true : false;
+    }
+
+
     #region effect graphics
     private void InvulnerabilityOn()
     {

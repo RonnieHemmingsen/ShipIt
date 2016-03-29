@@ -32,21 +32,14 @@ public class EndGameMenuHandler : MonoBehaviour {
 	void Start () {
         
         _payWithCoins.onClick.AddListener(delegate {
-
-            _survivesDeath = true;
-            EventManager.TriggerIntEvent(EventStrings.SUBTRACT_FROM_GLOBAL_COINSCORE, GameSettings.COST_OF_DEATH); 
-            EventManager.TriggerEvent(GameSettings.START_GAME);
-            EventManager.TriggerEvent(EventStrings.GET_REKT);
-            Utilities.UnPause();
-            
+            EventManager.TriggerIntEvent(EventStrings.SUBTRACT_FROM_GLOBAL_COINSCORE, GameSettings.COST_OF_DEATH);
+            SurviveDeath();
         });
 
         _payWithAds.onClick.AddListener(delegate {
             //TODO; Implement adds
             ShowAd();
             print("Show ad");
-            _survivesDeath = true;
-
         });
 
         DisableMenu();
@@ -71,15 +64,18 @@ public class EndGameMenuHandler : MonoBehaviour {
         _toMainMenu.gameObject.SetActive(true);
         _payWithAds.gameObject.SetActive(true);
         _payWithCoins.gameObject.SetActive(true); 
+        _survivesDeath = false;
 
         StartCoroutine(WaitForPermaDeath());
 
-        if(GameSettings.COST_OF_DEATH > _data.GlobalCoinScore || _GM.PlayerDeathCount > 1)
+        if(GameSettings.COST_OF_DEATH > (_data.GlobalCoinScore +_GM.CurrentCoinScore) || _GM.PlayerDeathCount > 1)
         {
+            PermaDeath();
             _payWithCoins.interactable = false;
             _payWithAds.interactable = false;
 
         }
+
 
         Utilities.Pause();
     }
@@ -94,10 +90,49 @@ public class EndGameMenuHandler : MonoBehaviour {
 
     private void ShowAd()
     {
-        if(Advertisement.IsReady())
+        if(Advertisement.IsReady("rewardedVideoZone"))
         {
-            Advertisement.Show();
+            ShowOptions options = new ShowOptions();
+            options.resultCallback = HandleShowResult;
+            Advertisement.Show("rewardedVideoZone", options);
         }
+    }
+
+    private void HandleShowResult(ShowResult result)
+    {
+        switch (result)
+        {
+            case ShowResult.Finished:
+                SurviveDeath();
+                print("Ad completed");
+                break;
+            case ShowResult.Skipped:
+                PermaDeath();
+                print("Player skipped the ad");
+                break;
+            case ShowResult.Failed:
+                PermaDeath();
+                print("The ad failed somehow: " + ShowResult.Failed.ToString());
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void SurviveDeath()
+    {            
+        DisableMenu();
+        Utilities.UnPause();
+        EventManager.TriggerEvent(GameSettings.START_GAME);
+        EventManager.TriggerEvent(EventStrings.GET_REKT);
+        _survivesDeath = true;
+    }
+
+    private void PermaDeath()
+    {
+        Utilities.UnPause();
+        EventManager.TriggerEvent(GameSettings.GAME_OVER);
+        EventManager.TriggerEvent(GameSettings.SAVE_DATA);  
     }
 
     private IEnumerator WaitForPermaDeath()
@@ -112,9 +147,7 @@ public class EndGameMenuHandler : MonoBehaviour {
 
         if(!_survivesDeath)
         {
-            Utilities.UnPause();
-            EventManager.TriggerEvent(GameSettings.GAME_OVER);
-            EventManager.TriggerEvent(GameSettings.SAVE_DATA);  
+            PermaDeath();
         }
 
     }
