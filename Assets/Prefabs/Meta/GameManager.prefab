@@ -145,7 +145,6 @@ MonoBehaviour:
   - Invulnerable
   - DestroyAll
   - LudicrousSpeed
-  - BigCoin
 --- !u!114 &11471706
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -164,6 +163,7 @@ MonoBehaviour:
   _SpeedTimer: 3
   _maxNumberOfBolts: 10
   _spawnValues: {x: 7, y: 0, z: 16}
+  _bolt: {fileID: 115052, guid: 56416625578d04cde8ca229efe590815, type: 2}
   _asteroid: {fileID: 172768, guid: 66142ff9f311343cda8cdacd73695717, type: 2}
   _laserEnemy: {fileID: 193976, guid: 48f33fd5afb5c48358371db5c9ce408f, type: 2}
   _bulletEnemy: {fileID: 116032, guid: 003107d4aa5ff4788905ec4150ab936f, type: 2}

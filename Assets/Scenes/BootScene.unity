@@ -237,7 +237,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1153324591}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63b9f25276e7546278ff8deab22ccb4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 216e5c795c23a4c1da76a45772b783a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1232924391
@@ -291,6 +291,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1485024718}
   - 114: {fileID: 1485024719}
+  - 81: {fileID: 1485024720}
   m_Layer: 0
   m_Name: LoadGame
   m_TagString: Untagged
@@ -321,6 +322,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bf0b7b7ec399480e8c87bf6690942d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!81 &1485024720
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1485024717}
+  m_Enabled: 1
 --- !u!1001 &1583595698
 Prefab:
   m_ObjectHideFlags: 0

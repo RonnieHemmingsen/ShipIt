@@ -49,15 +49,25 @@ public class SpawnManager : MonoBehaviour {
         _objPool = FindObjectOfType<ObjectPoolManager>();
         _GM = FindObjectOfType<GameManager>();
 	}
-	
+
+    void OnEnable()
+    {
+        EventManager.StartListening(GameSettings.GAME_OVER, Reset);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListening(GameSettings.GAME_OVER, Reset);
+    }
+        
     IEnumerator Start()
     {
-        print("Start Hazards");
+        //print("Start Hazards");
         _state = HazardStates.Initialise;
 
         while(true)
         {
-            if(!_GM.IsStartingGame)
+            if(!_GM.IsStartingGame && !_GM.IsWaitingForNewGame)
             {
                 switch (_state)
                 {
@@ -93,6 +103,12 @@ public class SpawnManager : MonoBehaviour {
         }
 
     }
+
+    private void Reset()
+    {
+        _state = HazardStates.Initialise;
+    }
+
 
     private void Initialise()
     {

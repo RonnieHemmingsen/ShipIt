@@ -41,6 +41,7 @@ public class GameBalancer : MonoBehaviour {
     private float _deltaTimeIncrement;
     private float _deltaDifficultyIncrement;
     private float _deltaToggleAllIncrement;
+    private float _deltaTokenIncrement;
     private bool _canSpawnTokens;
     private bool _canSpawnLaserEnemies;
     private bool _canSpawnBulletEnemies;
@@ -141,18 +142,33 @@ public class GameBalancer : MonoBehaviour {
         _GM = GetComponent<GameManager>();   
     }
 
-	// Use this for initialization
-	void Start () {
+    void OnEnable()
+    {
         _difficultySetting = 0;
-	}
+        EventManager.StartListening(GameSettings.GAME_OVER, Reset);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListening(GameSettings.GAME_OVER, Reset);
+    }
+    private void Reset()
+    {
+        _deltaTimeIncrement = 0;
+        _deltaDifficultyIncrement = 0;
+        _deltaToggleAllIncrement = 0;
+        _deltaTokenIncrement = 0;
+    }
+
 	
 	// Update is called once per frame
 	void Update () {
 
-        if(!_GM.IsStartingGame)
+        if(!_GM.IsStartingGame && !_GM.IsWaitingForNewGame)
         {
             _deltaTimeIncrement += Time.deltaTime;
             _deltaDifficultyIncrement += Time.deltaTime;
+            _deltaTokenIncrement += Time.deltaTime;
             _deltaToggleAllIncrement -= Time.deltaTime;
 
             if(_deltaTimeIncrement > _timeBetweenSpeedIncrements 
@@ -175,7 +191,7 @@ public class GameBalancer : MonoBehaviour {
             }
 
 
-            if(Time.time > _timeBeforeAsteroidsAppear)
+            if(_deltaTimeIncrement > _timeBeforeAsteroidsAppear)
             {
                 _canSpawnAsteroids = true;
             }
@@ -236,7 +252,7 @@ public class GameBalancer : MonoBehaviour {
                 //print("Level: " + _difficultySetting);
             }
 
-            if(Time.time > _timeBeforeTokensCanAppear)
+            if(_deltaTokenIncrement > _timeBeforeTokensCanAppear)
             {
                 _canSpawnTokens = true;
             }

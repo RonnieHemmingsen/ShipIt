@@ -7,27 +7,42 @@ public class LoggedInMenuHandler : MonoBehaviour {
     [SerializeField]
     private Text _userNameText;
     [SerializeField]
-    private Text _coinScoreText;
+    private Text _coinHeaderText;
     [SerializeField]
-    private Text _travelScoreText;
+    private Text _totalCoinScoreText;
+    [SerializeField]
+    private Text _lastCoinScoreText;
+    [SerializeField]
+    private Text _traveHeaderText;
+    [SerializeField]
+    private Text _lastTravelScoreText;
+    [SerializeField]
+    private Text _bestTravelScoreText;
 
     void OnEnable()
     {
-        EventManager.StartListening(GameSettings.UPDATE_LOGGED_IN_MENU, UpdateMenu);
+        EventManager.StartListening(MenuStrings.UPDATE_ONLINE_MENU, UpdateMenu);
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(GameSettings.UPDATE_LOGGED_IN_MENU, UpdateMenu);
+        EventManager.StopListening(MenuStrings.UPDATE_ONLINE_MENU, UpdateMenu);
     }
 
 
     private void UpdateMenu()
     {
-        print("updatemenu");
-        _userNameText.text = PlayerData.instance.FBName;
-        _coinScoreText.text = "Coin score: " + PlayerData.instance.GlobalCoinScore.ToString();
-        _travelScoreText.text = "Travel score " + PlayerData.instance.HighestTravelScore.ToString();
+        print("update online menu");
+        _userNameText.text = PlayerData.instance.Scores.userName;
+
+        _traveHeaderText.text = TextStrings.LIGHTYEARS_TRAVELLED;
+        _lastTravelScoreText.text = TextStrings.LAST_TRIP_LENGTH+ PlayerData.instance.Scores.lastTravelScore.ToString("F1");
+        _bestTravelScoreText.text = TextStrings.BEST_TRIP_LENGTH + PlayerData.instance.Scores.highestTravelScore.ToString("F1");
+
+        _coinHeaderText.text = TextStrings.FUTURE_GREENS_SCORE;
+        _lastCoinScoreText.text = TextStrings.FG_LAST + "\n" + PlayerData.instance.Scores.lastCoinScore.ToString();
+        _totalCoinScoreText.text = TextStrings.FG_TOTAL + "\n" + PlayerData.instance.Scores.globalCoinScore.ToString();
+
 
     }
 

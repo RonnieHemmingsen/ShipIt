@@ -49,6 +49,7 @@ public class ObjectPoolManager : MonoBehaviour {
     {
         List<GameObject> curList = RetrieveGOList(poolName);
      
+        //print(poolName);
         if(HasDisabled(curList))
         {
             GameObject GO = _objPool.GetObjectFromPool(curList);
@@ -71,17 +72,29 @@ public class ObjectPoolManager : MonoBehaviour {
         RemovePool(poolName);
     }
 
+    public void CreateNewDictionary()
+    {
+        _pools = new Dictionary<string, List<GameObject>>();
+    }
+
     private bool HasDisabled(List<GameObject> pool)
     {
         bool hasDisabled = false;
         for (int i = 0; i < pool.Count; i++)
         {
             GameObject GO = pool[i];
-            if(!GO.activeSelf)
+            try
             {
-                hasDisabled = true;
-                break;
+                if(!GO.activeSelf)
+                {
+                    hasDisabled = true;
+                    break;
+                }    
+            } catch (System.Exception ex)
+            {
+                print(ex.ToString());
             }
+
         }
 
         return hasDisabled;
@@ -107,4 +120,6 @@ public class ObjectPoolManager : MonoBehaviour {
             _pools.Remove(poolName);
         }
     }
+
+
 }

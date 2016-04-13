@@ -38,7 +38,24 @@ public class Utilities : MonoBehaviour {
 
     public static void UnPause()
     {
+        //WHY?!?
         Time.timeScale = 1;
+    }
+
+
+    public static IEnumerator CheckInternetConnection(Action<bool> callback)
+    {
+        WWW www = new WWW(OnlineStrings.URL_CHECK);
+        yield return www;
+
+        if(www.error != null)
+        {
+            callback(false);
+        }
+        else
+        {
+            callback(true);
+        }
     }
 
 

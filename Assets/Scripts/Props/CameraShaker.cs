@@ -11,6 +11,8 @@ public class CameraShaker : MonoBehaviour {
     private float _shakeMagnitude;
     [SerializeField]
     private float _decreaseFactor;
+    [SerializeField]
+    private Vector3 _defaultPosition;
 
 
     private float _deltaShakeTime; 
@@ -50,6 +52,8 @@ public class CameraShaker : MonoBehaviour {
             _mainCamera.transform.localPosition = Random.insideUnitSphere * _shakeMagnitude;
             _shakeTime -= Time.deltaTime * _decreaseFactor;    
         }
+
+        _mainCamera.transform.localPosition = _defaultPosition;
 
     }
 }

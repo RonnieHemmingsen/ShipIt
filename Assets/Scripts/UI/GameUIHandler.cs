@@ -18,13 +18,21 @@ public class GameUIHandler : MonoBehaviour {
     private Text _boltCount;
 
     private GameManager _GM;
-    private PlayerController _PC;
-
 
     void Awake()
     {
         _GM = FindObjectOfType<GameManager>();
-        _PC = FindObjectOfType<PlayerController>();
+
+    }
+
+    void OnEnable()
+    {
+        EventManager.StartListening(GameSettings.GAME_OVER, DisableSelf);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListening(GameSettings.GAME_OVER, DisableSelf);
     }
 
 	// Use this for initialization
@@ -33,15 +41,25 @@ public class GameUIHandler : MonoBehaviour {
         _distanceText.text = "Distance: 0";
         _scoreText.text = "0";
         _boltCount.text = "";
+
+        EventManager.TriggerEvent(GameSettings.GAME_UI_EXISTS);
 	}
+
 	
 	// Update is called once per frame
 	void Update () {
         _timePlayedText.text = Mathf.RoundToInt(Time.time).ToString();
 
-        _distanceText.text = _GM.CurrentTravelDistance.ToString("F1");
-        _scoreText.text = _GM.CurrentCoinScore.ToString(); 
+        _distanceText.text = PlayerData.instance.Scores.lastTravelScore.ToString("F1");
+        _scoreText.text = PlayerData.instance.Scores.lastCoinScore.ToString(); 
         _speedText.text = _GM.GameSpeed.ToString();
-        _boltCount.text = _PC.CurrentNumberOfBolts.ToString();
+        _boltCount.text = _GM.CurrentNumberOfBolts.ToString();
 	}
+
+    private void DisableSelf()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+
 }

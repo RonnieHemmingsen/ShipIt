@@ -617,9 +617,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shipSpeed: 20
-  _numberOfShots: 10
+  _numberOfShotsToSpawn: 10
   _fireRate: 0.15
-  _bolt: {fileID: 115052, guid: 56416625578d04cde8ca229efe590815, type: 2}
+  _bolt: {fileID: 194776, guid: a7037138876824aeab6060d20d916ecb, type: 2}
   _boltSpawnPos: {fileID: 186168}
   _invulnerableForceField: {fileID: 180108}
   _ludicrousSpeedAfterburner: {fileID: 141004}

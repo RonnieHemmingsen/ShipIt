@@ -46,7 +46,6 @@ public class DestroyByContact : MonoBehaviour {
             print("Death By Hazard");
             ExplodeAThing(gameObject);
             Destroy(other.gameObject);
-            EventManager.TriggerIntEvent(EventStrings.ADD_TO_GLOBAL_COINSCORE, _GM.CurrentCoinScore);
             EventManager.TriggerEvent(EventStrings.HAZARD_KILL);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
 
@@ -58,7 +57,6 @@ public class DestroyByContact : MonoBehaviour {
             print("Death by laser");
             ExplodeAThing(gameObject);
             Destroy(other.gameObject);
-            EventManager.TriggerIntEvent(EventStrings.ADD_TO_GLOBAL_COINSCORE, _GM.CurrentCoinScore);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
 
@@ -68,7 +66,6 @@ public class DestroyByContact : MonoBehaviour {
             print("Death by bullet");
             ExplodeAThing(gameObject);
             Destroy(other.gameObject);
-            EventManager.TriggerIntEvent(EventStrings.ADD_TO_GLOBAL_COINSCORE, _GM.CurrentCoinScore);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
 

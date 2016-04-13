@@ -8,14 +8,12 @@ public class StartGameButton : MonoBehaviour {
     [SerializeField]
     private GameObject _menu;
 
-    private LevelManager _lvlMan;
     private Button _me;
     private Animator _anim;
     // Use this for initialization
 
     void Awake()
     {
-        _lvlMan = FindObjectOfType<LevelManager>();
         _me = GetComponent<Button>();
         _anim = GetComponentInParent<Animator>();
     }
@@ -24,9 +22,16 @@ public class StartGameButton : MonoBehaviour {
     {
 
         _me.onClick.AddListener(delegate {
-            StartCoroutine(StartGameSequence());
+            //StartCoroutine(StartGameSequence());
+            StartGame();
         });
 	}
+
+    private void StartGame()
+    {
+        print("Press Play On Tape");
+        EventManager.TriggerEvent(GameSettings.START_GAME);
+    }
 
     private IEnumerator StartGameSequence()
     { 
@@ -42,9 +47,6 @@ public class StartGameButton : MonoBehaviour {
 
         } 
 
-        EventManager.TriggerEvent(GameSettings.UPDATE_ACTIVE_SCENE);
-        EventManager.TriggerEvent(GameSettings.START_GAME);
-        _menu.SetActive(false);
     }
 	
 

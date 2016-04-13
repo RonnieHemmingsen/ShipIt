@@ -14,11 +14,7 @@ public class PlayerController : MonoBehaviour {
     [SerializeField]
     private float _shipSpeed = 5f;
     [SerializeField]
-    private int _numberOfShotsToSpawn = 10;
-    [SerializeField]
     private float _fireRate = 0.5f;
-    [SerializeField]
-    private GameObject _bolt;
     [SerializeField]
     private GameObject _boltSpawnPos;
     [SerializeField]
@@ -46,10 +42,6 @@ public class PlayerController : MonoBehaviour {
     private bool _isStartingGame = true;
     private Vector2 _startSwipePosition;
     private bool _shieldIsFading;
-    private int _currentNumberOfBolts;
-
-
-
 
     public float ShipSpeed
     {
@@ -57,11 +49,7 @@ public class PlayerController : MonoBehaviour {
         set { _shipSpeed = value; }
     }
         
-    public int CurrentNumberOfBolts
-    {
-        get { return _currentNumberOfBolts; }
-        set { _currentNumberOfBolts = value; }
-    }
+
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
@@ -77,8 +65,6 @@ public class PlayerController : MonoBehaviour {
         EventManager.StartListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
-        EventManager.StartListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
-
         EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
 
     }
@@ -90,7 +76,7 @@ public class PlayerController : MonoBehaviour {
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
-        EventManager.StopListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
+
 
         EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
     }
@@ -99,13 +85,6 @@ public class PlayerController : MonoBehaviour {
     {
         _invulnerableForceField.GetComponent<CanvasRenderer>().SetAlpha(0f);
         _ludicrousSpeedAfterburner.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
-        _objPool.CreatePool(_numberOfShotsToSpawn, _bolt, _bolt.tag);
-        _currentNumberOfBolts = _GM.MaxNumberOfBullets;
-    }
-
-    void OnDestroy()
-    {
-        _objPool.ClearPool(_bolt.tag);
     }
 
     void FixedUpdate()
@@ -130,18 +109,22 @@ public class PlayerController : MonoBehaviour {
         if(Input.GetKeyDown(KeyCode.Space) && CanFire())
         {
             Fire();
-            SubtractBoltFromPlayer();
+            EventManager.TriggerEvent(EventStrings.PLAYER_SHOOTS);
+
         }
 
 
         #elif UNITY_IOS
+        _moveHorizontal = Input.acceleration.x;
+
+
         Touch[] touchy = Input.touches;
         //Shoot once per tap
         if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch && CanFire())
         {
             _hasFiredTouch = true;
             Fire();
-            SubtractBoltFromPlayer();
+            EventManager.TriggerEvent(EventStrings.PLAYER_SHOOTS);
         }
         //reset on tap end
         if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Ended && _hasFiredTouch)
@@ -280,22 +263,11 @@ public class PlayerController : MonoBehaviour {
     }
     #endregion
 
-    private void AddBoltToPlayer()
-    {
-        if (_currentNumberOfBolts + 1 <= _GM.MaxNumberOfBullets)
-        {
-            _currentNumberOfBolts++;
-        }
-    }
 
-    private void SubtractBoltFromPlayer()
-    {
-        _currentNumberOfBolts--;
-    }
 
     private bool CanFire()
     {
-        return _currentNumberOfBolts > 0 ? true : false;
+        return _GM.CurrentNumberOfBolts > 0 ? true : false;
     }
 
 

@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private Vector3 _spawnValues;
     [SerializeField]
+    private GameObject _bolt;
+    [SerializeField]
     private GameObject _asteroid;
     [SerializeField]
     private GameObject _laserEnemy;
@@ -50,7 +52,6 @@ public class GameManager : MonoBehaviour {
 
     private ObjectPoolManager _objPool;
     private List<string> _aliveTokenList;
-    private float _currentTravelDistance;
     private int _destroyedHazards;
     private int _bulletEnemiesAlive;
     private int _laserEnemiesAlive;
@@ -58,7 +59,6 @@ public class GameManager : MonoBehaviour {
     private bool _isPlayerShielded;
     private float _deltaShieldTime;
     private float _deltaSpeedTime;
-    private int _currentCoinScore;
     private bool _isSpeedActive;
     private bool _hasSpeedToken;
     private bool _hasDestroyAllToken;
@@ -73,7 +73,10 @@ public class GameManager : MonoBehaviour {
     private bool _hasSpeedTokenHelpBeenDisplayed;
     private bool _isPlayerDead;
     private int _playerDeathCount;
+    private int _currentNumberOfBolts;
     private bool _isStartingGame = true;
+    private bool _isWaitingForNewGame;
+
 
     #region Properties
 
@@ -92,18 +95,6 @@ public class GameManager : MonoBehaviour {
     {
         get { return _isDebugInvulne; }
         set { _isDebugInvulne = value; }
-    }
-
-    public int CurrentCoinScore
-    {
-        get { return _currentCoinScore; }
-        set { _currentCoinScore = value; }
-    }
-
-    public float CurrentTravelDistance
-    {
-        get { return _currentTravelDistance; }
-        set { _currentTravelDistance = value; }
     }
         
     public float GameSpeed
@@ -223,6 +214,17 @@ public class GameManager : MonoBehaviour {
         get { return _maxNumberOfBolts; }
         set { _maxNumberOfBolts = value; }
     }
+
+    public int CurrentNumberOfBolts
+    {
+        get { return _currentNumberOfBolts; }
+        set { _currentNumberOfBolts = value; }
+    }
+
+    public bool IsWaitingForNewGame {
+        get { return _isWaitingForNewGame; }
+        set { _isWaitingForNewGame = value; }
+    }
         
     #endregion
 
@@ -231,8 +233,11 @@ public class GameManager : MonoBehaviour {
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
     }
 
+
+
 	// Use this for initialization
 	void Start () {
+        _objPool.CreateNewDictionary();
         _objPool.CreatePool(100, _coin, _coin.tag);
         _objPool.CreatePool(10, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
@@ -244,8 +249,9 @@ public class GameManager : MonoBehaviour {
         _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
         _objPool.CreatePool(30, _boltToken, _boltToken.tag);
         _objPool.CreatePool(10, _tweenText, ObjectStrings.TWEEN_TEXT_OUT);
+        _objPool.CreatePool(_maxNumberOfBolts, _bolt, _bolt.tag);
 
-
+        _currentNumberOfBolts = _maxNumberOfBolts;
 
         _deltaShieldTime = _playerShieldedTime;
         _deltaSpeedTime = _SpeedTimer;
@@ -262,6 +268,7 @@ public class GameManager : MonoBehaviour {
     void OnEnable()
     {
         EventManager.StartListening(GameSettings.START_GAME, InstantiatePlayer);
+        EventManager.StartListening(GameSettings.RESET_GAME, InstantiatePlayer);
         EventManager.StartListening(EventStrings.PLAYER_DEAD, PlayerDied);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
 
@@ -279,9 +286,12 @@ public class GameManager : MonoBehaviour {
         EventManager.StartListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
         EventManager.StartListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
+        EventManager.StartListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
+        EventManager.StartListening(EventStrings.PLAYER_SHOOTS, SubtractBoltFromPlayer);
+
 
         EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
-        EventManager.StartListening(GameSettings.GAME_OVER, GameEnded);
+        EventManager.StartListening(GameSettings.GAME_OVER, ResetGame);
 
         EventManager.StartListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StartListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
@@ -293,6 +303,7 @@ public class GameManager : MonoBehaviour {
     void OnDisable()
     {
         EventManager.StopListening(GameSettings.START_GAME, InstantiatePlayer);
+        EventManager.StopListening(GameSettings.RESET_GAME, InstantiatePlayer);
         EventManager.StopListening(EventStrings.PLAYER_DEAD, PlayerDied);
 
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
@@ -308,8 +319,11 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListening(EventStrings.HAZARD_OUT_OF_BOUNDS, DecreaseAliveHazardCount);
         EventManager.StopListening(EventStrings.GRAB_COIN, UpdateCoinScore);
 
+        EventManager.StopListening(EventStrings.PLAYER_SHOOTS, SubtractBoltFromPlayer);
+        EventManager.StopListening(EventStrings.GRAB_BOLT_TOKEN, AddBoltToPlayer);
+
         EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
-        EventManager.StopListening(GameSettings.GAME_OVER, GameEnded);
+        EventManager.StopListening(GameSettings.GAME_OVER, ResetGame);
 
         EventManager.StopListeningForStringEvent(EventStrings.ENEMY_DESTROYED, EnemyDestroyed);
         EventManager.StopListeningForStringEvent(EventStrings.REMOVE_FROM_ALIVE_LIST, UpdateAliveList);
@@ -317,6 +331,18 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListeningForStringEvent(EventStrings.ENEMY_OUT_OF_BOUNDS, DecreaseAliveEnemyCount);
     }
     #endregion
+
+    //TODO: Finished the job!
+    private IEnumerator CreatePools()
+    {
+        float time = 0;
+
+        do
+        {
+            time += Time.deltaTime;
+
+        } while (time < 2);
+    }
 
     void Update()
     {
@@ -356,7 +382,7 @@ public class GameManager : MonoBehaviour {
 
             }
         }
-        if(!IsStartingGame)
+        if(!IsStartingGame && !IsWaitingForNewGame)
         {
             CalculatePlayDistance();
         }
@@ -453,25 +479,34 @@ public class GameManager : MonoBehaviour {
 
     private void UpdateCoinScore()
     {
-        _currentCoinScore++;
-    }
+        PlayerData.instance.Scores.lastCoinScore++;
+        PlayerData.instance.Scores.globalCoinScore++;
 
-    private void UpdateBigCoinScore()
-    {
-        _currentCoinScore += GameSettings.BIG_COIN_VALUE;
     }
 
     private void EnemyDestroyed(string tag)
     {
         DecreaseAliveEnemyCount(tag);
-        _destroyedHazards += GameSettings.SMALL_COIN_VALUE;
+        _destroyedHazards++;
 
+    }
 
+    private void AddBoltToPlayer()
+    {
+        if (_currentNumberOfBolts + 1 <= _maxNumberOfBolts)
+        {
+            _currentNumberOfBolts++;
+        }
+    }
+
+    private void SubtractBoltFromPlayer()
+    {
+        _currentNumberOfBolts--;
     }
 
     private void CalculatePlayDistance()
     {
-        _currentTravelDistance += Mathf.Abs(_gameSpeed * Time.deltaTime);
+        PlayerData.instance.Scores.lastTravelScore += Mathf.Abs(_gameSpeed * Time.deltaTime);
     }
     #endregion
 
@@ -564,16 +599,6 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
-    private IEnumerator Vibrate(float vibrateTimes)
-    {
-        
-        while (vibrateTimes >= 0)
-        {
-            vibrateTimes--;
-            Handheld.Vibrate();
-            yield return new WaitForSeconds(.6f);
-        }
-    }
 
     private IEnumerator WaitForDeath()
     {
@@ -624,6 +649,8 @@ public class GameManager : MonoBehaviour {
 
     private void InstantiatePlayer()
     {
+        PlayerData.instance.Scores.lastCoinScore = 0;
+        PlayerData.instance.Scores.lastTravelScore = 0;
         _isPlayerDead = false;
         _isStartingGame = true;
         GetComponent<CreatePlayer>().Create();
@@ -633,11 +660,25 @@ public class GameManager : MonoBehaviour {
     {
         _gameUI.SetActive(true);
         _isStartingGame = false;
+        _isWaitingForNewGame = false;
     }
 
-    private void GameEnded()
+    private void ResetGame()
     {
-       
+        _deltaShieldTime = _playerShieldedTime;
+        _deltaSpeedTime = _SpeedTimer;
+        _aliveTokenList = new List<string>();
+
+        _hasSpeedToken = false;
+        _hasShieldToken = false;
+        _hasDestroyAllToken = false;
+        _isStartingGame = false;
+
+        _playerDeathCount = 0;
+        _currentNumberOfBolts = _maxNumberOfBolts;
+
+
+        _isWaitingForNewGame = true;
     }
 
     private void CheckPlayerPrefs()

@@ -48,13 +48,56 @@ public class PersistentDataManager : MonoBehaviour {
         }
     }
 
-    public static void SavePlayerData(int coins, float maxTravel, float lastTravel)
+    public static void SaveGSUserId(string userId)
     {
-        SaveOfflinePlayerData(coins, maxTravel, lastTravel);
-        instance.StartCoroutine(SaveOnlinePlayerDataAsync(coins, maxTravel, lastTravel));
+        PlayerPrefs.SetString(OnlineStrings.GS_USER_ID, userId);
     }
 
+    public static string LoadGSUserId()
+    {
+        if(PlayerPrefs.HasKey(OnlineStrings.GS_USER_ID))
+        {
+            return PlayerPrefs.GetString(OnlineStrings.GS_USER_ID);
+        } else
+        {
+            return "";
+        }
+    }
 
+    public static IEnumerator LoadPlayerName(string userId, Action<string> callback)
+    {
+        string userName = ""; 
+        new AccountDetailsRequest().Send((response) => {
+            if (response.HasErrors) {
+                print(response.HasErrors.ToString());
+                userName = response.HasErrors.ToString();
+            }
+            else 
+            {
+                userName = response.DisplayName;
+            }
+        });
+
+        while (userName == "")
+        {
+            yield return new WaitForEndOfFrame();
+        }
+
+        callback(userName);
+    }
+
+    public static void SavePlayerData(Data scores)
+    {
+        scores.timeStamp = DateTime.Now;
+        if(IsNewTravelScoreHigher(scores.highestTravelScore, scores.lastTravelScore))
+        {
+            scores.highestTravelScore = scores.lastTravelScore;
+        }
+
+        SaveOfflinePlayerData(scores);
+        instance.StartCoroutine(SaveOnlinePlayerData(scores));
+    }
+        
     public static IEnumerator LoadPlayerData(string userId, Action<Data> callback)
     {
         Data onlineData = null;
@@ -62,26 +105,35 @@ public class PersistentDataManager : MonoBehaviour {
         bool isOnlineDataLegit = false;
         bool hasFinished = false;
 
-        print("loading stuff!");
+        print("loading player data ");
 
         offlineData = new Data(LoadOfflinePlayerData());
 
-        if (GS.Authenticated && userId != null)
+        if (GS.Authenticated && !string.IsNullOrEmpty(userId))
         {
             new LogEventRequest_GET_DATA().Set_PLAYER_ID(userId).Send((response) => {
                 if(!response.HasErrors)
                 {
-                    onlineData = new Data();
-                    onlineData.timeStamp = new DateTime((long)response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_TIMESTAMP));
-                    onlineData.globalCoinScore = (int) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_COINS);
-                    onlineData.lastTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_LAST_TRAVEL);
-                    onlineData.highestTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
-                        .GetNumber(BackendVariables.PLAYER_DATA_MAX_TRAVEL);    
+                    try {
+                        onlineData = new Data();
+                        onlineData.timeStamp = new DateTime((long)response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
+                            .GetNumber(BackendVariables.PLAYER_DATA_TIMESTAMP));
+                        
 
-                    print("Online TimeStamp: " + onlineData.timeStamp);
+                        onlineData.globalCoinScore = (int) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
+                            .GetNumber(BackendVariables.PLAYER_DATA_TOTAL_COINS);
+                        onlineData.lastCoinScore = (int) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
+                            .GetNumber(BackendVariables.PLAYER_DATA_LAST_COINS);
+                        onlineData.lastTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
+                            .GetNumber(BackendVariables.PLAYER_DATA_LAST_TRAVEL);
+                        onlineData.highestTravelScore = (float) response.ScriptData.GetGSData(BackendVariables.PLAYER_DATA)
+                            .GetNumber(BackendVariables.PLAYER_DATA_MAX_TRAVEL);    
+
+                        print("Online data retrieved - TimeStamp: " + onlineData.timeStamp);
+                    } catch (Exception ex) {
+                        print("Load Exception: " +ex.ToString());
+                    }
+
                     hasFinished = true;
                 }
                 else
@@ -110,25 +162,6 @@ public class PersistentDataManager : MonoBehaviour {
             print("User Offline, using offline data");   
         }
 
-
-        //assuming data was found both online and off. Check which is the newest.
-        if (onlineData != null && offlineData != null)
-        {
-            if (IsOfflineTimeStampNewer(offlineData.timeStamp, onlineData.timeStamp))
-            {
-                //if the offline data is newer, save it to online.
-                instance.StartCoroutine(SaveOnlinePlayerDataAsync(offlineData.globalCoinScore, offlineData.lastTravelScore, offlineData.highestTravelScore));
-                isOnlineDataLegit = false;
-                print("Offline data newer. Using that.");
-
-            } else
-            {
-                SaveOfflinePlayerData(onlineData.globalCoinScore, onlineData.lastTravelScore, onlineData.highestTravelScore);
-                isOnlineDataLegit = true;
-
-            }
-        }
-
         //print("returning " + onlineData.timeStamp + " - " + onlineData.globalCoinScore + "Is online data: " + isOnlineDataLegit);
         if(hasFinished && isOnlineDataLegit)
         {
@@ -141,18 +174,18 @@ public class PersistentDataManager : MonoBehaviour {
 
     }
         
-
-    private static IEnumerator SaveOnlinePlayerDataAsync(int coins, float maxTravel, float lastTravel)
+    private static IEnumerator SaveOnlinePlayerData(Data scores)
     {
         string message = "";
         //We create a GSRequestData variable
         //by using jsonDataToSend.Add() we can add in any variable we choose
         //and they will be converted to JSON
         GSRequestData jsonDataToSend = new GSRequestData();
-        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_COINS, coins);
-        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_MAX_TRAVEL, maxTravel);
-        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_LAST_TRAVEL, lastTravel);
-        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_TIMESTAMP, DateTime.Now.Ticks);
+        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_TOTAL_COINS, scores.globalCoinScore);
+        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_LAST_COINS, scores.lastCoinScore);
+        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_MAX_TRAVEL, scores.highestTravelScore);
+        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_LAST_TRAVEL, scores.lastTravelScore);
+        jsonDataToSend.Add(BackendVariables.PLAYER_DATA_TIMESTAMP, scores.timeStamp.Ticks);
 
         if(GS.Authenticated)
         {
@@ -160,12 +193,11 @@ public class PersistentDataManager : MonoBehaviour {
             new LogEventRequest_SET_DATA().Set_PLAYER_DATA(jsonDataToSend).Send((response) =>
             {
                 if (response.HasErrors) {
-                    Console.WriteLine(response.Errors.ToString());
-                    message = response.Errors.ToString();
+                    print("Error Sending Data: " + response.HasErrors.ToString());
                 }
                 else
                 {
-                    Console.WriteLine("Player Data sent");
+                    print("Player data sent");
                     message = "Player Data Sent";
                 }
 
@@ -177,20 +209,26 @@ public class PersistentDataManager : MonoBehaviour {
             }
 
         }
+        else
+        {
+            print("User not connected to GS, cant send data");
+        }
 
     }
+        
 
     #region offline data
-    private static void SaveOfflinePlayerData(int coins, float lastTravel, float highestTravel)
+    private static void SaveOfflinePlayerData(Data scores)
     {
         BinaryFormatter bf = new BinaryFormatter();
         FileStream file = File.Open(Application.persistentDataPath + GameSettings.SAVE_PATH, FileMode.OpenOrCreate);
 
         Data data = new Data();
-        data.timeStamp = DateTime.Now;
-        data.globalCoinScore = coins;
-        data.highestTravelScore = highestTravel;
-        data.lastTravelScore = lastTravel;
+        data.timeStamp = scores.timeStamp;
+        data.globalCoinScore = scores.globalCoinScore;
+        data.lastCoinScore = scores.lastCoinScore;
+        data.highestTravelScore = scores.highestTravelScore;
+        data.lastTravelScore = scores.lastTravelScore;
 
         bf.Serialize(file, data);
         file.Close();
@@ -216,10 +254,16 @@ public class PersistentDataManager : MonoBehaviour {
     }
     #endregion
 
-    private static bool IsOfflineTimeStampNewer(DateTime offlineStamp, DateTime onlineStamp)
+    private static bool IsOnlineTimeStampNewer(DateTime offlineStamp, DateTime onlineStamp)
     {
-        return (offlineStamp > onlineStamp) ? true : false;
+        return (onlineStamp >= offlineStamp) ? true : false;
     }
+
+    private static bool IsNewTravelScoreHigher(float prevScore, float thisScore)
+    {
+        return (thisScore > prevScore) ? true : false;
+    }
+
 
 }
     
@@ -233,12 +277,15 @@ public class Data
     {
         timeStamp = dat.timeStamp;
         globalCoinScore = dat.globalCoinScore;
+        lastCoinScore = dat.lastCoinScore;
         lastTravelScore = dat.lastTravelScore;
         highestTravelScore = dat.highestTravelScore;
 
     }
     public DateTime timeStamp;
     public int globalCoinScore;
+    public int lastCoinScore;
     public float lastTravelScore;
     public float highestTravelScore;
+    public string userName;
 }

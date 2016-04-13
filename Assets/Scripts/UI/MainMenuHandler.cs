@@ -8,42 +8,65 @@ public class MainMenuHandler : MonoBehaviour {
     [SerializeField]
     private GameObject _title;
     [SerializeField]
-    private GameObject _BottomMenu;
+    private GameObject _facebookMenu;
     [SerializeField]
-    private GameObject _FacebookMenu;
+    private GameObject _offlineMenu;
     [SerializeField]
-    private GameObject _LoggedInMenu;
+    private GameObject _loggedInMenu;
     [SerializeField]
-    private GameObject _FacebookSpinner;
+    private GameObject _facebookSpinner;
+    [SerializeField] 
+    private RectTransform _profileRectTransform;
 
     private LoginStates _state;
+    private OnlineManager _online;
     private Animator _anim;
     private bool _isSpinning;
     private bool _stopLoginTimer;
+    private bool _hasMenuSlidIn;
+    private string _GSid;
 
     void Awake()
     {
         _anim = GetComponent<Animator>();
-        _LoggedInMenu.SetActive(false);
-        _FacebookMenu.SetActive(false);
-        _FacebookSpinner.SetActive(false);
+        _online = FindObjectOfType<OnlineManager>();
+        _loggedInMenu.SetActive(false);
+        _offlineMenu.SetActive(false);
+        _facebookMenu.SetActive(false);
+        _facebookSpinner.SetActive(false);
         _state = LoginStates.Init;
+    }
+
+    void Start()
+    {
+        EventManager.TriggerEvent(GameSettings.MAIN_MENU_EXISTS);
     }
 
     void OnEnable()
     {
-        EventManager.StartListening(GameSettings.START_SPINNER, StartFBSpinner);
-        EventManager.StartListening(GameSettings.STOP_SPINNER, StopFBSpinner);
-        EventManager.StartListening(GameSettings.ONLINE_BUTTON_PRESSED, SetUserPressedOnlineButtonMarker);
-        EventManager.StartListening(GameSettings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksMarker);
+        Reset();
+
+        EventManager.StartListening(MenuStrings.START_SPINNER, StartFBSpinner);
+        EventManager.StartListening(MenuStrings.STOP_SPINNER, StopFBSpinner);
+
+        EventManager.StartListening(OnlineStrings.ONLINE_BUTTON_PRESSED, SetUserPressedLoginState);
+        EventManager.StartListening(OnlineStrings.OFFLINE_BUTTON_PRESSED, SetUserOfflineState);
+        EventManager.StartListening(OnlineStrings.ONLINE_FALLTHROUGH, SetUserOfflineState);
+        EventManager.StartListening(OnlineStrings.LOGGED_IN_TO_FACEBOOK, SetUserLoggedInToFacebookState);
+        EventManager.StartListening(OnlineStrings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksState);
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(GameSettings.START_SPINNER, StartFBSpinner);
-        EventManager.StopListening(GameSettings.STOP_SPINNER, StopFBSpinner);
-        EventManager.StopListening(GameSettings.ONLINE_BUTTON_PRESSED, SetUserPressedOnlineButtonMarker);
-        EventManager.StopListening(GameSettings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksMarker);
+        
+        EventManager.StopListening(MenuStrings.START_SPINNER, StartFBSpinner);
+        EventManager.StopListening(MenuStrings.STOP_SPINNER, StopFBSpinner);
+
+        EventManager.StopListening(OnlineStrings.ONLINE_BUTTON_PRESSED, SetUserPressedLoginState);
+        EventManager.StopListening(OnlineStrings.OFFLINE_BUTTON_PRESSED, SetUserOfflineState);
+        EventManager.StopListening(OnlineStrings.ONLINE_FALLTHROUGH, SetUserOfflineState);
+        EventManager.StopListening(OnlineStrings.LOGGED_IN_TO_FACEBOOK, SetUserLoggedInToFacebookState);
+        EventManager.StopListening(OnlineStrings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksState);
     }
 
     void Update()
@@ -61,8 +84,14 @@ public class MainMenuHandler : MonoBehaviour {
                 case LoginStates.Offline:
                     Offline();
                     break;
+                case LoginStates.Online:
+                    Online();
+                    break;
                 case LoginStates.UserPressedLogin:
                     UserPressedLogin();
+                    break;
+                case LoginStates.UserLoggedInToFacebook:
+                    UserLoggedInToFacebook();
                     break;
                 case LoginStates.UserLoggedInToGameSparks:
                     UserLoggedInToGameSparks();
@@ -70,36 +99,37 @@ public class MainMenuHandler : MonoBehaviour {
                 case LoginStates.LoginSequenceComplete:
                     LoginSequenceComplete();
                     break;
-                case LoginStates.GetNewData:
-                    GetNewData();
+                case LoginStates.GetPlayerName:
+                    GetPlayerName();
                     break;
-                
                 default:
                     break;
             }
         }
-
     }
 
     private void Init()
     {
-        _FacebookSpinner.SetActive(true);
-        EventManager.TriggerEvent(GameSettings.START_SPINNER);
-        StartCoroutine(PlayerData.instance.CheckIfUserIsLoggedIn((response) => {
-            if(response)
-            {
-                _state = LoginStates.GetNewData;
-
-            }
-            else
-            {
-                EventManager.TriggerEvent(GameSettings.STOP_SPINNER);
-                _FacebookSpinner.SetActive(false);
-                _state = LoginStates.Offline;
-            }            
-        }));
-        _state = LoginStates.Idle;
+        print("MM Init");
+        if (!_hasMenuSlidIn)
+        {
+            print("Run slide animation");
+            _anim.SetTrigger(AnimatorStrings.SLIDE_LINES_IN);
+            _anim.SetTrigger(AnimatorStrings.SLIDE_SIDE_MENU_IN);
+            _hasMenuSlidIn = true;
+        }
+//
+        //PlayerData.instance.SaveUserGSId("");
+        if (PlayerData.instance.HasUserLoggedIn)
+        {
+            _state = LoginStates.Online;
+        } 
+        else
+        {
+            _state = LoginStates.Offline;
+        }
     }
+
 
     private void Idle()
     {
@@ -108,77 +138,126 @@ public class MainMenuHandler : MonoBehaviour {
 
     private void Offline()
     {
-        _FacebookMenu.SetActive(true);
-        _LoggedInMenu.SetActive(false);
-        _state = LoginStates.Idle;
+        print("MM Offline");
 
+        _facebookSpinner.SetActive(false);
+        _offlineMenu.SetActive(true);
+        _facebookMenu.SetActive(true);
+        _loggedInMenu.SetActive(false);
+        PlayerData.instance.HasUserLoggedIn = false;
+        EventManager.TriggerEvent(MenuStrings.UPDATE_OFFLINE_MENU);
+        _state = LoginStates.Idle;
+    }
+
+    private void Online()
+    {
+        _facebookSpinner.SetActive(false);
+        _offlineMenu.SetActive(false);
+        _facebookMenu.SetActive(false);
+        _loggedInMenu.SetActive(true);
+        EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
+        _state = LoginStates.Idle;
     }
 
     private void UserPressedLogin()
     {
-        
-        _FacebookMenu.SetActive(false);
+        print("MM UserPressedLogin");
         StartFBSpinner();
+        _facebookMenu.SetActive(false);
+        StartCoroutine(Utilities.CheckInternetConnection((isConnected) => {
+            if(isConnected)
+            {
+                _online.FacebookLogin();         
+            }
+            else
+            {
+                _state = LoginStates.Offline;
+            }
+        }));
 
+
+        _state = LoginStates.Idle; 
+    }
+
+    private void UserLoggedInToFacebook()
+    {
+        print("MM UserLoggedInToFacebook");
+        _online.GameSparksLogin();
         _state = LoginStates.Idle;
     }
 
     private void UserLoggedInToGameSparks()
     {
-        StartCoroutine(PlayerData.instance.LoadData((response) => {
+        print("MM UserLoggedInToGamesparks");
+        _GSid = PersistentDataManager.LoadGSUserId();
+        //Get the data
+        StartCoroutine(PersistentDataManager.LoadPlayerData(_GSid, (response) => {
             print("all data should be loaded");
-            _state = LoginStates.LoginSequenceComplete;
+            PlayerData.instance.Scores = response;
+            _state = LoginStates.GetPlayerName;
         }));
         _state = LoginStates.Idle;
 
+    }
+
+    private void GetPlayerName()
+    {
+        print("MM GetPlayerName");
+        StartCoroutine(PersistentDataManager.LoadPlayerName(_GSid, (response) => {
+            PlayerData.instance.Scores.userName = response.ToString();
+            print("GS Username: " + response.ToString());
+            StopFBSpinner();
+            EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
+
+            _state = LoginStates.LoginSequenceComplete;
+        }));
+
+        _state = LoginStates.Idle;
     }
 
     private void LoginSequenceComplete()
     {
+        print("MM LoginSequenceComplete");
         StopFBSpinner();
-        _LoggedInMenu.SetActive(true);
-        print("logincomplete");
-        EventManager.TriggerEvent(GameSettings.UPDATE_LOGGED_IN_MENU);
-
-        _state = LoginStates.Idle;
-    }
-
-    private void GetNewData()
-    {
-        _FacebookMenu.SetActive(false);
-
-        StartCoroutine(PlayerData.instance.LoadData((response) => {
-            EventManager.TriggerEvent(AnimatorStrings.TRIGGER_FB_SPINNER_OFF);
-            _LoggedInMenu.SetActive(true);   
-            _FacebookSpinner.SetActive(false);
-            EventManager.TriggerEvent(GameSettings.UPDATE_LOGGED_IN_MENU);
-        }));
+        _facebookMenu.SetActive(false);
+        _offlineMenu.SetActive(false);
+        _loggedInMenu.SetActive(true);
+        //FreezeSlideInAnimation();
+        PlayerData.instance.HasUserLoggedIn = true;
+        EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
 
         _state = LoginStates.Idle;
     }
 
 
-    private void SetUserPressedOnlineButtonMarker()
+    private void SetUserPressedLoginState()
     {
         _state = LoginStates.UserPressedLogin;
+        FreezeSlideInAnimation();
     }
 
-    private void SetUserLoggedInToGamesparksMarker()
+    private void SetUserLoggedInToFacebookState()
+    {
+        _state = LoginStates.UserLoggedInToFacebook;
+    }
+
+    private void SetUserLoggedInToGamesparksState()
     {
         _state = LoginStates.UserLoggedInToGameSparks;
     }
 
-    private void SetSilentFacebookInitDoneMarker()
+    private void SetUserOfflineState()
     {
-        _state = LoginStates.GetNewData;
+        _state = LoginStates.Offline;
     }
+
 
     private void StartFBSpinner()
     {   
         if(!_isSpinning)
         {
             _isSpinning = true;
-            _FacebookSpinner.SetActive(true);
+            _facebookSpinner.SetActive(true);
             _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_ON);    
         }
     }
@@ -189,8 +268,25 @@ public class MainMenuHandler : MonoBehaviour {
         {
             _isSpinning = false;
             _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_OFF);   
-            _FacebookSpinner.SetActive(false);
+            _facebookSpinner.SetActive(false);
         }
+    }
+
+    private void Reset()
+    {
+        _state = LoginStates.Init;
+    }
+
+    private void ResetSlideInAnimation()
+    {
+        print("resetSlideInAnimation");
+        _anim.Play("MenuSlideIn", -1, 0f);
+    }
+
+    private void FreezeSlideInAnimation()
+    {
+        print("freezeSlideInAnimation");
+        _anim.Play("MenuSlideIn", -1, 1f);
     }
 
 }
@@ -200,9 +296,12 @@ public enum LoginStates
     Init,
     Idle,
     Offline,
+    Online,
     UserPressedLogin,
+    UserLoggedInToFacebook,
     UserLoggedInToGameSparks,
     LoginSequenceComplete,
-    GetNewData
+    GetScores,
+    GetPlayerName
 
 }

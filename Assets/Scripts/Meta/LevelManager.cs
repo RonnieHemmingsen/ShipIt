@@ -8,6 +8,9 @@ public class LevelManager : MonoBehaviour {
 
     private bool _hasActiveSceneUpdated;
     private bool _isStartMenuActive;
+    private GameObject _mainMenu;
+    private GameObject _gameUI;
+
 
     public bool IsStartMenuActive {
         get { return _isStartMenuActive; }
@@ -33,14 +36,20 @@ public class LevelManager : MonoBehaviour {
 
     void OnEnable()
     {
-        EventManager.StartListening(GameSettings.UPDATE_ACTIVE_SCENE, ToggleStartMenu);
-        EventManager.StartListening(GameSettings.GAME_OVER, ResetGame);
+        EventManager.StartListening(GameSettings.GAME_UI_EXISTS, FindGameUI);
+        EventManager.StartListening(GameSettings.MAIN_MENU_EXISTS, FindMainMenu);
+        EventManager.StartListening(GameSettings.BOOT_GAME, BootGame);
+        EventManager.StartListening(GameSettings.START_GAME, StartGame);
+        EventManager.StartListening(GameSettings.GAME_OVER, GameOver);
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(GameSettings.UPDATE_ACTIVE_SCENE, ToggleStartMenu);
-        EventManager.StopListening(GameSettings.GAME_OVER, ResetGame);
+        EventManager.StopListening(GameSettings.GAME_UI_EXISTS, FindGameUI);
+        EventManager.StopListening(GameSettings.MAIN_MENU_EXISTS, FindMainMenu);
+        EventManager.StopListening(GameSettings.BOOT_GAME, BootGame);
+        EventManager.StopListening(GameSettings.START_GAME, StartGame);
+        EventManager.StopListening(GameSettings.GAME_OVER, GameOver);
     }
 
     void Update()
@@ -51,32 +60,56 @@ public class LevelManager : MonoBehaviour {
             {
                 print(SceneManager.GetActiveScene().name);
                 SceneManager.SetActiveScene(SceneManager.GetSceneByName(GameSettings.MAIN_MENU_SCENE));
-                print(SceneManager.GetActiveScene().name);
+                //print(SceneManager.GetActiveScene().name);
+
                 _hasActiveSceneUpdated = true;
                 
             }
             if(!_hasActiveSceneUpdated && !_isStartMenuActive)
             {
                 SceneManager.SetActiveScene(SceneManager.GetSceneByName(GameSettings.GAME_SCENE));
+
                 _hasActiveSceneUpdated = true;
             }
         }
     }
 
-    private void ToggleStartMenu()
+    private void ToggleScenes()
     {
         _isStartMenuActive = !_isStartMenuActive;
         _hasActiveSceneUpdated = false;
     }
 
-
-    private void ResetGame()
+    private void BootGame()
     {
-        SceneManager.LoadScene("Game", LoadSceneMode.Single);
-        SceneManager.LoadScene("Start Menu", LoadSceneMode.Additive);
+        ToggleScenes();
+    }
 
-        ToggleStartMenu();
+    private void GameOver()
+    {
+        _gameUI.SetActive(false);
+        _mainMenu.SetActive(true);
+        ToggleScenes();
+    }
 
+    private void StartGame()
+    {
+        _gameUI.SetActive(true);
+        _mainMenu.SetActive(false);
+        ToggleScenes();
+    }
+
+    private void FindMainMenu()
+    {
+        _mainMenu = GameObject.Find("Main Menu");   
+        //print(_mainMenu.name);
+    }
+
+    private void FindGameUI()
+    {
+        _gameUI = GameObject.Find("GameUI");
+        _gameUI.SetActive(false);
+        //print(_gameUI.name);
     }
         
 
