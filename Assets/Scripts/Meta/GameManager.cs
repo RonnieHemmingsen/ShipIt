@@ -238,17 +238,17 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         _objPool.CreateNewDictionary();
-        _objPool.CreatePool(100, _coin, _coin.tag);
+        _objPool.CreatePool(20, _coin, _coin.tag);
         _objPool.CreatePool(10, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
-        _objPool.CreatePool(10, _invulnePower, _invulnePower.tag);
+        _objPool.CreatePool(1, _invulnePower, _invulnePower.tag);
         _objPool.CreatePool(5, _laserEnemy, _laserEnemy.tag);
         _objPool.CreatePool(5, _bulletEnemy, _bulletEnemy.tag);
-        _objPool.CreatePool(300, _bullet, _bullet.tag);
-        _objPool.CreatePool(10, _destroyAll, _destroyAll.tag);
-        _objPool.CreatePool(10, _ludicrousToken, _ludicrousToken.tag);
-        _objPool.CreatePool(30, _boltToken, _boltToken.tag);
-        _objPool.CreatePool(10, _tweenText, ObjectStrings.TWEEN_TEXT_OUT);
+        _objPool.CreatePool(100, _bullet, _bullet.tag);
+        _objPool.CreatePool(1, _destroyAll, _destroyAll.tag);
+        _objPool.CreatePool(1, _ludicrousToken, _ludicrousToken.tag);
+        _objPool.CreatePool(1, _boltToken, _boltToken.tag);
+        _objPool.CreatePool(3, _tweenText, ObjectStrings.TWEEN_TEXT_OUT);
         _objPool.CreatePool(_maxNumberOfBolts, _bolt, _bolt.tag);
 
         _currentNumberOfBolts = _maxNumberOfBolts;
@@ -331,18 +331,6 @@ public class GameManager : MonoBehaviour {
         EventManager.StopListeningForStringEvent(EventStrings.ENEMY_OUT_OF_BOUNDS, DecreaseAliveEnemyCount);
     }
     #endregion
-
-    //TODO: Finished the job!
-    private IEnumerator CreatePools()
-    {
-        float time = 0;
-
-        do
-        {
-            time += Time.deltaTime;
-
-        } while (time < 2);
-    }
 
     void Update()
     {

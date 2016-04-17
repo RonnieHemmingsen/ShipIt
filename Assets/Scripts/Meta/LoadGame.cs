@@ -107,6 +107,8 @@ public class LoadGame : MonoBehaviour {
 
     private void CheckInternetConnection()
     {
+        _state = OnlineStates.Idle;
+
         StartCoroutine(Utilities.CheckInternetConnection((isConnected) => {
             if (isConnected) 
             {
@@ -117,21 +119,23 @@ public class LoadGame : MonoBehaviour {
                 _state = OnlineStates.ConfirmUserOffline;
             }
         }));
-        _state = OnlineStates.Idle;
+
     }
 
     private void Init()
     {
         print("Init");
 
+
         GS.GameSparksAvailable += (available) => {
             if (available) {
                 print("GS available");
                 _state = OnlineStates.InitializeFB;
+                return;
             }
         };
-
         _state = OnlineStates.Idle;
+
 
     }
 

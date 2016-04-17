@@ -82,7 +82,11 @@ public static class AnimatorStrings
     public const string TRIGGER_FB_SPINNER_OFF = "StopFBSpin";
 
     public const string SLIDE_LINES_IN = "SlideLinesIn";
+    public const string SLIDE_LINES_OUT = "SlideLinesOut";
     public const string SLIDE_SIDE_MENU_IN = "SlideSideMenuIn";
+    public const string SLIDE_SIDE_MENU_OUT = "SlideSideMenuOut";
+    public const string SLIDE_TOP_MENU_IN = "SlideTopMenuIn";
+    public const string SLIDE_TOP_MENU_OUT = "SlideTopMenuOut";
 }
    
 public static class GameSettings
@@ -160,6 +164,12 @@ public static class MenuStrings
 
     public const string UPDATE_ONLINE_MENU = "UpdateLoggedInMenu";
     public const string UPDATE_OFFLINE_MENU = "UpdateOfflineMenu";
+
+    public const string UPDATE_LEADERBOARDS = "UpdateLeaderboards";
+
+    public const string TOP_MENU_DISPLAYED = "TopMenuDisplayed";
+    public const string SIDE_MENU_DISPLAYED = "SideMenuDisplayed";
+
 }
 
 public static class OnlineStrings

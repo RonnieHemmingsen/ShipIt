@@ -82,9 +82,9 @@ public class OnlineManager : MonoBehaviour {
     {
         print("FB Token: " + AccessToken.CurrentAccessToken);
 
-
         if(!FB.IsLoggedIn && AccessToken.CurrentAccessToken == null)
         {
+
             //Kontroller at der ikke er et login til gamesparks som kan bruges.
             string id = PersistentDataManager.LoadGSUserId();
             {
@@ -93,9 +93,13 @@ public class OnlineManager : MonoBehaviour {
                     print("id: " + id);
                     EventManager.TriggerEvent(OnlineStrings.FACEBOOK_NEW_USER);        
                 }
+                else
+                {
+                    print("id: " + id);
+                    EventManager.TriggerEvent(OnlineStrings.LOGGED_IN_TO_GAMESPARKS);
+                }
 
             }
-
             print("Not logged in to facebook, is initted");
         }
         else
@@ -128,7 +132,7 @@ public class OnlineManager : MonoBehaviour {
         }
     }
 
-    public void GameSparksLogout()
+    public void OnlineLogout()
     {
         GS.Reset();
         PersistentDataManager.SaveGSUserId("");
@@ -143,8 +147,8 @@ public class OnlineManager : MonoBehaviour {
         {
             FB.LogOut();    
         }
-        EventManager.TriggerEvent(OnlineStrings.OFFLINE_BUTTON_PRESSED);
-        print("PlayerData logged out of facebook");
+
+        print("Player logged out of facebook");
     }
 
     public void GameSparksLogin()

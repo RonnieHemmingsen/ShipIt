@@ -935,9 +935,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 1397987758}
-  _shakeTime: 2
-  _shakeMagnitude: 0.7
-  _decreaseFactor: 0.5
+  _shakeTime: 0
+  _shakeMagnitude: 1
+  _decreaseFactor: 0.1
   _defaultPosition: {x: 0, y: 0, z: 0}
 --- !u!4 &543447903
 Transform:
@@ -1772,7 +1772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f44a41a41d0e46dfbd0f427d4b72540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _scrollSpeed: -2
+  _scrollSpeed: -5
   _tileSizeZ: 30
 --- !u!1001 &1132348252
 Prefab:
@@ -1856,7 +1856,6 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1144591556}
-  - 114: {fileID: 1144591557}
   m_Layer: 0
   m_Name: Middle
   m_TagString: Untagged
@@ -1880,19 +1879,6 @@ Transform:
   - {fileID: 1850599191}
   m_Father: {fileID: 1445296852}
   m_RootOrder: 1
---- !u!114 &1144591557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1144591555}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f44a41a41d0e46dfbd0f427d4b72540, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _scrollSpeed: -5
-  _tileSizeZ: 60
 --- !u!224 &1153955878 stripped
 RectTransform:
   m_PrefabParentObject: {fileID: 22432736, guid: 1063c1ad99f254ebca88ef8ea15cf674,
@@ -2060,7 +2046,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 153340, guid: 1063c1ad99f254ebca88ef8ea15cf674, type: 2}
       propertyPath: m_Name
-      value: BlueLine (1)
+      value: BlueLine Straight
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1063c1ad99f254ebca88ef8ea15cf674, type: 2}
@@ -2076,7 +2062,7 @@ GameObject:
   - 222: {fileID: 1257129097}
   - 114: {fileID: 1257129096}
   m_Layer: 5
-  m_Name: ScoreText
+  m_Name: FGScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2218,6 +2204,10 @@ Prefab:
     - target: {fileID: 22432736, guid: 1063c1ad99f254ebca88ef8ea15cf674, type: 2}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 153340, guid: 1063c1ad99f254ebca88ef8ea15cf674, type: 2}
+      propertyPath: m_Name
+      value: BlueLine Crocket
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1063c1ad99f254ebca88ef8ea15cf674, type: 2}
@@ -2774,12 +2764,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f1cff943b03f4a7cbe880793589988a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _switchTime: 0.1
-  _tiles:
-  - {fileID: 681903344}
-  - {fileID: 1401700070}
-  - {fileID: 494785766}
-  - {fileID: 435531917}
+  _switchTime: 0
+  _tiles: []
 --- !u!1 &1448021693
 GameObject:
   m_ObjectHideFlags: 0
@@ -2895,6 +2881,7 @@ GameObject:
   - 4: {fileID: 1518366451}
   - 33: {fileID: 1518366453}
   - 23: {fileID: 1518366452}
+  - 114: {fileID: 1518366454}
   m_Layer: 0
   m_Name: Earth Mark II
   m_TagString: Untagged
@@ -2947,6 +2934,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1518366450}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1518366454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1518366450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f44a41a41d0e46dfbd0f427d4b72540, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scrollSpeed: -4
+  _tileSizeZ: 50
 --- !u!1 &1657519236
 GameObject:
   m_ObjectHideFlags: 0
@@ -3060,11 +3060,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _distanceText: {fileID: 2094828243}
-  _scoreText: {fileID: 1257129096}
-  _killText: {fileID: 290050974}
-  _timePlayedText: {fileID: 2094828243}
   _speedText: {fileID: 1933239261}
   _boltCount: {fileID: 1050961209}
+  _currentFGScore: {fileID: 1257129096}
 --- !u!1 &1695957917
 GameObject:
   m_ObjectHideFlags: 0
@@ -4051,6 +4049,7 @@ GameObject:
   - 4: {fileID: 2092006071}
   - 33: {fileID: 2092006073}
   - 23: {fileID: 2092006072}
+  - 114: {fileID: 2092006074}
   m_Layer: 0
   m_Name: Blue planet
   m_TagString: Untagged
@@ -4103,6 +4102,19 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2092006070}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &2092006074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2092006070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f44a41a41d0e46dfbd0f427d4b72540, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scrollSpeed: -2
+  _tileSizeZ: 40
 --- !u!1 &2094828241
 GameObject:
   m_ObjectHideFlags: 0

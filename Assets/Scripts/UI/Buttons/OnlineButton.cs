@@ -17,10 +17,6 @@ public class OnlineButton : MonoBehaviour {
             EventManager.TriggerEvent(OnlineStrings.ONLINE_BUTTON_PRESSED);
             print("Login button clicked");
         });
-
-
-
-	
 	}
 	
 }

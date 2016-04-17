@@ -96,6 +96,12 @@ public class PersistentDataManager : MonoBehaviour {
 
         SaveOfflinePlayerData(scores);
         instance.StartCoroutine(SaveOnlinePlayerData(scores));
+
+        if(GS.Authenticated)
+        {
+            SaveToLeaderBoard(scores.highestTravelScore);
+        }
+
     }
         
     public static IEnumerator LoadPlayerData(string userId, Action<Data> callback)
@@ -105,7 +111,7 @@ public class PersistentDataManager : MonoBehaviour {
         bool isOnlineDataLegit = false;
         bool hasFinished = false;
 
-        print("loading player data ");
+        print("loading player data " + userId);
 
         offlineData = new Data(LoadOfflinePlayerData());
 

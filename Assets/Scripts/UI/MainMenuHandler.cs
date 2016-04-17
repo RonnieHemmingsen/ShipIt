@@ -4,19 +4,23 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuHandler : MonoBehaviour {
     [SerializeField]
-    private float _timeBeforeGivingUp;
+    private CanvasGroup _topLevelSideMenu;
+    [SerializeField]
+    private CanvasGroup _topLevelLinesMenu;
     [SerializeField]
     private GameObject _title;
     [SerializeField]
-    private GameObject _facebookMenu;
+    private CanvasGroup _facebookMenu;
     [SerializeField]
-    private GameObject _offlineMenu;
+    private CanvasGroup _offlineMenu;
     [SerializeField]
-    private GameObject _loggedInMenu;
+    private CanvasGroup _onlineMenu;
     [SerializeField]
-    private GameObject _facebookSpinner;
-    [SerializeField] 
-    private RectTransform _profileRectTransform;
+    private CanvasGroup _facebookSpinner;
+    [SerializeField]
+    private Vector3 _sideMenuDefaultPositon;
+    [SerializeField]
+    private Vector3 _linesDefaultPosition;
 
     private LoginStates _state;
     private OnlineManager _online;
@@ -30,10 +34,10 @@ public class MainMenuHandler : MonoBehaviour {
     {
         _anim = GetComponent<Animator>();
         _online = FindObjectOfType<OnlineManager>();
-        _loggedInMenu.SetActive(false);
-        _offlineMenu.SetActive(false);
-        _facebookMenu.SetActive(false);
-        _facebookSpinner.SetActive(false);
+        _onlineMenu.alpha = 0;
+        _offlineMenu.alpha = 0;
+        _facebookMenu.alpha = 0;
+        _facebookSpinner.alpha = 0;
         _state = LoginStates.Init;
     }
 
@@ -140,10 +144,11 @@ public class MainMenuHandler : MonoBehaviour {
     {
         print("MM Offline");
 
-        _facebookSpinner.SetActive(false);
-        _offlineMenu.SetActive(true);
-        _facebookMenu.SetActive(true);
-        _loggedInMenu.SetActive(false);
+        _facebookSpinner.alpha = 0;
+        _offlineMenu.alpha = 1;
+        _facebookMenu.alpha = 1;
+        _onlineMenu.alpha = 0;
+        _online.OnlineLogout();
         PlayerData.instance.HasUserLoggedIn = false;
         EventManager.TriggerEvent(MenuStrings.UPDATE_OFFLINE_MENU);
         _state = LoginStates.Idle;
@@ -151,11 +156,13 @@ public class MainMenuHandler : MonoBehaviour {
 
     private void Online()
     {
-        _facebookSpinner.SetActive(false);
-        _offlineMenu.SetActive(false);
-        _facebookMenu.SetActive(false);
-        _loggedInMenu.SetActive(true);
+        print("MM Online");
+        _facebookSpinner.alpha = 0;
+        _offlineMenu.alpha = 0;
+        _facebookMenu.alpha = 0;
+        _onlineMenu.alpha = 1;
         EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
+        EventManager.TriggerEvent(MenuStrings.UPDATE_LEADERBOARDS);
         _state = LoginStates.Idle;
     }
 
@@ -163,7 +170,7 @@ public class MainMenuHandler : MonoBehaviour {
     {
         print("MM UserPressedLogin");
         StartFBSpinner();
-        _facebookMenu.SetActive(false);
+        _facebookMenu.alpha = 0;
         StartCoroutine(Utilities.CheckInternetConnection((isConnected) => {
             if(isConnected)
             {
@@ -189,6 +196,8 @@ public class MainMenuHandler : MonoBehaviour {
     private void UserLoggedInToGameSparks()
     {
         print("MM UserLoggedInToGamesparks");
+        EventManager.TriggerEvent(MenuStrings.UPDATE_LEADERBOARDS);
+
         _GSid = PersistentDataManager.LoadGSUserId();
         //Get the data
         StartCoroutine(PersistentDataManager.LoadPlayerData(_GSid, (response) => {
@@ -219,9 +228,9 @@ public class MainMenuHandler : MonoBehaviour {
     {
         print("MM LoginSequenceComplete");
         StopFBSpinner();
-        _facebookMenu.SetActive(false);
-        _offlineMenu.SetActive(false);
-        _loggedInMenu.SetActive(true);
+        _facebookMenu.alpha = 0;
+        _offlineMenu.alpha = 0;
+        _onlineMenu.alpha = 1;
         //FreezeSlideInAnimation();
         PlayerData.instance.HasUserLoggedIn = true;
         EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
@@ -257,7 +266,7 @@ public class MainMenuHandler : MonoBehaviour {
         if(!_isSpinning)
         {
             _isSpinning = true;
-            _facebookSpinner.SetActive(true);
+            _facebookSpinner.alpha = 1;
             _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_ON);    
         }
     }
@@ -268,12 +277,13 @@ public class MainMenuHandler : MonoBehaviour {
         {
             _isSpinning = false;
             _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_OFF);   
-            _facebookSpinner.SetActive(false);
+            _facebookSpinner.alpha = 0;
         }
     }
 
     private void Reset()
     {
+        _hasMenuSlidIn = false;
         _state = LoginStates.Init;
     }
 

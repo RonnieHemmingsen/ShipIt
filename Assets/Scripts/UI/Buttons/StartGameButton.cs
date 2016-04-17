@@ -20,34 +20,30 @@ public class StartGameButton : MonoBehaviour {
 
     void Start () 
     {
-
         _me.onClick.AddListener(delegate {
-            //StartCoroutine(StartGameSequence());
-            StartGame();
+            StartCoroutine(StartGameSequence());
         });
 	}
 
-    private void StartGame()
-    {
-        print("Press Play On Tape");
-        EventManager.TriggerEvent(GameSettings.START_GAME);
-    }
-
     private IEnumerator StartGameSequence()
     { 
+        print("Press Play On Tape");
         float time = 0;
 
-        _anim.SetTrigger("BottomMenuSlideOut");
+        _anim.SetTrigger(AnimatorStrings.SLIDE_SIDE_MENU_OUT);
+        _anim.SetTrigger(AnimatorStrings.SLIDE_LINES_OUT);
 
-        while (time <= _anim.GetCurrentAnimatorStateInfo(0).length)
+
+        while (time <= 1.5f)
         {
             time += Time.deltaTime;
 
             yield return new WaitForEndOfFrame();
-
-        } 
-
+        }
+        EventManager.TriggerEvent(GameSettings.START_GAME);
     }
+
+
 	
 
 }
