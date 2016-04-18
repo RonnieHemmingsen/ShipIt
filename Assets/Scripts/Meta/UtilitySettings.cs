@@ -176,6 +176,11 @@ public static class MenuStrings
     public const string ENABLE_PAUSE_MENU = "EnablePauseMenu";
     public const string DISABLE_PAUSE_MENU = "DisablePauseMenu";
 
+    public const string ENABLE_DESTROYALL_INSTRUCTIONS = "EnableDestroyAllInstructions";
+    public const string ENABLE_SHIELD_INSTRUCTIONS = "EnableShieldInstructions";
+    public const string ENABLE_SPEED_INSTRUCTIONS = "EnableSpeedInstructions";
+    public const string DISABLE_INSTRUCTIONS_SCREEN = "DisableInstructionsScreen";
+
 }
 
 public static class OnlineStrings
