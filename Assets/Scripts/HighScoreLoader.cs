@@ -62,7 +62,7 @@ public class HighScoreLoader : MonoBehaviour {
     private void GetSocialLeaderBoard()
     {
         new SocialLeaderboardDataRequest().SetLeaderboardShortCode(BackendVariables.HIGHSCORE_BOARD).
-        SetEntryCount(10).
+        SetEntryCount(_numberOfEntries).
         SetDontErrorOnNotSocial(true).
         Send((response) => {
             foreach (var entry in response.Data) {
@@ -73,7 +73,7 @@ public class HighScoreLoader : MonoBehaviour {
                 _thisEntry.Rank.text = entry.Rank.ToString();
                 _thisEntry.Name.text = entry.UserName.ToString();
                 _thisEntry.Score.text = entry.GetNumberValue(BackendVariables.TRAVELSCORE_ATTRIBUTE).ToString();
-                GO.transform.SetParent(this.transform, true);
+                GO.transform.SetParent(this.transform, false);
             }
         });
 
@@ -81,7 +81,9 @@ public class HighScoreLoader : MonoBehaviour {
 	
     private void GetAroundMeLeaderBoard()
     {
-        new AroundMeLeaderboardRequest_HIGH_SCORE_LB().SetEntryCount(1).Send((response) => {
+        new AroundMeLeaderboardRequest_HIGH_SCORE_LB().
+        SetEntryCount(_numberOfEntries).
+        Send((response) => {
             foreach (var entry in response.Data) {
                 GameObject GO = Instantiate(_entry) as GameObject;
                 _entries.Add(GO);
@@ -90,7 +92,7 @@ public class HighScoreLoader : MonoBehaviour {
                 _thisEntry.Rank.text = entry.Rank.ToString();
                 _thisEntry.Name.text = entry.UserName.ToString();
                 _thisEntry.Score.text = entry.GetNumberValue(BackendVariables.TRAVELSCORE_ATTRIBUTE).ToString();
-                GO.transform.SetParent(this.transform, true);
+                GO.transform.SetParent(this.transform, false);
             }
         });
     }
@@ -111,7 +113,7 @@ public class HighScoreLoader : MonoBehaviour {
                 _thisEntry.Rank.text = entry.Rank.ToString();
                 _thisEntry.Name.text = entry.UserName.ToString();
                 _thisEntry.Score.text = entry.GetNumberValue(BackendVariables.TRAVELSCORE_ATTRIBUTE).ToString();
-                GO.transform.SetParent(this.transform, true);
+                GO.transform.SetParent(this.transform, false);
             }
            
         });

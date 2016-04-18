@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class MainMenuHandler : MonoBehaviour {
     [SerializeField]
+    private CanvasGroup _topLevelTopMenu;
+    [SerializeField]
     private CanvasGroup _topLevelSideMenu;
     [SerializeField]
     private CanvasGroup _topLevelLinesMenu;
@@ -16,62 +18,75 @@ public class MainMenuHandler : MonoBehaviour {
     [SerializeField]
     private CanvasGroup _onlineMenu;
     [SerializeField]
-    private CanvasGroup _facebookSpinner;
-    [SerializeField]
     private Vector3 _sideMenuDefaultPositon;
     [SerializeField]
     private Vector3 _linesDefaultPosition;
 
+    private CanvasGroup _mainMenu;
     private LoginStates _state;
     private OnlineManager _online;
     private Animator _anim;
     private bool _isSpinning;
-    private bool _stopLoginTimer;
     private bool _hasMenuSlidIn;
+    private bool _wasFilthyFacebookHack;
     private string _GSid;
+    private string _currentActiveTopLevelMenu;
+
+    public Animator Anim
+    {
+        get { return _anim; }
+        set { _anim = value; }
+    }
 
     void Awake()
     {
         _anim = GetComponent<Animator>();
         _online = FindObjectOfType<OnlineManager>();
-        _onlineMenu.alpha = 0;
-        _offlineMenu.alpha = 0;
-        _facebookMenu.alpha = 0;
-        _facebookSpinner.alpha = 0;
+        _mainMenu = GetComponent<CanvasGroup>();
+
+        Utilities.MenuOff(_onlineMenu);
+        Utilities.MenuOff(_offlineMenu);
+        Utilities.MenuOff(_facebookMenu);
         _state = LoginStates.Init;
     }
 
     void Start()
     {
+        _currentActiveTopLevelMenu = _topLevelSideMenu.name;
         EventManager.TriggerEvent(GameSettings.MAIN_MENU_EXISTS);
     }
 
     void OnEnable()
     {
-        Reset();
-
-        EventManager.StartListening(MenuStrings.START_SPINNER, StartFBSpinner);
-        EventManager.StartListening(MenuStrings.STOP_SPINNER, StopFBSpinner);
+        EventManager.StartListening(GameSettings.GAME_OVER, Reset);
 
         EventManager.StartListening(OnlineStrings.ONLINE_BUTTON_PRESSED, SetUserPressedLoginState);
         EventManager.StartListening(OnlineStrings.OFFLINE_BUTTON_PRESSED, SetUserOfflineState);
         EventManager.StartListening(OnlineStrings.ONLINE_FALLTHROUGH, SetUserOfflineState);
         EventManager.StartListening(OnlineStrings.LOGGED_IN_TO_FACEBOOK, SetUserLoggedInToFacebookState);
         EventManager.StartListening(OnlineStrings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksState);
+
+        EventManager.StartListening(MenuStrings.LEADER_BOARD_MENU_PRESSED, LeaderBoardMenuPressed);
+        EventManager.StartListening(MenuStrings.PROFILE_MENU_PRESSED, ProfileMenuPressed);
+        EventManager.StartListening(MenuStrings.CLEAR_MENUS_FOR_GAME, ClearMenusForGamePressed);
     }
 
     void OnDisable()
     {
-        
-        EventManager.StopListening(MenuStrings.START_SPINNER, StartFBSpinner);
-        EventManager.StopListening(MenuStrings.STOP_SPINNER, StopFBSpinner);
+        EventManager.StopListening(GameSettings.GAME_OVER, Reset);
 
         EventManager.StopListening(OnlineStrings.ONLINE_BUTTON_PRESSED, SetUserPressedLoginState);
         EventManager.StopListening(OnlineStrings.OFFLINE_BUTTON_PRESSED, SetUserOfflineState);
         EventManager.StopListening(OnlineStrings.ONLINE_FALLTHROUGH, SetUserOfflineState);
         EventManager.StopListening(OnlineStrings.LOGGED_IN_TO_FACEBOOK, SetUserLoggedInToFacebookState);
         EventManager.StopListening(OnlineStrings.LOGGED_IN_TO_GAMESPARKS, SetUserLoggedInToGamesparksState);
+
+        EventManager.StopListening(MenuStrings.LEADER_BOARD_MENU_PRESSED, LeaderBoardMenuPressed);
+        EventManager.StopListening(MenuStrings.PROFILE_MENU_PRESSED, ProfileMenuPressed);
+        EventManager.StopListening(MenuStrings.CLEAR_MENUS_FOR_GAME, ClearMenusForGamePressed);
     }
+
+    #region login states
 
     void Update()
     {
@@ -144,10 +159,10 @@ public class MainMenuHandler : MonoBehaviour {
     {
         print("MM Offline");
 
-        _facebookSpinner.alpha = 0;
-        _offlineMenu.alpha = 1;
-        _facebookMenu.alpha = 1;
-        _onlineMenu.alpha = 0;
+        Utilities.MenuOff(_onlineMenu);
+        Utilities.MenuOn(_offlineMenu);
+        Utilities.MenuOn(_facebookMenu);
+
         _online.OnlineLogout();
         PlayerData.instance.HasUserLoggedIn = false;
         EventManager.TriggerEvent(MenuStrings.UPDATE_OFFLINE_MENU);
@@ -157,10 +172,10 @@ public class MainMenuHandler : MonoBehaviour {
     private void Online()
     {
         print("MM Online");
-        _facebookSpinner.alpha = 0;
-        _offlineMenu.alpha = 0;
-        _facebookMenu.alpha = 0;
-        _onlineMenu.alpha = 1;
+        Utilities.MenuOff(_offlineMenu);
+        Utilities.MenuOff(_facebookMenu);
+        Utilities.MenuOn(_onlineMenu);
+
         EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
         EventManager.TriggerEvent(MenuStrings.UPDATE_LEADERBOARDS);
         _state = LoginStates.Idle;
@@ -169,8 +184,12 @@ public class MainMenuHandler : MonoBehaviour {
     private void UserPressedLogin()
     {
         print("MM UserPressedLogin");
-        StartFBSpinner();
-        _facebookMenu.alpha = 0;
+        EventManager.TriggerEvent(MenuStrings.START_SPINNER);
+
+        _wasFilthyFacebookHack = true;
+
+        Utilities.MenuOff(_facebookMenu);
+        Utilities.MenuOff(_topLevelSideMenu);
         StartCoroutine(Utilities.CheckInternetConnection((isConnected) => {
             if(isConnected)
             {
@@ -196,7 +215,6 @@ public class MainMenuHandler : MonoBehaviour {
     private void UserLoggedInToGameSparks()
     {
         print("MM UserLoggedInToGamesparks");
-        EventManager.TriggerEvent(MenuStrings.UPDATE_LEADERBOARDS);
 
         _GSid = PersistentDataManager.LoadGSUserId();
         //Get the data
@@ -215,7 +233,6 @@ public class MainMenuHandler : MonoBehaviour {
         StartCoroutine(PersistentDataManager.LoadPlayerName(_GSid, (response) => {
             PlayerData.instance.Scores.userName = response.ToString();
             print("GS Username: " + response.ToString());
-            StopFBSpinner();
             EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
 
             _state = LoginStates.LoginSequenceComplete;
@@ -227,13 +244,11 @@ public class MainMenuHandler : MonoBehaviour {
     private void LoginSequenceComplete()
     {
         print("MM LoginSequenceComplete");
-        StopFBSpinner();
-        _facebookMenu.alpha = 0;
-        _offlineMenu.alpha = 0;
-        _onlineMenu.alpha = 1;
-        //FreezeSlideInAnimation();
+
         PlayerData.instance.HasUserLoggedIn = true;
         EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
+        EventManager.TriggerEvent(MenuStrings.UPDATE_LEADERBOARDS);
+        EventManager.TriggerEvent(MenuStrings.STOP_SPINNER);
 
         _state = LoginStates.Idle;
     }
@@ -261,35 +276,19 @@ public class MainMenuHandler : MonoBehaviour {
     }
 
 
-    private void StartFBSpinner()
-    {   
-        if(!_isSpinning)
-        {
-            _isSpinning = true;
-            _facebookSpinner.alpha = 1;
-            _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_ON);    
-        }
-    }
-
-    private void StopFBSpinner()
-    {
-        if(_isSpinning)
-        {
-            _isSpinning = false;
-            _anim.SetTrigger(AnimatorStrings.TRIGGER_FB_SPINNER_OFF);   
-            _facebookSpinner.alpha = 0;
-        }
-    }
+   
 
     private void Reset()
     {
+        Utilities.MenuOn(_mainMenu);
         _hasMenuSlidIn = false;
         _state = LoginStates.Init;
     }
 
-    private void ResetSlideInAnimation()
+    //hack to avoid facebook menu snafu
+    private void StopMenuFromSlidingIn()
     {
-        print("resetSlideInAnimation");
+        print("StopMenuFromSlidingIn");
         _anim.Play("MenuSlideIn", -1, 0f);
     }
 
@@ -297,8 +296,95 @@ public class MainMenuHandler : MonoBehaviour {
     {
         print("freezeSlideInAnimation");
         _anim.Play("MenuSlideIn", -1, 1f);
+
     }
 
+    #endregion
+
+    #region menu buttons pressed
+    private void LeaderBoardMenuPressed()
+    {
+        //Already on the top menu view. do nothing
+        if(_currentActiveTopLevelMenu == MenuStrings.TOP_LEVEL_TOP_MENU)
+        {
+            return;
+        }
+
+        //Switch from side menu to top menu
+        if(_currentActiveTopLevelMenu == MenuStrings.TOP_LEVEL_SIDE_MENU)
+        {
+            _currentActiveTopLevelMenu = MenuStrings.TOP_LEVEL_TOP_MENU;
+            StartCoroutine(SwitchTopLevelMenus(
+                AnimatorStrings.SLIDE_SIDE_MENU_OUT, 
+                AnimatorStrings.SLIDE_TOP_MENU_IN));
+        }
+    }
+
+    private void ProfileMenuPressed()
+    {
+        //Already on the side menu view. do nothing
+        if(_currentActiveTopLevelMenu == MenuStrings.TOP_LEVEL_SIDE_MENU)
+        {
+            return;
+        }
+
+        //Switch from top menu to side menu
+        if(_currentActiveTopLevelMenu == MenuStrings.TOP_LEVEL_TOP_MENU)
+        {
+            
+
+            _currentActiveTopLevelMenu = MenuStrings.TOP_LEVEL_SIDE_MENU;
+            StartCoroutine(SwitchTopLevelMenus(
+                AnimatorStrings.SLIDE_TOP_MENU_OUT, 
+                AnimatorStrings.SLIDE_SIDE_MENU_IN));
+        }
+    }
+
+    private void ClearMenusForGamePressed()
+    {
+        StartCoroutine(ClearForGame());
+    }
+
+
+    private IEnumerator ClearForGame()
+    {
+        //Check which of the toplevel menus are active. then slide it out
+        if(_currentActiveTopLevelMenu == MenuStrings.TOP_LEVEL_SIDE_MENU)
+        {
+            _anim.SetTrigger(AnimatorStrings.SLIDE_SIDE_MENU_OUT);    
+        }
+        else
+        {
+            _anim.SetTrigger(AnimatorStrings.SLIDE_TOP_MENU_OUT);
+        }
+
+        //slide the line menus out
+        _anim.SetTrigger(AnimatorStrings.SLIDE_LINES_OUT);
+
+        yield return new WaitForSeconds(1);
+
+        //make sure all buttons are switched off
+        Utilities.MenuOff(_mainMenu);
+        //Start new game
+        EventManager.TriggerEvent(GameSettings.START_GAME);
+    }
+
+    private IEnumerator SwitchTopLevelMenus(string menuOut, string menuIn)
+    {
+        _anim.SetTrigger(menuOut);
+
+        yield return new WaitForSeconds(0.7f);
+
+        if(_wasFilthyFacebookHack)
+        {
+            StopMenuFromSlidingIn();
+            Utilities.MenuOn(_topLevelSideMenu); //just in case
+            _wasFilthyFacebookHack = false;
+        }
+        _anim.SetTrigger(menuIn);
+    }
+    #endregion
+        
 }
 
 public enum LoginStates

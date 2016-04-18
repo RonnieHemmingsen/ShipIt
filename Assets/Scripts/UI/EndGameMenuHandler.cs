@@ -29,43 +29,22 @@ public class EndGameMenuHandler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-
-        DisableMenu();
+        
 	}
 
     void OnEnable()
     {
-        EventManager.StartListening(EventStrings.ENABLE_GAMEOVER_MENU, EnableMenu);
+        EventManager.StartListening(MenuStrings.ENABLE_GAMEOVER_MENU, PrepareMenu);
         
     }
 
     void OnDisable()
     {
-        EventManager.StopListening(EventStrings.ENABLE_GAMEOVER_MENU, EnableMenu);
+        EventManager.StopListening(MenuStrings.ENABLE_GAMEOVER_MENU, PrepareMenu);
     }
 
-    public void OnWatchAdClicked()
+    private void PrepareMenu()
     {
-
-        print("Show ad");
-        _watchingAd = true;
-        ShowAd();
-    
-
-    }
-
-    public void OnPayForLifeClicked()
-    {
-        print("pay click lives");
-        print("Coins before: " + PlayerData.instance.Scores.globalCoinScore);
-        PlayerData.instance.Scores.globalCoinScore -= GameSettings.COST_OF_DEATH;
-        print("Coins after: " + PlayerData.instance.Scores.globalCoinScore);
-        SurviveDeath();
-    }
-
-    private void EnableMenu()
-    {
-        _menu.SetActive(true);
         _survivesDeath = false;
 
         _totalCoinsText.text = "(Have: " + PlayerData.instance.Scores.globalCoinScore.ToString() + ")";
@@ -92,11 +71,21 @@ public class EndGameMenuHandler : MonoBehaviour {
         }
     }
 
-    private void DisableMenu()
+    public void OnWatchAdClicked()
     {
-        _menu.SetActive(false);
+        print("Show ad");
+        _watchingAd = true;
+        ShowAd();
     }
-	
+
+    public void OnPayForLifeClicked()
+    {
+        print("pay click lives");
+        print("Coins before: " + PlayerData.instance.Scores.globalCoinScore);
+        PlayerData.instance.Scores.globalCoinScore -= GameSettings.COST_OF_DEATH;
+        print("Coins after: " + PlayerData.instance.Scores.globalCoinScore);
+        SurviveDeath();
+    }
 
     private void ShowAd()
     {
@@ -134,8 +123,8 @@ public class EndGameMenuHandler : MonoBehaviour {
 
     private void SurviveDeath()
     {            
-        DisableMenu();
         Utilities.UnPause();
+        EventManager.TriggerEvent(MenuStrings.DISABLE_GAMEOVER_MENU);
         EventManager.TriggerEvent(EventStrings.GET_REKT);
         _survivesDeath = true;
         StartCoroutine(WaitABit(1, "Restart"));
@@ -146,7 +135,7 @@ public class EndGameMenuHandler : MonoBehaviour {
     {
         Utilities.UnPause();
         _GM.IsWaitingForNewGame = true;
-        DisableMenu();
+        EventManager.TriggerEvent(MenuStrings.DISABLE_GAMEOVER_MENU);
         print("Perma death");
         EventManager.TriggerEvent(EventStrings.GET_REKT);
         //vent på at alt er eksploderet færdig, før vi fortsætter
@@ -205,7 +194,6 @@ public class EndGameMenuHandler : MonoBehaviour {
 
     private void Restart()
     {
-        
         EventManager.TriggerEvent(GameSettings.RESET_GAME);
     }
 }

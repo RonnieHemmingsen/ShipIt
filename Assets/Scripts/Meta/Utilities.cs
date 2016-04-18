@@ -38,10 +38,22 @@ public class Utilities : MonoBehaviour {
 
     public static void UnPause()
     {
-        //WHY?!?
         Time.timeScale = 1;
     }
 
+    public static void MenuOff(CanvasGroup menu)
+    {
+        menu.alpha = 0;
+        menu.blocksRaycasts = false;
+        menu.interactable = false;
+    }
+
+    public static void MenuOn(CanvasGroup menu)
+    {
+        menu.alpha = 1;
+        menu.blocksRaycasts = true;
+        menu.interactable = true;
+    }
 
     public static IEnumerator CheckInternetConnection(Action<bool> callback)
     {

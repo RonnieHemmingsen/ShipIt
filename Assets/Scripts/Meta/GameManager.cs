@@ -591,7 +591,7 @@ public class GameManager : MonoBehaviour {
     private IEnumerator WaitForDeath()
     {
         yield return new WaitForSeconds(0.5f);
-        EventManager.TriggerEvent(EventStrings.ENABLE_GAMEOVER_MENU);
+        EventManager.TriggerEvent(MenuStrings.ENABLE_GAMEOVER_MENU);
     }
 
     private void MaintainPositionLists(List<Vector3> list)

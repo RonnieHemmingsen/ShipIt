@@ -8,8 +8,8 @@ public class LevelManager : MonoBehaviour {
 
     private bool _hasActiveSceneUpdated;
     private bool _isStartMenuActive;
-    private GameObject _mainMenu;
-    private GameObject _gameUI;
+    private CanvasGroup _mainMenu;
+    private CanvasGroup _gameUI;
 
 
     public bool IsStartMenuActive {
@@ -87,28 +87,28 @@ public class LevelManager : MonoBehaviour {
 
     private void GameOver()
     {
-        _gameUI.SetActive(false);
-        _mainMenu.SetActive(true);
+        _gameUI.alpha = 0;
+        _mainMenu.alpha = 1;
         ToggleScenes();
     }
 
     private void StartGame()
     {
-        _gameUI.SetActive(true);
-        _mainMenu.SetActive(false);
+        _gameUI.alpha = 1;
+        _mainMenu.alpha = 0;
         ToggleScenes();
     }
 
     private void FindMainMenu()
     {
-        _mainMenu = GameObject.Find("Main Menu");   
+        _mainMenu = GameObject.Find("Main Menu").GetComponent<CanvasGroup>();   
         //print(_mainMenu.name);
     }
 
     private void FindGameUI()
     {
-        _gameUI = GameObject.Find("GameUI");
-        _gameUI.SetActive(false);
+        _gameUI = GameObject.Find("GameUI").GetComponent<CanvasGroup>();
+        _gameUI.alpha = 0;
         //print(_gameUI.name);
     }
         

@@ -18,45 +18,18 @@ AnimationClip:
       m_Curve:
       - time: 0
         value: {x: 0, y: 0, z: 0}
-        inSlope: {x: 0, y: 0, z: -118.320206}
-        outSlope: {x: 0, y: 0, z: -118.320206}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
       - time: 1
-        value: {x: 0, y: 0, z: -118.320206}
-        inSlope: {x: 0, y: 0, z: -118.320206}
-        outSlope: {x: 0, y: 0, z: -118.320206}
-        tangentMode: 0
-      - time: 3.0001667
-        value: {x: 0, y: 0, z: -354.98035}
-        inSlope: {x: 0, y: 0, z: -118.320206}
-        outSlope: {x: 0, y: 0, z: -118.320206}
-        tangentMode: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    path: FacebookSpinner/SpinnerInner
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - time: 0
         value: {x: 0, y: 0, z: 0}
-        inSlope: {x: 0, y: 0, z: 118.320206}
-        outSlope: {x: 0, y: 0, z: 118.320206}
-        tangentMode: 0
-      - time: 1
-        value: {x: 0, y: 0, z: 118.320206}
-        inSlope: {x: 0, y: 0, z: 118.320206}
-        outSlope: {x: 0, y: 0, z: 118.320206}
-        tangentMode: 0
-      - time: 3.0001667
-        value: {x: 0, y: 0, z: 354.98035}
-        inSlope: {x: 0, y: 0, z: 118.320206}
-        outSlope: {x: 0, y: 0, z: 118.320206}
+        inSlope: {x: 0, y: 0, z: 0}
+        outSlope: {x: 0, y: 0, z: 0}
         tangentMode: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: FacebookSpinner/SpinnerOuter
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
   m_PositionCurves: []
   m_ScaleCurves: []
   m_FloatCurves: []
@@ -68,13 +41,7 @@ AnimationClip:
     m_Extent: {x: 0, y: 0, z: 0}
   m_ClipBindingConstant:
     genericBindings:
-    - path: 1139691887
-      attribute: 4
-      script: {fileID: 0}
-      classID: 4
-      customType: 14
-      isPPtrCurve: 0
-    - path: 1510429431
+    - path: 4190383572
       attribute: 4
       script: {fileID: 0}
       classID: 4
@@ -86,7 +53,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 3.0001667
+    m_StopTime: 1
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -119,7 +86,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: FacebookSpinner/SpinnerInner
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -139,27 +106,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: FacebookSpinner/SpinnerInner
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - time: 0
-        value: 0
-        inSlope: -118.320206
-        outSlope: -118.320206
-        tangentMode: 10
-      - time: 3.0001667
-        value: -354.98035
-        inSlope: -118.320206
-        outSlope: -118.320206
-        tangentMode: 10
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: localEulerAnglesRaw.z
-    path: FacebookSpinner/SpinnerInner
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -178,48 +125,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: localEulerAnglesRaw.x
-    path: FacebookSpinner/SpinnerOuter
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 10
-      - time: 1
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 10
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: localEulerAnglesRaw.y
-    path: FacebookSpinner/SpinnerOuter
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - time: 0
-        value: 0
-        inSlope: 118.320206
-        outSlope: 118.320206
-        tangentMode: 10
-      - time: 3.0001667
-        value: 354.98035
-        inSlope: 118.320206
-        outSlope: 118.320206
-        tangentMode: 10
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: FacebookSpinner/SpinnerOuter
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves:
@@ -229,8 +136,8 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.z
-    path: FacebookSpinner/SpinnerInner
+    attribute: m_LocalEulerAngles.x
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -240,37 +147,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: FacebookSpinner/SpinnerInner
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: FacebookSpinner/SpinnerInner
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.x
-    path: FacebookSpinner/SpinnerOuter
-    classID: 224
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve: []
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_LocalEulerAngles.y
-    path: FacebookSpinner/SpinnerOuter
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -280,7 +157,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: FacebookSpinner/SpinnerOuter
+    path: TopLeveLTopMenu/LeaderBoardsMenu/Spinner/SpinnerInner
     classID: 224
     script: {fileID: 0}
   m_HasGenericRootTransform: 0

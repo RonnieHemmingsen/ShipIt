@@ -34,9 +34,6 @@ public static class EventStrings
     public const string START_BULLETENEMY_SHOOTING = "StartBulletEnemyShooting";
     public const string STOP_BULLETENEMY_SHOOTING = "StopBulletEnemyShooting";
 
-    public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";
-    public const string DISABLE_GAMEOVER_MENU = "DisableGameoverMenu";
-
     public const string REMOVE_FROM_ALIVE_LIST = "RemoveFromAliveList";
 
     public const string HAZARD_OUT_OF_BOUNDS = "HazardOutOfBounds";
@@ -78,8 +75,8 @@ public static class ObjectStrings
 
 public static class AnimatorStrings
 {
-    public const string TRIGGER_FB_SPINNER_ON = "StartFBSpin";
-    public const string TRIGGER_FB_SPINNER_OFF = "StopFBSpin";
+    public const string TRIGGER_SPINNER_ON = "StartSpin";
+    public const string TRIGGER_SPINNER_OFF = "StopSpin";
 
     public const string SLIDE_LINES_IN = "SlideLinesIn";
     public const string SLIDE_LINES_OUT = "SlideLinesOut";
@@ -167,8 +164,17 @@ public static class MenuStrings
 
     public const string UPDATE_LEADERBOARDS = "UpdateLeaderboards";
 
-    public const string TOP_MENU_DISPLAYED = "TopMenuDisplayed";
-    public const string SIDE_MENU_DISPLAYED = "SideMenuDisplayed";
+    public const string TOP_LEVEL_SIDE_MENU = "TopLevelSideMenu";
+    public const string TOP_LEVEL_TOP_MENU = "TopLevelTopMenu";
+
+    public const string LEADER_BOARD_MENU_PRESSED = "LeaderBoardMenuPressed";
+    public const string PROFILE_MENU_PRESSED = "ProfileMenuPressed";
+    public const string CLEAR_MENUS_FOR_GAME = "ClearMenusForGame";
+
+    public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";
+    public const string DISABLE_GAMEOVER_MENU = "DisableGameoverMenu";
+    public const string ENABLE_PAUSE_MENU = "EnablePauseMenu";
+    public const string DISABLE_PAUSE_MENU = "DisablePauseMenu";
 
 }
 

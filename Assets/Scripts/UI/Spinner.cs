@@ -4,32 +4,54 @@ using System.Collections;
 public class Spinner : MonoBehaviour {
 
     [SerializeField]
+    private MainMenuHandler _mainMenu;
+    [SerializeField]
     private GameObject _innerSpinner;
     [SerializeField]
     private GameObject _outerSpinner;
 
-    private Animator _anim;
-    private bool _shouldSpin;
+    private CanvasGroup _spinnerMenu;
+    private bool _isSpinning;
 
     void Awake()
     {
-        _anim = GetComponent<Animator>();
-        _innerSpinner.SetActive(false);
-        _outerSpinner.SetActive(false);
+        _spinnerMenu = GetComponent<CanvasGroup>();
+        Utilities.MenuOff(_spinnerMenu);
+    }
+
+    void OnEnable()
+    {
+        EventManager.StartListening(MenuStrings.START_SPINNER, StartSpinner);
+        EventManager.StartListening(MenuStrings.STOP_SPINNER, StopSpinner);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListening(MenuStrings.START_SPINNER, StartSpinner);
+        EventManager.StopListening(MenuStrings.STOP_SPINNER, StopSpinner);
     }
 
     private void StartSpinner()
-    {
-        _innerSpinner.SetActive(true);
-        _outerSpinner.SetActive(true);
-        _anim.SetBool("StartSpin", true);
+    {   
+        if(!_isSpinning)
+        {
+            print("Spinner On");
+            _isSpinning = true;
+            Utilities.MenuOn(_spinnerMenu);
+            _mainMenu.Anim.SetTrigger(AnimatorStrings.TRIGGER_SPINNER_ON);    
+        }
     }
 
     private void StopSpinner()
     {
-        _anim.SetBool("StopSpin", false);
-        _innerSpinner.SetActive(false);
-        _outerSpinner.SetActive(false);
+        if(_isSpinning)
+        {
+            print("Spinner Off");
+            _isSpinning = false;
+            _mainMenu.Anim.SetTrigger(AnimatorStrings.TRIGGER_SPINNER_OFF);   
+            Utilities.MenuOff(_spinnerMenu);
+        }
     }
+
 
 }
