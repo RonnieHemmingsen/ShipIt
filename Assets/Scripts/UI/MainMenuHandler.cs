@@ -68,6 +68,7 @@ public class MainMenuHandler : MonoBehaviour {
 
         EventManager.StartListening(MenuStrings.LEADER_BOARD_MENU_PRESSED, LeaderBoardMenuPressed);
         EventManager.StartListening(MenuStrings.PROFILE_MENU_PRESSED, ProfileMenuPressed);
+        EventManager.StartListening(MenuStrings.CREDITS_PRESSED, CreditsPressed);
         EventManager.StartListening(MenuStrings.CLEAR_MENUS_FOR_GAME, ClearMenusForGamePressed);
     }
 
@@ -83,6 +84,7 @@ public class MainMenuHandler : MonoBehaviour {
 
         EventManager.StopListening(MenuStrings.LEADER_BOARD_MENU_PRESSED, LeaderBoardMenuPressed);
         EventManager.StopListening(MenuStrings.PROFILE_MENU_PRESSED, ProfileMenuPressed);
+        EventManager.StartListening(MenuStrings.CREDITS_PRESSED, CreditsPressed);
         EventManager.StopListening(MenuStrings.CLEAR_MENUS_FOR_GAME, ClearMenusForGamePressed);
     }
 
@@ -281,6 +283,7 @@ public class MainMenuHandler : MonoBehaviour {
     private void Reset()
     {
         Utilities.MenuOn(_mainMenu);
+        _currentActiveTopLevelMenu = _topLevelSideMenu.name;
         _hasMenuSlidIn = false;
         _state = LoginStates.Init;
     }
@@ -338,6 +341,12 @@ public class MainMenuHandler : MonoBehaviour {
                 AnimatorStrings.SLIDE_TOP_MENU_OUT, 
                 AnimatorStrings.SLIDE_SIDE_MENU_IN));
         }
+    }
+
+    private void CreditsPressed()
+    {
+        //TODO: Refactor to make sense
+        ProfileMenuPressed();
     }
 
     private void ClearMenusForGamePressed()

@@ -35,7 +35,7 @@ public class EventManager : MonoBehaviour {
 
             if(!_eventManager)
             {
-                Debug.LogError("EventManager missing");
+                Debug.LogWarning("EventManager missing");
             }
             else
             {
@@ -74,16 +74,23 @@ public class EventManager : MonoBehaviour {
     {
        
         UnityEvent thisEvent = null;
-        if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+        try
         {
-            thisEvent.AddListener(listener);   
-        }
-        else
+            if (instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+            {
+                thisEvent.AddListener(listener);   
+            }
+            else
+            {
+                thisEvent = new UnityEvent();
+                thisEvent.AddListener(listener);
+                instance.eventDictionary.Add(eventName, thisEvent);
+            }   
+        } catch (Exception ex)
         {
-            thisEvent = new UnityEvent();
-            thisEvent.AddListener(listener);
-            instance.eventDictionary.Add(eventName, thisEvent);
+            print("StartListening error: " + ex);
         }
+
     }
 
     public static void StopListening(string eventName, UnityAction listener)
@@ -92,10 +99,17 @@ public class EventManager : MonoBehaviour {
 
         UnityEvent thisEvent = null;
 
-        if(instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+        try
         {
-            thisEvent.RemoveListener(listener);
+            if(instance.eventDictionary.TryGetValue(eventName, out thisEvent))
+            {
+                thisEvent.RemoveListener(listener);
+            }
+        } catch (Exception ex)
+        {
+            print("StopListening error: " + ex);
         }
+
     }
 
     public static void TriggerEvent(string eventName, string param = "")

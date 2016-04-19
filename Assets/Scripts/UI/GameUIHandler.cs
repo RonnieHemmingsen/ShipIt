@@ -8,7 +8,7 @@ public class GameUIHandler : MonoBehaviour {
     [SerializeField]
     private CanvasGroup _pauseMenu;
     [SerializeField]
-    private CanvasGroup _helpMenu;
+    private CanvasGroup _introScreen;
     [SerializeField]
     private Text _distanceText;
     [SerializeField]
@@ -35,6 +35,9 @@ public class GameUIHandler : MonoBehaviour {
         EventManager.StartListening(MenuStrings.DISABLE_GAMEOVER_MENU, DisableGameOverMenu);
         EventManager.StartListening(MenuStrings.ENABLE_PAUSE_MENU, EnablePauseMenu);
         EventManager.StartListening(MenuStrings.DISABLE_PAUSE_MENU, DisablePauseMenu);
+
+        EventManager.StartListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
+        EventManager.StartListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
     }
 
     void OnDisable()
@@ -44,6 +47,9 @@ public class GameUIHandler : MonoBehaviour {
         EventManager.StopListening(MenuStrings.DISABLE_GAMEOVER_MENU, DisableGameOverMenu);
         EventManager.StopListening(MenuStrings.ENABLE_PAUSE_MENU, EnablePauseMenu);
         EventManager.StopListening(MenuStrings.DISABLE_PAUSE_MENU, DisablePauseMenu);
+
+        EventManager.StartListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
+        EventManager.StartListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
     }
 
 	// Use this for initialization
@@ -51,6 +57,7 @@ public class GameUIHandler : MonoBehaviour {
 	
         Utilities.MenuOff(_gameOverMenu);
         Utilities.MenuOff(_pauseMenu);
+        Utilities.MenuOff(_introScreen);
 
         _distanceText.text = "Distance: 0";
         _currentFGScore.text = "0";
@@ -89,6 +96,16 @@ public class GameUIHandler : MonoBehaviour {
     {
         Utilities.UnPause();
         Utilities.MenuOff(_pauseMenu);
+    }
+
+    private void EnableIntro()
+    {
+        Utilities.MenuOn(_introScreen);
+    }
+
+    private void DisableIntro()
+    {
+        Utilities.MenuOff(_introScreen);
     }
 
     private void EnableSelf()

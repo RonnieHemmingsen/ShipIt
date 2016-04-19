@@ -637,6 +637,7 @@ public class GameManager : MonoBehaviour {
 
     private void InstantiatePlayer()
     {
+        EventManager.TriggerEvent(MenuStrings.ENABLE_INTRO_SCREEN);
         PlayerData.instance.Scores.lastCoinScore = 0;
         PlayerData.instance.Scores.lastTravelScore = 0;
         _isPlayerDead = false;
@@ -649,6 +650,7 @@ public class GameManager : MonoBehaviour {
         _gameUI.SetActive(true);
         _isStartingGame = false;
         _isWaitingForNewGame = false;
+        EventManager.TriggerEvent(MenuStrings.DISABLE_INTRO_SCREEN);
     }
 
     private void ResetGame()

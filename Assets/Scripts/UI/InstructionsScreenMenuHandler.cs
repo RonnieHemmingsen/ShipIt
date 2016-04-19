@@ -11,8 +11,6 @@ public class InstructionsScreenMenuHandler : MonoBehaviour {
     private CanvasGroup _shieldInstructions;
     [SerializeField]
     private CanvasGroup _speedInstructions;
-    [SerializeField]
-    private CanvasGroup _powerRack;
 
 	// Use this for initialization
 	void Start () {

@@ -169,6 +169,7 @@ public static class MenuStrings
 
     public const string LEADER_BOARD_MENU_PRESSED = "LeaderBoardMenuPressed";
     public const string PROFILE_MENU_PRESSED = "ProfileMenuPressed";
+    public const string CREDITS_PRESSED = "CreditsPressed";
     public const string CLEAR_MENUS_FOR_GAME = "ClearMenusForGame";
 
     public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";
@@ -180,6 +181,9 @@ public static class MenuStrings
     public const string ENABLE_SHIELD_INSTRUCTIONS = "EnableShieldInstructions";
     public const string ENABLE_SPEED_INSTRUCTIONS = "EnableSpeedInstructions";
     public const string DISABLE_INSTRUCTIONS_SCREEN = "DisableInstructionsScreen";
+
+    public const string ENABLE_INTRO_SCREEN = "EnableIntroScreen";
+    public const string DISABLE_INTRO_SCREEN = "DisableIntroScreen";
 
 }
 
