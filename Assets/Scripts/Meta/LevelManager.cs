@@ -87,15 +87,15 @@ public class LevelManager : MonoBehaviour {
 
     private void GameOver()
     {
-        _gameUI.alpha = 0;
-        _mainMenu.alpha = 1;
+        Utilities.MenuOff(_gameUI);
+        Utilities.MenuOn(_mainMenu);
         ToggleScenes();
     }
 
     private void StartGame()
     {
-        _gameUI.alpha = 1;
-        _mainMenu.alpha = 0;
+        Utilities.MenuOff(_mainMenu);
+        Utilities.MenuOn(_gameUI);
         ToggleScenes();
     }
 
@@ -108,7 +108,7 @@ public class LevelManager : MonoBehaviour {
     private void FindGameUI()
     {
         _gameUI = GameObject.Find("GameUI").GetComponent<CanvasGroup>();
-        _gameUI.alpha = 0;
+        Utilities.MenuOff(_gameUI);
         //print(_gameUI.name);
     }
         
