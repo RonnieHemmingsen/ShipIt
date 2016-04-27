@@ -86,7 +86,6 @@ GameObject:
   - 54: {fileID: 5442566}
   - 114: {fileID: 11453694}
   - 114: {fileID: 11471796}
-  - 114: {fileID: 11495134}
   m_Layer: 0
   m_Name: DestroyAll
   m_TagString: DestroyAll
@@ -402,18 +401,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tumble: 2
---- !u!114 &11495134
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 199062}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33076371c0dcf44a3b437b250f47aac6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tutorialButton: {fileID: 11435738}
 --- !u!222 &22213960
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -447,6 +434,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

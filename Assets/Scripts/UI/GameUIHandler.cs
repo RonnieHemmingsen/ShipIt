@@ -38,6 +38,9 @@ public class GameUIHandler : MonoBehaviour {
 
         EventManager.StartListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
         EventManager.StartListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
+
+        EventManager.StartListening(MenuStrings.INTRO_PRESSED, EnableIntro);
+
     }
 
     void OnDisable()
@@ -48,8 +51,10 @@ public class GameUIHandler : MonoBehaviour {
         EventManager.StopListening(MenuStrings.ENABLE_PAUSE_MENU, EnablePauseMenu);
         EventManager.StopListening(MenuStrings.DISABLE_PAUSE_MENU, DisablePauseMenu);
 
-        EventManager.StartListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
-        EventManager.StartListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
+        EventManager.StopListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
+        EventManager.StopListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
+
+        EventManager.StopListening(MenuStrings.INTRO_PRESSED, EnableIntro);
     }
 
 	// Use this for initialization

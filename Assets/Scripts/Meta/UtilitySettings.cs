@@ -103,6 +103,7 @@ public static class GameSettings
     public const string RESET_GAME = "ResetGame";
     public const string BOOT_GAME = "BootGame";
     public const string GAME_OVER = "GameOver";
+    public const string MURDER_PLAYER = "MurderPlayer"; //for quitting manually
     public const string GAME_HAS_STARTED = "GameHasStarted";
     public const string MAIN_MENU_EXISTS = "MainMenuExists";
     public const string GAME_UI_EXISTS = "GameUIExists";
@@ -171,6 +172,9 @@ public static class MenuStrings
     public const string PROFILE_MENU_PRESSED = "ProfileMenuPressed";
     public const string CREDITS_PRESSED = "CreditsPressed";
     public const string CLEAR_MENUS_FOR_GAME = "ClearMenusForGame";
+
+    public const string INTRO_PRESSED = "IntroPressed";
+    public const string EXIT_TO_MENU = "ExitToMenu";
 
     public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";
     public const string DISABLE_GAMEOVER_MENU = "DisableGameoverMenu";

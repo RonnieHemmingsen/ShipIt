@@ -214,7 +214,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 140932}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -5}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22457980}
@@ -617,9 +617,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shipSpeed: 20
-  _numberOfShotsToSpawn: 10
   _fireRate: 0.15
-  _bolt: {fileID: 194776, guid: a7037138876824aeab6060d20d916ecb, type: 2}
   _boltSpawnPos: {fileID: 186168}
   _invulnerableForceField: {fileID: 180108}
   _ludicrousSpeedAfterburner: {fileID: 141004}
@@ -633,6 +631,7 @@ MonoBehaviour:
   _engineSound: {fileID: 8296794}
   _ludicrousSound: {fileID: 8221994}
   _laserSound: {fileID: 8270306}
+  _explosion: {fileID: 100008, guid: a93496017806b7740910df5fd946f306, type: 2}
 --- !u!114 &11498280
 MonoBehaviour:
   m_ObjectHideFlags: 1

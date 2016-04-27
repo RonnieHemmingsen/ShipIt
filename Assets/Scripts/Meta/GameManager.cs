@@ -68,14 +68,12 @@ public class GameManager : MonoBehaviour {
     private bool _shieldTokenExists;
     private bool _isSpawningAsteroids;
     private bool _hasSpawnStarted;
-    private bool _hasDestroyAllTokenHelpBeenDisplayed;
-    private bool _hasShieldTokenHelpBeenDisplayed;
-    private bool _hasSpeedTokenHelpBeenDisplayed;
     private bool _isPlayerDead;
     private int _playerDeathCount;
     private int _currentNumberOfBolts;
     private bool _isStartingGame = true;
     private bool _isWaitingForNewGame;
+    private bool _didMurderPlayer;
 
 
     #region Properties
@@ -149,24 +147,6 @@ public class GameManager : MonoBehaviour {
     {
         get { return _shieldTokenExists; }
         set { _shieldTokenExists = value; }
-    }
-
-    public bool HasDestroyTokenHelpBeenDisplayed
-    {
-        get { return _hasDestroyAllTokenHelpBeenDisplayed; }
-        set { _hasDestroyAllTokenHelpBeenDisplayed = value; }
-    }
-
-    public bool HasShieldTokenHelpBeenDisplayed
-    {
-        get { return _hasShieldTokenHelpBeenDisplayed; }
-        set { _hasShieldTokenHelpBeenDisplayed = value; }
-    }
-
-    public bool HasSpeedTokenHelpBeenDisplayed
-    {
-        get { return _hasSpeedTokenHelpBeenDisplayed; }
-        set { _hasSpeedTokenHelpBeenDisplayed = value; }
     }
 
     public int LaserEnemiesAlive
@@ -258,8 +238,6 @@ public class GameManager : MonoBehaviour {
 
         _aliveTokenList = new List<string>();
 
-        CheckPlayerPrefs();
-
         EventManager.TriggerEvent(EventStrings.GET_GAME_MANAGER); 
 
 
@@ -269,6 +247,7 @@ public class GameManager : MonoBehaviour {
     {
         EventManager.StartListening(GameSettings.START_GAME, InstantiatePlayer);
         EventManager.StartListening(GameSettings.RESET_GAME, InstantiatePlayer);
+        EventManager.StartListening(GameSettings.MURDER_PLAYER, MurderPlayer);
         EventManager.StartListening(EventStrings.PLAYER_DEAD, PlayerDied);
         EventManager.StartListening(EventStrings.HAZARD_KILL, UpdateHazardDestroyed); 
 
@@ -304,6 +283,7 @@ public class GameManager : MonoBehaviour {
     {
         EventManager.StopListening(GameSettings.START_GAME, InstantiatePlayer);
         EventManager.StopListening(GameSettings.RESET_GAME, InstantiatePlayer);
+        EventManager.StopListening(GameSettings.MURDER_PLAYER, MurderPlayer);
         EventManager.StopListening(EventStrings.PLAYER_DEAD, PlayerDied);
 
         EventManager.StopListening(EventStrings.INVULNERABILITY_ON, InvulnerabilityOn);
@@ -578,20 +558,37 @@ public class GameManager : MonoBehaviour {
 
     }
 
+    private void MurderPlayer()
+    {
+        print("You exited the game");
+        _didMurderPlayer = true;
+        EventManager.TriggerEvent(GameSettings.GAME_OVER);
+
+    }
+
     private void PlayerDied()
     {
         print("You died");
         _isPlayerDead = true;
         _playerDeathCount++;
-        StartCoroutine(WaitForDeath());
+        StartCoroutine(WaitForDeath("Natural"));
     }
     #endregion
 
 
-    private IEnumerator WaitForDeath()
+    private IEnumerator WaitForDeath(string causeOfDeath)
     {
         yield return new WaitForSeconds(0.5f);
-        EventManager.TriggerEvent(MenuStrings.ENABLE_GAMEOVER_MENU);
+
+        if(!_didMurderPlayer)
+        {
+            EventManager.TriggerEvent(MenuStrings.ENABLE_GAMEOVER_MENU);    
+        }
+        else
+        {
+            //Nothing. its cool.
+        }
+            
     }
 
     private void MaintainPositionLists(List<Vector3> list)
@@ -667,27 +664,9 @@ public class GameManager : MonoBehaviour {
         _playerDeathCount = 0;
         _currentNumberOfBolts = _maxNumberOfBolts;
 
+        _didMurderPlayer = false;
 
         _isWaitingForNewGame = true;
     }
-
-    private void CheckPlayerPrefs()
-    {
-        if (PlayerPrefs.HasKey(GameSettings.HAS_DESTROY_ALL_TOKEN_HELP_BEEN_DISPLAYED))
-        {
-            _hasDestroyAllTokenHelpBeenDisplayed = true;
-        }
-
-        if (PlayerPrefs.HasKey(GameSettings.HAS_SHIELD_TOKEN_HELP_BEEN_DISPLAYED))
-        {
-            _hasShieldTokenHelpBeenDisplayed = true;
-        }
-
-        if (PlayerPrefs.HasKey(GameSettings.HAS_SPEED_TOKEN_HELP_BEEN_DISPLAYED))
-        {
-            _hasSpeedTokenHelpBeenDisplayed = true;
-        }
-    }
-
 }
    

@@ -51,7 +51,6 @@ GameObject:
   - 54: {fileID: 5477602}
   - 114: {fileID: 11440222}
   - 114: {fileID: 11466564}
-  - 114: {fileID: 11440058}
   m_Layer: 0
   m_Name: LudicrousSpeedToken
   m_TagString: LudicrousSpeed
@@ -183,18 +182,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &11440058
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 164614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33076371c0dcf44a3b437b250f47aac6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tutorialButton: {fileID: 11449778}
 --- !u!114 &11440222
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -447,6 +434,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

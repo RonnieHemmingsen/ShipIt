@@ -29,15 +29,20 @@ public class PlayerController : MonoBehaviour {
     private AudioSource _ludicrousSound;
     [SerializeField]
     private AudioSource _laserSound;
+    [SerializeField]
+    private GameObject _explosion;
 
     private Rigidbody _rigidbody;
     private ObjectPoolManager _objPool;
     private GameManager _GM;
     private Animator _anim;
+
     private float _timeBetweenShots;
     private float _moveHorizontal;
-    private float _currentVertical;
-    private float _lastVertical;
+    private float _currentDestroyVertical;
+    private float _lastDestroyVertical;
+    private float _currentSpeedVertical;
+    private float _lastSpeedVertical;
     private bool _hasFiredTouch;
     private bool _isStartingGame = true;
     private Vector2 _startSwipePosition;
@@ -66,6 +71,7 @@ public class PlayerController : MonoBehaviour {
         EventManager.StartListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
         EventManager.StartListening(GameSettings.GAME_HAS_STARTED, GameStarted);
+        EventManager.StartListening(GameSettings.MURDER_PLAYER, Explode);
 
     }
 
@@ -76,9 +82,8 @@ public class PlayerController : MonoBehaviour {
         EventManager.StopListening(EventStrings.ENGAGE_LUDICROUS_SPEED, EngageLudicrousSpeed);
         EventManager.StopListening(EventStrings.DISENGAGE_LUDICROUS_SPEED, DisengageLudicrousSpeed);
 
-
-
         EventManager.StopListening(GameSettings.GAME_HAS_STARTED, GameStarted);
+        EventManager.StopListening(GameSettings.MURDER_PLAYER, Explode);
     }
 
     void Start()
@@ -117,10 +122,12 @@ public class PlayerController : MonoBehaviour {
         #elif UNITY_IOS
         _moveHorizontal = Input.acceleration.x;
 
+        float marginLeft = 65f;
+        float marginRight = Screen.width - 75f;
 
         Touch[] touchy = Input.touches;
         //Shoot once per tap
-        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch && CanFire())
+        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began && !_hasFiredTouch && CanFire() && touchy[0].position.x > marginLeft && touchy[0].position.x < marginRight)
         {
             _hasFiredTouch = true;
             Fire();
@@ -171,8 +178,8 @@ public class PlayerController : MonoBehaviour {
             }
         }
         #elif UNITY_IOS
-        _currentVertical = Input.acceleration.y;
-        float difference = _currentVertical - _lastVertical;
+        _currentDestroyVertical = Input.acceleration.y;
+        float difference = _currentDestroyVertical - _lastDestroyVertical;
         if(difference > 0.3f && _GM.HasDestroyAllToken)
         {
             print("Difference: " + difference);
@@ -181,7 +188,7 @@ public class PlayerController : MonoBehaviour {
         }
         else
         {
-            _lastVertical = _currentVertical;
+        _lastDestroyVertical = _currentDestroyVertical;
         }
         #endif
     }
@@ -202,13 +209,15 @@ public class PlayerController : MonoBehaviour {
         {
             bool leftSideTouch = false;
             bool rightSideTouch = false;
+            float marginLeft = 65f;
+            float marginRight = Screen.width - 65f;
             foreach (var t in touches) 
             {
-                if(t.position.x < Screen.width / 2)
+                if(t.position.x < Screen.width / 2 && t.position.x > marginLeft)
                 {
                     leftSideTouch = true;
                 }
-                if(t.position.x > Screen.width / 2)
+                if(t.position.x > Screen.width / 2 && t.position.x < marginRight)
                 {
                     rightSideTouch = true;
                 }
@@ -237,27 +246,41 @@ public class PlayerController : MonoBehaviour {
         }
         #elif UNITY_IOS
 
-
-        //check if swipe has started -cache location
-        Touch[] touchy = Input.touches;
-        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began)
+        _lastSpeedVertical = Input.acceleration.y;
+        float difference =  _lastSpeedVertical - _currentSpeedVertical;
+        if(difference > 0.3f && _GM.HasSpeedToken)
         {
-            _startSwipePosition = touchy[0].position;
-            print("Start Position: " + _startSwipePosition);
+        print("Difference: " + difference);
+            _ludicrousSound.Play();
+            EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+            EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
+            EventManager.TriggerEvent(EventStrings.GET_REKT);
+        }
+        else
+        {
+            _lastSpeedVertical = _currentSpeedVertical;
         }
 
-        //Check if swipe has progressed, trigger ludicrous speed if appropriate
-        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Moved)
-        {
-            float distance = Vector2.Distance(touchy[0].deltaPosition, _startSwipePosition);
-            print("Swipe Distance: " + distance);
-            if(distance > 500 && _GM.HasSpeedToken)
-            {
-                EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
-                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
-                EventManager.TriggerEvent(EventStrings.GET_REKT);
-            }
-        }
+//        //check if swipe has started -cache location
+//        Touch[] touchy = Input.touches;
+//        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Began)
+//        {
+//            _startSwipePosition = touchy[0].position;
+//            print("Start Position: " + _startSwipePosition);
+//        }
+//
+//        //Check if swipe has progressed, trigger ludicrous speed if appropriate
+//        if(Input.touchCount == 1 && touchy[0].phase == TouchPhase.Moved)
+//        {
+//            float distance = Vector2.Distance(touchy[0].deltaPosition, _startSwipePosition);
+//            print("Swipe Distance: " + distance);
+//            if(distance > 500 && _GM.HasSpeedToken)
+//            {
+//                EventManager.TriggerEvent(EventStrings.ENGAGE_LUDICROUS_SPEED);
+//                EventManager.TriggerEvent(EventStrings.INVULNERABILITY_ON);
+//                EventManager.TriggerEvent(EventStrings.GET_REKT);
+//            }
+//        }
         #endif
 
     }
@@ -350,6 +373,12 @@ public class PlayerController : MonoBehaviour {
 
         } while (time <= fadeTime && _shieldIsFading);
 
+    }
+
+    private void Explode()
+    {
+        Instantiate(_explosion, transform.position, transform.rotation);
+        _objPool.ReturnObjectToPool(tag, gameObject);
     }
 
     private void GameStarted()

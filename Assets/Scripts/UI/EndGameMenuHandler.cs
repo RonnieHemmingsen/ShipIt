@@ -35,12 +35,14 @@ public class EndGameMenuHandler : MonoBehaviour {
     void OnEnable()
     {
         EventManager.StartListening(MenuStrings.ENABLE_GAMEOVER_MENU, PrepareMenu);
+        EventManager.StartListening(MenuStrings.EXIT_TO_MENU, ManuallyExitGame);
         
     }
 
     void OnDisable()
     {
         EventManager.StopListening(MenuStrings.ENABLE_GAMEOVER_MENU, PrepareMenu);
+        EventManager.StopListening(MenuStrings.EXIT_TO_MENU, ManuallyExitGame);
     }
 
     private void PrepareMenu()
@@ -121,6 +123,17 @@ public class EndGameMenuHandler : MonoBehaviour {
         }
     }
 
+    private void ManuallyExitGame()
+    {
+        Utilities.UnPause();
+        _GM.IsWaitingForNewGame = true;
+        print("Death by murder");
+        EventManager.TriggerEvent(MenuStrings.DISABLE_PAUSE_MENU);
+        EventManager.TriggerEvent(EventStrings.GET_REKT);
+        //vent på at alt er eksploderet færdig, før vi fortsætter
+        StartCoroutine(WaitABit(0.2f, "Murder"));
+    }
+
     private void SurviveDeath()
     {            
         Utilities.UnPause();
@@ -152,7 +165,7 @@ public class EndGameMenuHandler : MonoBehaviour {
             yield return new WaitForEndOfFrame();
         }
         print("Done waiting a bit");
-
+        print("Called By: " +  calledBy);
         switch (calledBy) 
         {
             case "GameOver":
@@ -160,6 +173,9 @@ public class EndGameMenuHandler : MonoBehaviour {
                 break;
             case "Restart":
                 Restart();
+                break;
+            case "Murder":
+                Murder();
                 break;
             default:
                 break;
@@ -195,5 +211,11 @@ public class EndGameMenuHandler : MonoBehaviour {
     private void Restart()
     {
         EventManager.TriggerEvent(GameSettings.RESET_GAME);
+    }
+
+    private void Murder()
+    {
+        PersistentDataManager.SavePlayerData(PlayerData.instance.Scores);
+        EventManager.TriggerEvent(GameSettings.MURDER_PLAYER);
     }
 }

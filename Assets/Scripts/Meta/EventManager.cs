@@ -89,6 +89,7 @@ public class EventManager : MonoBehaviour {
         } catch (Exception ex)
         {
             print("StartListening error: " + ex);
+            print("EventName: " + eventName);
         }
 
     }

@@ -86,7 +86,6 @@ GameObject:
   - 54: {fileID: 5425664}
   - 114: {fileID: 11471734}
   - 114: {fileID: 11425042}
-  - 114: {fileID: 11425866}
   m_Layer: 0
   m_Name: InvulnerablePower
   m_TagString: Invulnerable
@@ -274,18 +273,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosion: {fileID: 100012, guid: 384371afbb4354cc9a3fc68eab303756, type: 2}
---- !u!114 &11425866
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 187450}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 33076371c0dcf44a3b437b250f47aac6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tutorialButton: {fileID: 11400166}
 --- !u!114 &11436150
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -447,6 +434,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
