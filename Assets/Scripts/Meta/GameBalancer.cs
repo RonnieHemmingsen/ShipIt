@@ -154,6 +154,7 @@ public class GameBalancer : MonoBehaviour {
     }
     private void Reset()
     {
+        _difficultySetting = 0;
         _deltaTimeIncrement = 0;
         _deltaDifficultyIncrement = 0;
         _deltaToggleAllIncrement = 0;

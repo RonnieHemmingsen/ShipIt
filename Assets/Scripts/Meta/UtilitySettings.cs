@@ -173,7 +173,8 @@ public static class MenuStrings
     public const string CREDITS_PRESSED = "CreditsPressed";
     public const string CLEAR_MENUS_FOR_GAME = "ClearMenusForGame";
 
-    public const string INTRO_PRESSED = "IntroPressed";
+    public const string PAUSE_INTRO_ENABLED = "PauseIntroEnabled";
+    public const string PAUSE_INTRO_DISABLED = "PauseIntroDisabled";
     public const string EXIT_TO_MENU = "ExitToMenu";
 
     public const string ENABLE_GAMEOVER_MENU = "EnableGameoverMenu";

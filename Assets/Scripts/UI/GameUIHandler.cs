@@ -10,6 +10,8 @@ public class GameUIHandler : MonoBehaviour {
     [SerializeField]
     private CanvasGroup _introScreen;
     [SerializeField]
+    private CanvasGroup _pausedIntroScreen;
+    [SerializeField]
     private Text _distanceText;
     [SerializeField]
     private Text _speedText;
@@ -39,7 +41,8 @@ public class GameUIHandler : MonoBehaviour {
         EventManager.StartListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
         EventManager.StartListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
 
-        EventManager.StartListening(MenuStrings.INTRO_PRESSED, EnableIntro);
+        EventManager.StartListening(MenuStrings.PAUSE_INTRO_ENABLED, EnablePausedIntro);
+        EventManager.StartListening(MenuStrings.PAUSE_INTRO_DISABLED, DisablePausedIntro);
 
     }
 
@@ -54,7 +57,8 @@ public class GameUIHandler : MonoBehaviour {
         EventManager.StopListening(MenuStrings.ENABLE_INTRO_SCREEN, EnableIntro);
         EventManager.StopListening(MenuStrings.DISABLE_INTRO_SCREEN, DisableIntro);
 
-        EventManager.StopListening(MenuStrings.INTRO_PRESSED, EnableIntro);
+        EventManager.StopListening(MenuStrings.PAUSE_INTRO_ENABLED, EnablePausedIntro);
+        EventManager.StopListening(MenuStrings.PAUSE_INTRO_DISABLED, DisablePausedIntro);
     }
 
 	// Use this for initialization
@@ -63,6 +67,7 @@ public class GameUIHandler : MonoBehaviour {
         Utilities.MenuOff(_gameOverMenu);
         Utilities.MenuOff(_pauseMenu);
         Utilities.MenuOff(_introScreen);
+        Utilities.MenuOff(_pausedIntroScreen);
 
         _distanceText.text = "Distance: 0";
         _currentFGScore.text = "0";
@@ -101,6 +106,20 @@ public class GameUIHandler : MonoBehaviour {
     {
         Utilities.UnPause();
         Utilities.MenuOff(_pauseMenu);
+    }
+
+    private void EnablePausedIntro()
+    {
+        DisablePauseMenu();
+        Utilities.Pause();
+        Utilities.MenuOn(_pausedIntroScreen);
+    }
+
+    private void DisablePausedIntro()
+    {
+        //Utilities.UnPause();
+        Utilities.MenuOff(_pausedIntroScreen);
+        EnablePauseMenu();
     }
 
     private void EnableIntro()

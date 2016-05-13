@@ -51,7 +51,7 @@ public class DestroyByContact : MonoBehaviour {
 
         }
 
-        //Player hits enemy laser and is fucking dead.
+        //Player hits an enemy laser, and is having a bad day.
         if(other.tag == ObjectStrings.PLAYER && !_GM.IsPlayerShielded && tag == ObjectStrings.ENEMY_BOLT && !_GM.DebugInvulne)
         {
             print("Death by laser");
@@ -59,6 +59,7 @@ public class DestroyByContact : MonoBehaviour {
             Destroy(other.gameObject);
             EventManager.TriggerEvent(EventStrings.PLAYER_DEAD);
         }
+
 
         //Player hits a bullet and is hard pressed for luck
         if(other.tag == ObjectStrings.PLAYER && !_GM.IsPlayerShielded && tag == ObjectStrings.BULLET && !_GM.DebugInvulne)

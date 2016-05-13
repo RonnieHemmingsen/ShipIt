@@ -38,8 +38,6 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private GameObject _coin;
     [SerializeField]
-    private GameObject _bigCoin;
-    [SerializeField]
     private GameObject _ludicrousToken;
     [SerializeField]
     private GameObject _boltToken;
@@ -219,7 +217,6 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         _objPool.CreateNewDictionary();
         _objPool.CreatePool(20, _coin, _coin.tag);
-        _objPool.CreatePool(10, _bigCoin, _bigCoin.tag);
         _objPool.CreatePool(20, _asteroid, _asteroid.tag);
         _objPool.CreatePool(1, _invulnePower, _invulnePower.tag);
         _objPool.CreatePool(5, _laserEnemy, _laserEnemy.tag);
@@ -442,7 +439,6 @@ public class GameManager : MonoBehaviour {
     {
         DecreaseAliveHazardCount();
         _destroyedHazards++;
-
     }
 
     private void UpdateCoinScore()
