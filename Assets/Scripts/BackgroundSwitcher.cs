@@ -22,6 +22,15 @@ public class BackgroundSwitcher : MonoBehaviour {
         _switchToIndex = 2;
         _lastDisplayed = _switchToIndex;
 
+        for (int i = 2; i < _tiles.Length; i++)
+        {
+            Renderer rend = _tiles[i].GetComponent<Renderer>();
+            Color col = rend.material.color;
+            col.a = 0;
+            rend.material.color = col;
+
+        }
+
         StartCoroutine(ChangeOpacity());
 	}
 	
@@ -38,7 +47,7 @@ public class BackgroundSwitcher : MonoBehaviour {
                 StartCoroutine(ChangeOpacity());
             }
 
-            else 
+            else
             {
                 _curIndex = 0;
                 _switchFromIndex = _lastDisplayed;
@@ -50,6 +59,7 @@ public class BackgroundSwitcher : MonoBehaviour {
 
                 StartCoroutine(ChangeOpacity());
             }
+
         }
 	}
 
@@ -76,10 +86,13 @@ public class BackgroundSwitcher : MonoBehaviour {
         Color colThree = GetColor(rendThree);
         Color colFour = GetColor(rendFour);
 
+        colOne.a = 1;
+        colTwo.a = 1;
         colThree.a = 0;
         colFour.a = 0;
 
         while (rendOne.material.color.a >= 0 && rendTwo.material.color.a >= 0) {
+            //print(string.Format("ColOne"))
             colOne.a -= _switchTime;
             colTwo.a -= _switchTime;
             colThree.a += _switchTime;
@@ -89,7 +102,7 @@ public class BackgroundSwitcher : MonoBehaviour {
             rendTwo.material.color = colTwo;
             rendThree.material.color = colThree;
             rendFour.material.color = colFour;
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
         }
         _curIndex += 2;
         _lastDisplayed = _switchToIndex;

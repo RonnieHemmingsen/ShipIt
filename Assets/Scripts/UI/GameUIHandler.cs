@@ -19,13 +19,17 @@ public class GameUIHandler : MonoBehaviour {
     private Text _boltCount;
     [SerializeField]
     private Text _currentFGScore;
+    [SerializeField]
+    private Text _FPSText;
 
     private GameManager _GM;
     private CanvasGroup _gameUI;
+    private FPSCounter _fpsCounter;
 
     void Awake()
     {
         _GM = FindObjectOfType<GameManager>();
+        _fpsCounter = FindObjectOfType<FPSCounter>();
         _gameUI = GetComponent<CanvasGroup>();
 
     }
@@ -72,6 +76,7 @@ public class GameUIHandler : MonoBehaviour {
         _distanceText.text = "Distance: 0";
         _currentFGScore.text = "0";
         _boltCount.text = "";
+        _FPSText.text = "0";
 
         EventManager.TriggerEvent(GameSettings.GAME_UI_EXISTS);
 	}
@@ -84,6 +89,8 @@ public class GameUIHandler : MonoBehaviour {
         _currentFGScore.text = PlayerData.instance.Scores.lastCoinScore.ToString(); 
         _speedText.text = _GM.GameSpeed.ToString();
         _boltCount.text = _GM.CurrentNumberOfBolts.ToString();
+
+        _FPSText.text = "FPS: " + _fpsCounter.FPS.ToString("F1");
 	}
 
     private void EnableGameOverMenu()

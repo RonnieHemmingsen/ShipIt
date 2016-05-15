@@ -84,7 +84,7 @@ public class MainMenuHandler : MonoBehaviour {
 
         EventManager.StopListening(MenuStrings.LEADER_BOARD_MENU_PRESSED, LeaderBoardMenuPressed);
         EventManager.StopListening(MenuStrings.PROFILE_MENU_PRESSED, ProfileMenuPressed);
-        EventManager.StartListening(MenuStrings.CREDITS_PRESSED, CreditsPressed);
+        EventManager.StopListening(MenuStrings.CREDITS_PRESSED, CreditsPressed);
         EventManager.StopListening(MenuStrings.CLEAR_MENUS_FOR_GAME, ClearMenusForGamePressed);
     }
 
