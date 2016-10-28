@@ -144,10 +144,10 @@ public static class TextStrings
     public const string COIN_AQUIRED = "+1";
 
     //Scores
-    public const string FUTURE_GREENS_SCORE = "Future Greens";
+    public const string FUTURE_GOLD_SCORE = "Future Gold";
     public const string LIGHTYEARS_TRAVELLED = "Lightyears Travelled";
-    public const string FG_LAST = "Greens Collected on the last trip: ";
-    public const string FG_TOTAL = "Greens collected in total: ";
+    public const string FG_LAST = "Gold Collected on the last trip: ";
+    public const string FG_TOTAL = "Gold collected in total: ";
     public const string LAST_TRIP_LENGTH = "Last Trip: ";
     public const string BEST_TRIP_LENGTH = "Best Trip: ";
 

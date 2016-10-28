@@ -6,9 +6,11 @@ public class BackgroundSwitcher : MonoBehaviour {
     [SerializeField]
     private float _switchTime;
     [SerializeField]
+    private float _alphaIncrement;
+    [SerializeField]
     private GameObject[] _tiles;
 
-
+    private bool _isCycling;
     private bool _hasSwitched;
     private int _switchToIndex;
     private int _switchFromIndex;
@@ -17,10 +19,23 @@ public class BackgroundSwitcher : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        ResetRenderers();
+	}
+
+    private void ResetRenderers()
+    {
         _curIndex = 0;
         _switchFromIndex = 0;
         _switchToIndex = 2;
         _lastDisplayed = _switchToIndex;
+
+        Renderer r0 = _tiles[0].GetComponent<Renderer>();
+        Renderer r1 = _tiles[1].GetComponent<Renderer>();
+        Color c = r0.material.color;
+
+        c.a = 1;
+        r0.material.color = c;
+        r1.material.color = c;
 
         for (int i = 2; i < _tiles.Length; i++)
         {
@@ -28,16 +43,38 @@ public class BackgroundSwitcher : MonoBehaviour {
             Color col = rend.material.color;
             col.a = 0;
             rend.material.color = col;
-
         }
+    }
 
+    void OnEnable()
+    {
+        EventManager.StartListening(GameSettings.START_GAME, StartCycle);
+        EventManager.StartListening(GameSettings.GAME_OVER, StopCycle);
+    }
+
+    void OnDisable()
+    {
+        EventManager.StopListening(GameSettings.START_GAME, StartCycle);
+        EventManager.StopListening(GameSettings.GAME_OVER, StopCycle);
+    }
+
+    private void StartCycle()
+    {
+        ResetRenderers();
+        _isCycling = true;
         StartCoroutine(ChangeOpacity());
-	}
+    }
+
+    private void StopCycle()
+    {
+        ResetRenderers();
+        _isCycling = false;
+    }
 	
 	// Update is called once per frame
 	void Update () {
 	
-        if(_hasSwitched)
+        if(_hasSwitched && _isCycling)
         {
             _hasSwitched = false;
             if(_curIndex <= _tiles.Length - 3)
@@ -91,18 +128,18 @@ public class BackgroundSwitcher : MonoBehaviour {
         colThree.a = 0;
         colFour.a = 0;
 
-        while (rendOne.material.color.a >= 0 && rendTwo.material.color.a >= 0) {
+        while (rendOne.material.color.a >= 0 && rendTwo.material.color.a >= 0 && _isCycling) {
             //print(string.Format("ColOne"))
-            colOne.a -= _switchTime;
-            colTwo.a -= _switchTime;
-            colThree.a += _switchTime;
-            colFour.a += _switchTime;
+            colOne.a -= _alphaIncrement;
+            colTwo.a -= _alphaIncrement;
+            colThree.a += _alphaIncrement;
+            colFour.a += _alphaIncrement;
 
             rendOne.material.color = colOne;
             rendTwo.material.color = colTwo;
             rendThree.material.color = colThree;
             rendFour.material.color = colFour;
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(_switchTime);
         }
         _curIndex += 2;
         _lastDisplayed = _switchToIndex;

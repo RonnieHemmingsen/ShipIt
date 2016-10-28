@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PowerUpImageBehaviour : MonoBehaviour {
+public class GenericObjectSpawnManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

@@ -39,7 +39,7 @@ public class LoggedInMenuHandler : MonoBehaviour {
         _lastTravelScoreText.text = TextStrings.LAST_TRIP_LENGTH+ PlayerData.instance.Scores.lastTravelScore.ToString("F1");
         _bestTravelScoreText.text = TextStrings.BEST_TRIP_LENGTH + PlayerData.instance.Scores.highestTravelScore.ToString("F1");
 
-        _coinHeaderText.text = TextStrings.FUTURE_GREENS_SCORE;
+        _coinHeaderText.text = TextStrings.FUTURE_GOLD_SCORE;
         _lastCoinScoreText.text = TextStrings.FG_LAST + "\n" + PlayerData.instance.Scores.lastCoinScore.ToString();
         _totalCoinScoreText.text = TextStrings.FG_TOTAL + "\n" + PlayerData.instance.Scores.globalCoinScore.ToString();
 

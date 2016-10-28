@@ -12,6 +12,8 @@ public class DestroyByBoundary : MonoBehaviour {
 
     void OnTriggerExit(Collider other)
     {
+
+
         if(other.tag == ObjectStrings.DESTROY_ALL 
             || other.tag == ObjectStrings.INVULNERABLE 
             || other.tag == ObjectStrings.LUDICROUS_SPEED 

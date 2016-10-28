@@ -16,6 +16,7 @@ TagManager:
   - BulletEnemy
   - Bullet
   - BoltToken
+  - MiddleBackground
   layers:
   - Default
   - TransparentFX

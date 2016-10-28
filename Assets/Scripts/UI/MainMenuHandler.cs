@@ -140,7 +140,7 @@ public class MainMenuHandler : MonoBehaviour {
             _hasMenuSlidIn = true;
         }
 //
-        //PlayerData.instance.SaveUserGSId("");
+        print("MM has user logged in: " + PlayerData.instance.HasUserLoggedIn);
         if (PlayerData.instance.HasUserLoggedIn)
         {
             _state = LoginStates.Online;
@@ -221,7 +221,7 @@ public class MainMenuHandler : MonoBehaviour {
         _GSid = PersistentDataManager.LoadGSUserId();
         //Get the data
         StartCoroutine(PersistentDataManager.LoadPlayerData(_GSid, (response) => {
-            print("all data should be loaded");
+            print(string.Format("all data for id: {0} should be loaded: {1} - {2}", _GSid, response.globalCoinScore, response.lastTravelScore));
             PlayerData.instance.Scores = response;
             _state = LoginStates.GetPlayerName;
         }));
@@ -337,6 +337,7 @@ public class MainMenuHandler : MonoBehaviour {
             
 
             _currentActiveTopLevelMenu = MenuStrings.TOP_LEVEL_SIDE_MENU;
+            EventManager.TriggerEvent(MenuStrings.UPDATE_ONLINE_MENU);
             StartCoroutine(SwitchTopLevelMenus(
                 AnimatorStrings.SLIDE_TOP_MENU_OUT, 
                 AnimatorStrings.SLIDE_SIDE_MENU_IN));

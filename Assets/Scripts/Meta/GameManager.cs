@@ -211,8 +211,6 @@ public class GameManager : MonoBehaviour {
         _objPool = GameObject.FindObjectOfType<ObjectPoolManager>();
     }
 
-
-
 	// Use this for initialization
 	void Start () {
         _objPool.CreateNewDictionary();

@@ -30,7 +30,6 @@ public class OnlineManager : MonoBehaviour {
 
     public void InitializeFacebook()
     {
-
             if(!FB.IsInitialized)
             {
 
